@@ -1,0 +1,144 @@
+---
+/**
+ * 404.astro
+ * Página de error 404 con navegación de recuperación.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Página no encontrada" noindex={true}>
+  <div class="error-page">
+    <div class="error-page__bg" aria-hidden="true"></div>
+    <div class="container error-page__content">
+
+      <div class="error-card">
+        <div class="error-card__visual" aria-hidden="true">
+          <img
+            class="error-card__emoji"
+            src="/assets/img/logo/caracol-h160.png"
+            alt=""
+            width="200" height="74"
+          />
+          <span class="error-card__code">404</span>
+        </div>
+
+        <h1 class="error-card__title">Esta ruta no existe</h1>
+        <p class="error-card__desc">
+          Parece que la página que buscas se perdió en alguna carretera de las Canarias.
+          No te preocupes, te ayudamos a encontrar el camino.
+        </p>
+
+        <div class="error-card__actions">
+          <a href="/" class="btn btn--primary btn--lg">
+            Volver al inicio
+          </a>
+          <a href="/contacto" class="btn btn--ghost btn--lg">
+            Contactar
+          </a>
+        </div>
+
+        <div class="error-card__links">
+          <p>¿Buscabas quizás?</p>
+          <ul>
+            <li><a href="/noticias">📰 Noticias</a></li>
+            <li><a href="/eventos">📅 Eventos</a></li>
+            <li><a href="/rutas">🗺️ Rutas</a></li>
+            <li><a href="/hazte-socio">✋ Hazte socio</a></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+.error-page {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--primitive-ocean-950);
+}
+.error-page__bg {
+  position: absolute; inset: 0;
+  background: var(--gradient-hero); opacity: 0.85;
+}
+.error-page__bg::after {
+  content:''; position:absolute; inset:0;
+  background-image: radial-gradient(rgba(201,169,110,0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.error-page__content {
+  position: relative; z-index: 1;
+  display: flex; justify-content: center; align-items: center;
+  padding-block: var(--space-20);
+}
+
+.error-card {
+  text-align: center;
+  max-width: 560px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--space-6);
+}
+
+.error-card__visual {
+  position: relative;
+  display: flex;
+  align-items: center; justify-content: center;
+  margin-bottom: var(--space-2);
+}
+.error-card__emoji {
+  height: 5rem;
+  width: auto;
+  filter: drop-shadow(0 4px 20px rgba(0,0,0,0.3));
+  animation: bounce-y 3s ease-in-out infinite;
+}
+.error-card__code {
+  position: absolute;
+  bottom: -16px;
+  right: -24px;
+  font-family: var(--font-display);
+  font-size: var(--text-7xl);
+  font-weight: var(--weight-black);
+  color: rgba(201,169,110,0.15);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.error-card__title {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl));
+  font-weight: var(--weight-black);
+  color: white;
+  line-height: var(--leading-snug);
+}
+.error-card__desc {
+  font-size: var(--text-lg);
+  color: rgba(255,255,255,0.65);
+  line-height: var(--leading-relaxed);
+  max-width: 42ch;
+}
+.error-card__actions {
+  display: flex; gap: var(--space-4); flex-wrap: wrap; justify-content: center;
+}
+.error-card__links {
+  padding-top: var(--space-6);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  width: 100%;
+}
+.error-card__links p {
+  font-size: var(--text-sm); color: rgba(255,255,255,0.45);
+  margin-bottom: var(--space-3); max-width: none; text-align: center;
+}
+.error-card__links ul {
+  display: flex; justify-content: center; gap: var(--space-4); flex-wrap: wrap; list-style: none;
+}
+.error-card__links a {
+  font-size: var(--text-sm); font-weight: var(--weight-medium);
+  color: rgba(255,255,255,0.7); text-decoration: none;
+  transition: color var(--duration-fast);
+}
+.error-card__links a:hover { color: var(--color-accent); }
+</style>

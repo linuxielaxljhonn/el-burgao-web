@@ -1,0 +1,446 @@
+---
+/**
+ * SectionInscripcion.astro
+ * ─────────────────────────────────────────────────────────────
+ * Formulario de inscripción como socio.
+ * Accesible, validación HTML5 + JS suave.
+ * Envío con Netlify Forms: la solicitud llega por email a la junta.
+ */
+
+import siteConfig from '../../config/site.ts';
+const { cuota, islas, vehiculos, legal } = siteConfig;
+---
+
+<section class="section section--ocean" id="inscripcion" aria-labelledby="inscripcion-title">
+  <div class="container">
+
+    <div class="inscripcion-layout">
+
+      <!-- ── IZQUIERDA: Info ── -->
+      <div class="inscripcion-info" data-reveal="left">
+        <p class="eyebrow eyebrow--light">✋ Únete</p>
+        <h2 class="section-title" id="inscripcion-title" style="color:white;">
+          Forma parte de El Burgao
+        </h2>
+        <p class="section-desc" style="color:rgba(255,255,255,0.7); max-width:40ch;">
+          Encuentros en todas las islas, rutas y pernoctas recomendadas, ventajas
+          en servicios y una comunidad que defiende el autocaravanismo en Canarias.
+        </p>
+
+        <!-- Beneficios -->
+        <ul class="inscripcion-benefits" aria-label="Beneficios de ser socio">
+          {[
+            { icon: '🏕️', text: 'Encuentros y jornadas de convivencia' },
+            { icon: '🗺️', text: 'Rutas, paradas y pernoctas recomendadas' },
+            { icon: '💳', text: 'Carnet de socio para descuentos' },
+            { icon: '⛴️', text: 'Ventajas en servicios y navieras' },
+            { icon: '📢', text: 'Voz en la defensa del autocaravanismo' },
+            { icon: '🤝', text: 'Red de apoyo entre socios' },
+          ].map(b => (
+            <li class="inscripcion-benefit">
+              <span aria-hidden="true">{b.icon}</span>
+              <span>{b.text}</span>
+            </li>
+          ))}
+        </ul>
+
+        <!-- Precio -->
+        <div class="inscripcion-price">
+          <div class="inscripcion-price__amount">
+            <span class="inscripcion-price__value">{cuota.alta}</span>
+            <span class="inscripcion-price__currency">€</span>
+            <span class="inscripcion-price__period">el primer año</span>
+          </div>
+          <p class="inscripcion-price__note">Renovación: {cuota.renovacion} € al año · {cuota.nota}</p>
+        </div>
+      </div>
+
+      <!-- ── DERECHA: Formulario ── -->
+      <div class="inscripcion-form-wrap card card--glass" data-reveal="right">
+        <h3 class="inscripcion-form-title">Solicitud de socio</h3>
+
+        <form
+          class="inscripcion-form"
+          id="inscripcionForm"
+          novalidate
+          name="inscripcion"
+          method="POST"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+          action="/gracias"
+        >
+          <!-- Netlify hidden field -->
+          <input type="hidden" name="form-name" value="inscripcion" />
+          <p hidden><label>No rellenar: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="nombre">
+                Nombre <span class="required" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                class="form-input"
+                placeholder="Tu nombre"
+                required
+                autocomplete="given-name"
+              />
+              <span class="form-error" id="nombre-error" role="alert"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="apellidos">
+                Apellidos <span class="required" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="text"
+                id="apellidos"
+                name="apellidos"
+                class="form-input"
+                placeholder="Tus apellidos"
+                required
+                autocomplete="family-name"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">
+              Correo electrónico <span class="required" aria-hidden="true">*</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="form-input"
+              placeholder="tu@correo.com"
+              required
+              autocomplete="email"
+            />
+            <span class="form-error" id="email-error" role="alert"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="telefono">
+              Teléfono <span class="form-hint">(opcional, para avisos por WhatsApp)</span>
+            </label>
+            <input type="tel" id="telefono" name="telefono" class="form-input"
+              placeholder="600 000 000" autocomplete="tel" inputmode="tel" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="isla">Isla de residencia</label>
+              <select id="isla" name="isla" class="form-input form-select">
+                <option value="">Selecciona tu isla</option>
+                {islas.map(isla => (
+                  <option value={isla.value}>{isla.label}</option>
+                ))}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="vehiculo">Tipo de vehículo</label>
+              <select id="vehiculo" name="vehiculo" class="form-input form-select">
+                <option value="">Selecciona</option>
+                {vehiculos.map(v => (
+                  <option value={v.value}>{v.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="mensaje">
+              ¿Cómo nos conociste? <span class="form-hint">(opcional)</span>
+            </label>
+            <textarea
+              id="mensaje"
+              name="mensaje"
+              class="form-input form-textarea"
+              placeholder="A través de un amigo, redes sociales, evento..."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="rgpd" required />
+              <span>
+                Acepto la
+                <a href="/privacidad" target="_blank" rel="noopener">política de privacidad</a>
+                y el tratamiento de mis datos para gestionar mi solicitud de socio.
+                <span class="required" aria-hidden="true">*</span>
+              </span>
+            </label>
+            <span class="form-error" id="rgpd-error" role="alert"></span>
+            <p class="form-legal">
+              Responsable: {legal.razonSocial}. Finalidad: gestionar tu alta como socio.
+              No se ceden datos a terceros. Puedes ejercer tus derechos según la
+              <a href="/privacidad">política de privacidad</a>.
+            </p>
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--full" id="inscripcionSubmit">
+            <span class="btn__text">Enviar solicitud</span>
+            <span class="btn__loader" aria-hidden="true"></span>
+          </button>
+
+          <p class="inscripcion-form__note">
+            La junta te responderá con los datos para el pago de la cuota y tu carnet de socio.
+          </p>
+        </form>
+
+        <!-- Estado de éxito -->
+        <div class="inscripcion-success" id="inscripcionSuccess" hidden aria-live="polite">
+          <span class="inscripcion-success__icon" aria-hidden="true">🎉</span>
+          <h4>¡Solicitud enviada!</h4>
+          <p>La junta revisará tu solicitud y se pondrá en contacto contigo. ¡Bienvenido a El Burgao!</p>
+        </div>
+        <div class="form-send-error" id="inscripcionError" hidden role="alert">
+          No se ha podido enviar la solicitud. Revisa tu conexión e inténtalo de nuevo en unos minutos.
+        </div>
+
+      </div><!-- /form-wrap -->
+
+    </div><!-- /layout -->
+  </div><!-- /container -->
+</section>
+
+<style>
+.form-legal { font-size: .75rem; line-height: 1.45; color: rgba(255,255,255,.72); margin-top: var(--space-2); }
+.inscripcion-form a { color: #E2C48E; text-decoration: underline; }
+.form-send-error { margin-top: var(--space-4); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: rgba(220,53,69,.12); color: #ffd6da; font-size: .875rem; }
+
+.inscripcion-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-16);
+  align-items: start;
+}
+
+/* ── INFO ────────────────────────────────────────────────────── */
+.inscripcion-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.inscripcion-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  list-style: none;
+}
+
+.inscripcion-benefit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: var(--weight-medium);
+}
+
+.inscripcion-benefit span:first-child {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+/* Precio */
+.inscripcion-price {
+  margin-top: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+  background: rgba(201, 169, 110, 0.1);
+  border: 1px solid rgba(201, 169, 110, 0.25);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.inscripcion-price__amount {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+
+.inscripcion-price__currency {
+  font-size: var(--text-2xl);
+  color: var(--color-accent);
+  font-weight: var(--weight-bold);
+}
+
+.inscripcion-price__value {
+  font-family: var(--font-display);
+  font-size: var(--text-5xl);
+  font-weight: var(--weight-black);
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+.inscripcion-price__period {
+  font-size: var(--text-lg);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.inscripcion-price__note {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.5);
+  max-width: none;
+}
+
+/* ── FORMULARIO ──────────────────────────────────────────────── */
+.inscripcion-form-wrap {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  padding: var(--space-8);
+  border-radius: var(--radius-xl);
+}
+
+.inscripcion-form-title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: white;
+  margin-bottom: var(--space-6);
+}
+
+.inscripcion-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.inscripcion-form .form-input {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+.inscripcion-form .form-input::placeholder { color: rgba(255,255,255,0.3); }
+.inscripcion-form .form-input:focus {
+  background: rgba(255,255,255,0.09);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(201,169,110,0.18);
+}
+
+.inscripcion-form .form-label { color: rgba(255,255,255,0.85); }
+.inscripcion-form .checkbox-label { color: rgba(255,255,255,0.75); }
+
+.inscripcion-form__note {
+  font-size: var(--text-xs);
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+  line-height: var(--leading-relaxed);
+  max-width: none;
+}
+
+/* Éxito */
+.inscripcion-success {
+  text-align: center;
+  padding: var(--space-10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.inscripcion-success__icon { font-size: 4rem; }
+.inscripcion-success h4 {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  color: white;
+  font-weight: var(--weight-bold);
+}
+.inscripcion-success p {
+  color: rgba(255,255,255,0.7);
+  max-width: none;
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .inscripcion-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-10);
+  }
+}
+
+@media (max-width: 640px) {
+  .inscripcion-form-wrap { padding: var(--space-6); }
+  .inscripcion-price { flex-direction: column; gap: var(--space-2); }
+}
+</style>
+
+<script>
+/* Validación del formulario de inscripción */
+(function () {
+  const form    = document.getElementById('inscripcionForm') as HTMLFormElement;
+  const success = document.getElementById('inscripcionSuccess') as HTMLElement;
+  const submitBtn = document.getElementById('inscripcionSubmit') as HTMLButtonElement;
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Limpiar errores
+    form.querySelectorAll('.form-error').forEach(el => { (el as HTMLElement).textContent = ''; });
+    form.querySelectorAll('.form-input').forEach(el => { el.classList.remove('is-error'); });
+
+    // Validar
+    let valid = true;
+
+    const nombre = form.querySelector<HTMLInputElement>('#nombre');
+    if (!nombre?.value.trim()) {
+      document.getElementById('nombre-error')!.textContent = 'El nombre es obligatorio';
+      nombre?.classList.add('is-error');
+      valid = false;
+    }
+
+    const email = form.querySelector<HTMLInputElement>('#email');
+    if (!email?.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+      document.getElementById('email-error')!.textContent = 'Introduce un email válido';
+      email?.classList.add('is-error');
+      valid = false;
+    }
+
+    const rgpd = form.querySelector<HTMLInputElement>('[name="rgpd"]');
+    if (!rgpd?.checked) {
+      document.getElementById('rgpd-error')!.textContent = 'Debes aceptar la política de privacidad';
+      valid = false;
+    }
+
+    if (!valid) {
+      form.querySelector('.is-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // Enviar
+    submitBtn.classList.add('is-loading');
+    submitBtn.disabled = true;
+
+    try {
+      const data = new FormData(form);
+      const res  = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data as any).toString(),
+      });
+
+      if (res.ok) {
+        form.hidden = true;
+        success.removeAttribute('hidden');
+        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        throw new Error('Error del servidor');
+      }
+    } catch {
+      document.getElementById('inscripcionError')?.removeAttribute('hidden');
+    } finally {
+      submitBtn.classList.remove('is-loading');
+      submitBtn.disabled = false;
+    }
+  });
+})();
+</script>

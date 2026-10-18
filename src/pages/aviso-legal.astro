@@ -1,0 +1,47 @@
+---
+/**
+ * aviso-legal.astro — Aviso legal (LSSI-CE, art. 10).
+ * Los datos salen de siteConfig.legal; revisar con la junta antes de publicar.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import siteConfig from '../config/site.ts';
+const { legal, contact, url, author } = siteConfig;
+---
+<PageLayout
+  title="Aviso legal"
+  description="Aviso legal de la web de la Asociación Autocaravanista El Burgao."
+  heading="Aviso legal"
+  emoji="⚖️"
+  eyebrow="⚖️ Legal"
+  breadcrumbs={[{ label: 'Aviso legal', href: '/aviso-legal' }]}
+  noindex={true}
+>
+  <div class="section">
+    <div class="container">
+      <div class="prose legal-prose">
+        <h2>1. Titular de la web</h2>
+        <ul>
+          <li><strong>Titular:</strong> {legal.razonSocial}</li>
+          <li><strong>CIF:</strong> {legal.cif}</li>
+          <li><strong>Inscripción registral:</strong> {legal.registro}</li>
+          <li><strong>Domicilio:</strong> {legal.domicilio}</li>
+          <li><strong>Email:</strong> {contact.email}</li>
+          <li><strong>Web:</strong> {url}</li>
+        </ul>
+        <h2>2. Objeto</h2>
+        <p>Esta web informa sobre las actividades de la asociación: agenda de eventos, noticias, rutas y lugares recomendados, y facilita la solicitud de alta como socio y el contacto con la junta.</p>
+        <h2>3. Responsabilidad sobre la información de rutas y lugares</h2>
+        <p>La información sobre rutas, áreas, pernoctas y normativa se ofrece a título orientativo y puede cambiar. Antes de estacionar o pernoctar, comprueba la señalización y las ordenanzas municipales vigentes. La asociación no se hace responsable del uso que se haga de esta información.</p>
+        <h2>4. Propiedad intelectual</h2>
+        <p>Los textos, fotografías y logotipos pertenecen a la asociación o a sus autores y se pueden compartir citando la fuente. El diseño y el código de la web son obra de {author}, que cede su uso a la asociación.</p>
+        <h2>5. Enlaces externos</h2>
+        <p>La web puede enlazar a sitios de terceros (navieras, ayuntamientos, empresas colaboradoras). La asociación no se responsabiliza de sus contenidos.</p>
+        <h2>6. Protección de datos y cookies</h2>
+        <p>Consulta la <a href="/privacidad">política de privacidad</a> y la <a href="/cookies">política de cookies</a>.</p>
+        <h2>7. Legislación aplicable</h2>
+        <p>Este aviso se rige por la legislación española.</p>
+      </div>
+    </div>
+  </div>
+</PageLayout>
+<style>.legal-prose { max-width: var(--container-md, 760px); margin-inline: auto; }</style>

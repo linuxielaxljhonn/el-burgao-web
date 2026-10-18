@@ -1,0 +1,114 @@
+---
+/**
+ * la-asociacion.astro
+ * Quiénes somos, qué hacemos, junta directiva, estatutos y datos registrales.
+ * Para actualizar la junta: editar la lista `junta` de abajo.
+ * Para publicar los estatutos: subir el PDF a /public/docs/estatutos.pdf
+ * y poner `estatutosPdf` a '/docs/estatutos.pdf'.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import siteConfig from '../config/site.ts';
+
+const { foundedYear, legal, stats } = siteConfig;
+
+// PENDIENTE: confirmar con la junta
+const junta = [
+  { cargo: 'Presidencia',    nombre: '[PENDIENTE]' },
+  { cargo: 'Vicepresidencia', nombre: '[PENDIENTE]' },
+  { cargo: 'Secretaría',     nombre: '[PENDIENTE]' },
+  { cargo: 'Tesorería',      nombre: '[PENDIENTE]' },
+  { cargo: 'Vocalías',       nombre: '[PENDIENTE]' },
+];
+
+const estatutosPdf = '';   // ej. '/docs/estatutos.pdf'
+
+const queHacemos = [
+  { icon: '🏕️', title: 'Encuentros',        text: 'Jornadas de convivencia y concentraciones en distintas islas.' },
+  { icon: '🗺️', title: 'Rutas y pernoctas', text: 'Recomendamos rutas, paradas y lugares de pernocta comprobados por socios.' },
+  { icon: '📢', title: 'Defensa',           text: 'Representamos a los autocaravanistas ante ayuntamientos, cabildos y Gobierno de Canarias.' },
+  { icon: '🤝', title: 'Comunidad',         text: 'Una red de familias que se ayudan en ruta y comparten experiencias.' },
+];
+---
+
+<PageLayout
+  title="La asociación"
+  description="Quiénes somos: la Asociación Autocaravanista El Burgao reúne a familias autocaravanistas de las Islas Canarias desde 2014."
+  heading="La asociación"
+  subheading={`Autocaravanistas de Canarias unidos desde ${foundedYear}.`}
+  emoji="🚐"
+  eyebrow="🚐 Quiénes somos"
+  breadcrumbs={[{ label: 'La asociación', href: '/la-asociacion' }]}
+>
+  <section class="section">
+    <div class="container">
+      <div class="prose asoc-prose">
+        <h2>Quiénes somos</h2>
+        <p>
+          El Burgao nació en {foundedYear} con una idea sencilla: explorar las Islas Canarias en
+          autocaravana no tiene por qué ser una aventura solitaria. Desde entonces reunimos a
+          familias de todas las islas que comparten una forma de viajar libre, responsable
+          y respetuosa con el entorno.
+        </p>
+        <p class="asoc-pendiente">[PENDIENTE: texto de presentación e historia redactado por la junta]</p>
+      </div>
+
+      <div class="asoc-grid" role="list">
+        {queHacemos.map(q => (
+          <div class="asoc-card card" role="listitem">
+            <span class="asoc-card__icon" aria-hidden="true">{q.icon}</span>
+            <h3>{q.title}</h3>
+            <p>{q.text}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="prose asoc-prose">
+        <h2 id="junta">Junta directiva</h2>
+        <table class="asoc-table">
+          <thead><tr><th scope="col">Cargo</th><th scope="col">Nombre</th></tr></thead>
+          <tbody>
+            {junta.map(j => <tr><td>{j.cargo}</td><td>{j.nombre}</td></tr>)}
+          </tbody>
+        </table>
+
+        <h2 id="estatutos">Estatutos</h2>
+        {estatutosPdf ? (
+          <p><a class="btn btn--primary" href={estatutosPdf} target="_blank" rel="noopener">Descargar estatutos (PDF)</a></p>
+        ) : (
+          <p>Los estatutos estarán disponibles aquí en PDF. Mientras tanto, puedes solicitar una copia desde la página de <a href="/contacto">contacto</a>.</p>
+        )}
+
+        <h2 id="datos">Datos registrales</h2>
+        <ul>
+          <li><strong>Denominación:</strong> {legal.razonSocial}</li>
+          <li><strong>CIF:</strong> {legal.cif}</li>
+          <li><strong>Registro:</strong> {legal.registro}</li>
+          <li><strong>Domicilio social:</strong> {legal.domicilio}</li>
+        </ul>
+
+        <div class="asoc-cta">
+          <p>¿Quieres formar parte?</p>
+          <a href="/hazte-socio" class="btn btn--primary">Hazte socio</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+.asoc-prose { max-width: var(--container-md, 760px); margin-inline: auto; }
+.asoc-pendiente { color: var(--color-text-muted); font-style: italic; }
+.asoc-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-5); margin: var(--space-10) auto; max-width: var(--container-lg, 1100px);
+}
+.asoc-card { padding: var(--space-6); }
+.asoc-card__icon { font-size: 2rem; display: block; margin-bottom: var(--space-3); }
+.asoc-card h3 { font-family: var(--font-display); font-size: var(--text-lg); margin-bottom: var(--space-2); color: var(--color-text); }
+.asoc-card p { color: var(--color-text-muted); font-size: var(--text-sm); line-height: var(--leading-relaxed); }
+.asoc-table { width: 100%; border-collapse: collapse; }
+.asoc-table th, .asoc-table td { text-align: left; padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border); }
+.asoc-table th { font-size: var(--text-sm); color: var(--color-text-muted); font-weight: 600; }
+.asoc-cta { margin-top: var(--space-10); padding: var(--space-6); border-radius: var(--radius-lg); background: var(--color-bg-raised); border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+.asoc-cta p { margin: 0; font-weight: 600; }
+</style>

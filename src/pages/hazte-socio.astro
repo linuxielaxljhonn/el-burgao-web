@@ -1,0 +1,53 @@
+---
+/**
+ * hazte-socio.astro
+ * Ventajas, cuotas, solicitud de alta (Netlify Forms) y preguntas frecuentes.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import SectionBeneficios  from '../components/sections/SectionBeneficios.astro';
+import SectionInscripcion from '../components/sections/SectionInscripcion.astro';
+import siteConfig from '../config/site.ts';
+
+const { cuota } = siteConfig;
+
+const faqs = [
+  { q: '¿Cuánto cuesta?', a: `${cuota.alta} € el primer año (alta) y ${cuota.renovacion} € cada renovación anual.` },
+  { q: '¿Cómo pago la cuota?', a: 'Tras enviar la solicitud, la junta te enviará los datos para el pago. [PENDIENTE: forma de pago]' },
+  { q: '¿Qué necesito para hacerme socio?', a: 'Rellenar la solicitud. No hace falta tener vehículo propio para unirte.' },
+  { q: '¿Cuándo se renueva?', a: '[PENDIENTE: periodo de renovación, p. ej. año natural]' },
+];
+---
+
+<PageLayout
+  title="Hazte socio"
+  description={`Únete a la Asociación Autocaravanista El Burgao: ${cuota.alta} € el primer año y ${cuota.renovacion} € la renovación. Encuentros, rutas, pernoctas y ventajas en Canarias.`}
+  heading="Hazte socio"
+  subheading={`${cuota.alta} € el primer año · ${cuota.renovacion} € la renovación`}
+  emoji="✋"
+  eyebrow="✋ Únete"
+  breadcrumbs={[{ label: 'Hazte socio', href: '/hazte-socio' }]}
+>
+  <SectionBeneficios ctaHref="#inscripcion" />
+  <SectionInscripcion />
+
+  <section class="section">
+    <div class="container">
+      <div class="prose faq-wrap">
+        <h2>Preguntas frecuentes</h2>
+        {faqs.map(f => (
+          <details class="faq-item">
+            <summary class="faq-item__q">{f.q}</summary>
+            <p class="faq-item__a">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+.faq-wrap { max-width: var(--container-md, 760px); margin-inline: auto; }
+.faq-item { border-bottom: 1px solid var(--color-border); padding: var(--space-4) 0; }
+.faq-item__q { cursor: pointer; font-weight: 600; color: var(--color-text); }
+.faq-item__a { margin-top: var(--space-3); color: var(--color-text-muted); }
+</style>

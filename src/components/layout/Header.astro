@@ -1,0 +1,628 @@
+---
+/**
+ * Header.astro
+ * ─────────────────────────────────────────────────────────────
+ * Header fijo con:
+ * - Logo + navegación principal
+ * - Efecto glassmorphism al hacer scroll
+ * - Menú móvil accesible
+ * - Buscador integrado
+ * - Toggle Dark Mode
+ * - CTA "Área Socios"
+ *
+ * REEMPLAZA la duplicación del <header> en los 6 HTML de v1.
+ */
+
+import siteConfig from '../../config/site.ts';
+const { nav, navCta, shortName } = siteConfig;
+
+// Detectar página activa para marcar el link correcto
+const currentPath = Astro.url.pathname;
+---
+
+<header class="site-header" id="site-header" role="banner">
+  <div class="header-inner">
+
+    <!-- ── LOGO ── -->
+    <a href="/" class="header-logo" aria-label={`${shortName} — Inicio`}>
+      <img
+        class="header-logo__icon"
+        src="/assets/img/logo/caracol-h160.png"
+        srcset="/assets/img/logo/caracol-h80.png 1x, /assets/img/logo/caracol-h160.png 2x"
+        width="86" height="32"
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        decoding="async"
+      />
+      <span class="header-logo__text">
+        El <strong>Burgao</strong>
+      </span>
+    </a>
+
+    <!-- ── NAV PRINCIPAL (desktop) ── -->
+    <nav class="header-nav" role="navigation" aria-label="Navegación principal">
+      <ul class="header-nav__list" role="list">
+        {nav.map(item => (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                'header-nav__link',
+                { 'is-active': currentPath === item.href }
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <!-- ── ACCIONES (derecha) ── -->
+    <div class="header-actions">
+
+      <!-- Buscador -->
+      <button
+        class="header-search-btn"
+        id="searchToggle"
+        aria-label="Abrir buscador"
+        aria-expanded="false"
+        aria-controls="searchPanel"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+
+      <!-- Dark Mode toggle -->
+      <button
+        class="header-theme-btn"
+        id="themeToggle"
+        aria-label="Cambiar modo oscuro/claro"
+        title="Modo oscuro / claro"
+      >
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+
+      <!-- CTA Área Socios -->
+      <a href={navCta.href} class="btn btn--primary btn--sm header-cta">
+        {navCta.label}
+      </a>
+
+      <!-- Hamburger (mobile) -->
+      <button
+        class="header-burger"
+        id="navToggle"
+        aria-expanded="false"
+        aria-controls="mobileMenu"
+        aria-label="Abrir menú de navegación"
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+
+  </div><!-- /header-inner -->
+
+  <!-- ── PANEL DE BÚSQUEDA ── -->
+  <div
+    class="search-panel"
+    id="searchPanel"
+    role="search"
+    aria-label="Búsqueda global"
+    hidden
+  >
+    <div class="search-panel__inner">
+      <label for="searchInput" class="sr-only">Buscar en El Burgao</label>
+      <input
+        type="search"
+        id="searchInput"
+        class="search-panel__input"
+        placeholder="Busca noticias, eventos, rutas..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button class="search-panel__close" id="searchClose" aria-label="Cerrar búsqueda">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="search-panel__results" id="searchResults" role="listbox" aria-label="Resultados de búsqueda"></div>
+  </div>
+
+</header>
+
+<!-- ── MENÚ MÓVIL ── -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menú de navegación">
+  <div class="mobile-menu__overlay" id="menuOverlay" aria-hidden="true"></div>
+  <nav class="mobile-menu__panel">
+    <div class="mobile-menu__header">
+      <a href="/" class="header-logo" style="color:var(--color-text-inverse);" tabindex="-1">
+        <img
+          class="header-logo__icon"
+          src="/assets/img/logo/caracol-h80.png"
+          width="60" height="22"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+        />
+        <span>El <strong>Burgao</strong></span>
+      </a>
+      <button class="mobile-menu__close" id="menuClose" aria-label="Cerrar menú">✕</button>
+    </div>
+
+    <ul class="mobile-menu__list" role="list">
+      {nav.map(item => (
+        <li>
+          <a href={item.href} class="mobile-menu__link">
+            <span aria-hidden="true">{item.emoji}</span>
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="mobile-menu__footer">
+      <a href={navCta.href} class="btn btn--primary btn--full">
+        {navCta.label}
+      </a>
+    </div>
+  </nav>
+</div>
+
+<style>
+/* ── SITE HEADER ──────────────────────────────────────────── */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-h);
+  z-index: var(--z-header);
+  transition:
+    background var(--duration-slow) var(--ease-out),
+    backdrop-filter var(--duration-slow),
+    box-shadow var(--duration-slow) var(--ease-out);
+}
+
+/* Estado scrolled */
+.site-header.is-scrolled {
+  background: rgba(13, 42, 61, 0.95);
+  backdrop-filter: blur(var(--blur-lg));
+  -webkit-backdrop-filter: blur(var(--blur-lg));
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: var(--container-xl);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+  gap: var(--space-6);
+}
+
+/* ── LOGO ──────────────────────────────────────────────────── */
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-inverse);
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: opacity var(--duration-fast);
+}
+.header-logo:hover { opacity: 0.85; }
+
+.header-logo__icon {
+  height: 32px;
+  width: auto;
+  display: block;
+  flex-shrink: 0;
+}
+
+.header-logo__text {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-regular);
+  letter-spacing: 0.02em;
+  color: var(--color-text-inverse);
+}
+.header-logo__text strong {
+  font-weight: var(--weight-bold);
+  color: var(--color-accent);
+}
+
+/* ── NAV DESKTOP ───────────────────────────────────────────── */
+.header-nav {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+}
+
+.header-nav__list {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+}
+
+.header-nav__link {
+  display: inline-block;
+  padding: var(--space-2) var(--space-3);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition:
+    color     var(--duration-fast),
+    background var(--duration-fast);
+}
+.header-nav__link:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+.header-nav__link.is-active {
+  color: var(--color-accent);
+}
+
+/* ── ACCIONES ───────────────────────────────────────────────── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.header-search-btn,
+.header-theme-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: rgba(255, 255, 255, 0.75);
+  border-radius: var(--radius-sm);
+  transition: all var(--duration-fast);
+}
+.header-search-btn:hover,
+.header-theme-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark/Light toggle — muestra el icono correcto según tema */
+.icon-moon { display: none; }
+[data-theme="dark"] .icon-sun  { display: none; }
+[data-theme="dark"] .icon-moon { display: block; }
+
+.header-cta {
+  margin-left: var(--space-2);
+}
+
+/* Burger */
+.header-burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  width: 32px;
+  padding: 4px;
+  color: white;
+}
+.header-burger span {
+  display: block;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition:
+    transform var(--duration-base),
+    opacity   var(--duration-base);
+}
+
+
+/* ── SEARCH PANEL ──────────────────────────────────────────── */
+.search-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(13, 42, 61, 0.98);
+  backdrop-filter: blur(var(--blur-lg));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--space-4) var(--container-pad);
+  animation: slide-in-right var(--duration-slow) var(--ease-out);
+}
+.search-panel[hidden] { display: none; }
+
+.search-panel__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  max-width: var(--container-xl);
+  margin-inline: auto;
+}
+
+.search-panel__input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-5);
+  color: white;
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+}
+.search-panel__input::placeholder { color: rgba(255,255,255,0.4); }
+.search-panel__input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.2);
+}
+
+.search-panel__close {
+  color: rgba(255,255,255,0.6);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast);
+}
+.search-panel__close:hover { color: white; }
+
+.search-panel__results {
+  max-width: var(--container-xl);
+  margin-inline: auto;
+  margin-top: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+
+/* ── MENÚ MÓVIL ─────────────────────────────────────────────── */
+.mobile-menu {
+  display: none;
+}
+
+.mobile-menu.is-open {
+  display: block;
+}
+
+.mobile-menu__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: calc(var(--z-header) + 5);
+  backdrop-filter: blur(var(--blur-sm));
+  animation: fade-in var(--duration-base) var(--ease-out);
+}
+
+.mobile-menu__panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(340px, 90vw);
+  background: var(--primitive-ocean-900);
+  z-index: calc(var(--z-header) + 10);
+  display: flex;
+  flex-direction: column;
+  animation: slide-in-right var(--duration-slow) var(--ease-out);
+  overflow-y: auto;
+}
+
+.mobile-menu__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.mobile-menu__close {
+  color: rgba(255,255,255,0.6);
+  font-size: var(--text-xl);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast);
+}
+.mobile-menu__close:hover { color: white; }
+
+.mobile-menu__list {
+  flex: 1;
+  padding: var(--space-4) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.mobile-menu__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4);
+  color: rgba(255,255,255,0.85);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition:
+    background var(--duration-fast),
+    color     var(--duration-fast);
+}
+.mobile-menu__link:hover {
+  background: rgba(255,255,255,0.08);
+  color: white;
+}
+
+.mobile-menu__footer {
+  padding: var(--space-6);
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .header-nav { display: none; }
+  .header-cta  { display: none; }
+  .header-burger { display: flex; }
+  .header-inner { gap: var(--space-4); }
+}
+
+@media (max-width: 480px) {
+  .site-header { height: var(--header-h-mobile); }
+  .header-search-btn,
+  .header-theme-btn { width: 32px; height: 32px; }
+}
+</style>
+
+<script>
+  /**
+   * Header interactions:
+   * - Scroll effect (glassmorphism)
+   * - Mobile menu (open/close, overlay, Escape)
+   * - Search panel (toggle, keyboard)
+   * - Dark mode toggle (persistencia en localStorage)
+   * - Active nav link (IntersectionObserver)
+   */
+  (function () {
+    'use strict';
+
+    // ── Scroll effect ──
+    const header = document.getElementById('site-header');
+    if (header) {
+      const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 40);
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
+
+    // ── Dark Mode ──
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('burgao-theme', next);
+      });
+    }
+
+    // ── Mobile menu ──
+    const navToggle  = document.getElementById('navToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuClose  = document.getElementById('menuClose');
+    const overlay    = document.getElementById('menuOverlay');
+
+    function openMenu() {
+      mobileMenu?.classList.add('is-open');
+      mobileMenu?.setAttribute('aria-hidden', 'false');
+      navToggle?.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+      // Mover foco al botón cerrar
+      setTimeout(() => menuClose?.focus(), 100);
+    }
+
+    function closeMenu() {
+      mobileMenu?.classList.remove('is-open');
+      mobileMenu?.setAttribute('aria-hidden', 'true');
+      navToggle?.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      navToggle?.focus();
+    }
+
+    navToggle?.addEventListener('click', openMenu);
+    menuClose?.addEventListener('click', closeMenu);
+    overlay?.addEventListener('click', closeMenu);
+
+    // Cerrar links del menú
+    document.querySelectorAll('.mobile-menu__link').forEach(a => {
+      a.addEventListener('click', closeMenu);
+    });
+
+    // Escape cierra todo
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        closeMenu();
+        closeSearch();
+      }
+    });
+
+    // ── Search panel ──
+    const searchToggle = document.getElementById('searchToggle');
+    const searchPanel  = document.getElementById('searchPanel');
+    const searchClose  = document.getElementById('searchClose');
+    const searchInput  = document.getElementById('searchInput') as HTMLInputElement;
+
+    function openSearch() {
+      searchPanel?.removeAttribute('hidden');
+      searchToggle?.setAttribute('aria-expanded', 'true');
+      searchInput?.focus();
+    }
+
+    function closeSearch() {
+      searchPanel?.setAttribute('hidden', '');
+      searchToggle?.setAttribute('aria-expanded', 'false');
+      if (searchInput) searchInput.value = '';
+      const results = document.getElementById('searchResults');
+      if (results) results.innerHTML = '';
+    }
+
+    searchToggle?.addEventListener('click', openSearch);
+    searchClose?.addEventListener('click', closeSearch);
+
+    // Search con debounce — la lógica real está en search.ts
+    let searchTimeout: ReturnType<typeof setTimeout>;
+    searchInput?.addEventListener('input', e => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const query = (e.target as HTMLInputElement).value.trim();
+        // Emitir evento custom para que search.ts lo capture
+        document.dispatchEvent(new CustomEvent('burgao:search', { detail: { query } }));
+      }, 250);
+    });
+
+    // ── Active nav (scroll sections) ──
+    const sections  = document.querySelectorAll('section[id]');
+    const navLinks  = document.querySelectorAll('.header-nav__link[href^="/#"]');
+
+    if (sections.length && navLinks.length) {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            const id = e.target.getAttribute('id');
+            navLinks.forEach(a => {
+              a.classList.toggle('is-active', a.getAttribute('href') === `/#${id}`);
+            });
+          }
+        });
+      }, { rootMargin: '-40% 0px -55% 0px' });
+      sections.forEach(s => obs.observe(s));
+    }
+
+    // ── Back to top ──
+    const backToTop = document.getElementById('backToTop');
+    if (backToTop) {
+      window.addEventListener('scroll', () => {
+        backToTop.classList.toggle('visible', window.scrollY > 500);
+      }, { passive: true });
+      backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+  })();
+</script>

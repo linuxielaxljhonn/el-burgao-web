@@ -1,0 +1,382 @@
+---
+/**
+ * /noticias/[slug].astro
+ * ─────────────────────────────────────────────────────────────
+ * Página de detalle de cada noticia.
+ * Generación estática desde Content Collections.
+ */
+
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import siteConfig from '../../config/site.ts';
+
+export async function getStaticPaths() {
+  const noticias = await getCollection('noticias', ({ data }) => !data.draft);
+  return noticias.map(n => ({
+    params: { slug: n.slug },
+    props:  { noticia: n },
+  }));
+}
+
+const { noticia } = Astro.props;
+const { Content } = await noticia.render();
+
+const allNoticias = await getCollection('noticias', ({ data }) => !data.draft);
+const related = allNoticias
+  .filter(n => n.slug !== noticia.slug && n.data.category === noticia.data.category)
+  .slice(0, 2);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('es-ES', {
+    day: 'numeric', month: 'long', year: 'numeric'
+  });
+}
+
+// Schema Article para SEO
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "headline": noticia.data.title,
+  "description": noticia.data.excerpt,
+  "datePublished": noticia.data.date.toISOString(),
+  "author": {
+    "@type": "Organization",
+    "name": siteConfig.name,
+    "url": siteConfig.url,
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": siteConfig.name,
+    "url": siteConfig.url,
+  },
+  "inLanguage": "es",
+  "url": `${siteConfig.url}/noticias/${noticia.slug}`,
+};
+---
+
+<BaseLayout
+  title={noticia.data.title}
+  description={noticia.data.excerpt}
+>
+
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+
+  <!-- Hero noticia -->
+  <div class="noticia-hero">
+    <div class="noticia-hero__bg" aria-hidden="true"></div>
+    <div class="container noticia-hero__content">
+
+      <nav class="breadcrumbs" aria-label="Ruta de navegación">
+        <ol class="breadcrumbs__list">
+          <li class="breadcrumbs__item"><a href="/" class="breadcrumbs__link">Inicio</a></li>
+          <li class="breadcrumbs__item">
+            <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+            <a href="/noticias" class="breadcrumbs__link">Noticias</a>
+          </li>
+          <li class="breadcrumbs__item">
+            <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+            <span class="breadcrumbs__current" aria-current="page">{noticia.data.title}</span>
+          </li>
+        </ol>
+      </nav>
+
+      <div class="noticia-hero__meta">
+        <span class="badge badge--accent">{noticia.data.category}</span>
+        <time datetime={noticia.data.date.toISOString()} class="noticia-hero__date">
+          {formatDate(noticia.data.date)}
+        </time>
+        <span class="noticia-hero__author">Por {noticia.data.author}</span>
+      </div>
+
+      <h1 class="noticia-hero__title">
+        <span aria-hidden="true">{noticia.data.emoji}</span>
+        {noticia.data.title}
+      </h1>
+
+      <p class="noticia-hero__excerpt">{noticia.data.excerpt}</p>
+
+      {noticia.data.tags.length > 0 && (
+        <div class="noticia-hero__tags" aria-label="Etiquetas">
+          {noticia.data.tags.map(tag => (
+            <span class="noticia-tag">#{tag}</span>
+          ))}
+        </div>
+      )}
+
+    </div>
+  </div>
+
+  <!-- Cuerpo artículo -->
+  <div class="section">
+    <div class="container">
+      <div class="noticia-layout">
+
+        <!-- Contenido principal -->
+        <article class="noticia-prose prose">
+          <Content />
+        </article>
+
+        <!-- Sidebar -->
+        <aside class="noticia-sidebar">
+
+          <!-- Compartir -->
+          <div class="sidebar-card">
+            <h3 class="sidebar-card__title">📤 Compartir</h3>
+            <div class="share-btns">
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(noticia.data.title + ' — ' + siteConfig.url + '/noticias/' + noticia.slug)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn--secondary btn--sm btn--full"
+              >
+                💬 WhatsApp
+              </a>
+              <button
+                class="btn btn--outline btn--sm btn--full"
+                id="copyLink"
+                data-url={`${siteConfig.url}/noticias/${noticia.slug}`}
+              >
+                🔗 Copiar enlace
+              </button>
+            </div>
+          </div>
+
+          <!-- Noticias relacionadas -->
+          {related.length > 0 && (
+            <div class="sidebar-card">
+              <h3 class="sidebar-card__title">📰 También te puede interesar</h3>
+              <div class="related-list">
+                {related.map(r => (
+                  <a href={`/noticias/${r.slug}`} class="related-item">
+                    <span aria-hidden="true">{r.data.emoji}</span>
+                    <div>
+                      <div class="related-item__title">{r.data.title}</div>
+                      <time class="related-item__date" datetime={r.data.date.toISOString()}>
+                        {formatDate(r.data.date)}
+                      </time>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- CTA hacerse socio -->
+          <div class="sidebar-card sidebar-card--cta">
+            <span aria-hidden="true">🚐</span>
+            <h4>¿No eres socio todavía?</h4>
+            <p>Únete a El Burgao y accede a todo el contenido exclusivo.</p>
+            <a href="/hazte-socio" class="btn btn--primary btn--sm btn--full">Hazte socio</a>
+          </div>
+
+        </aside>
+      </div>
+
+      <!-- Navegación inferior -->
+      <nav class="ruta-nav" aria-label="Más noticias">
+        <a href="/noticias" class="btn btn--outline">
+          ← Volver a noticias
+        </a>
+      </nav>
+
+    </div>
+  </div>
+
+</BaseLayout>
+
+<style>
+.noticia-hero {
+  position: relative;
+  padding-top: calc(var(--header-h) + var(--space-12));
+  padding-bottom: var(--space-16);
+  background: var(--primitive-ocean-900);
+  overflow: hidden;
+}
+.noticia-hero__bg {
+  position: absolute; inset: 0;
+  background: var(--gradient-hero);
+  opacity: 0.85;
+}
+.noticia-hero__bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(201,169,110,0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.noticia-hero__content { position: relative; z-index: 1; max-width: var(--container-lg); }
+
+.noticia-hero__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+}
+.noticia-hero__date {
+  font-size: var(--text-sm);
+  color: rgba(255,255,255,0.55);
+  font-weight: var(--weight-medium);
+}
+.noticia-hero__author {
+  font-size: var(--text-sm);
+  color: rgba(255,255,255,0.4);
+}
+
+.noticia-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl));
+  font-weight: var(--weight-black);
+  color: white;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-snug);
+  margin-bottom: var(--space-4);
+}
+
+.noticia-hero__excerpt {
+  font-size: clamp(var(--text-base), 2vw, var(--text-lg));
+  color: rgba(255,255,255,0.68);
+  line-height: var(--leading-relaxed);
+  max-width: 60ch;
+  margin-bottom: var(--space-5);
+}
+
+.noticia-hero__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.noticia-tag {
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  background: rgba(201,169,110,0.1);
+  border: 1px solid rgba(201,169,110,0.2);
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-full);
+}
+
+/* Layout */
+.noticia-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--space-12);
+  align-items: start;
+}
+
+.noticia-prose {
+  max-width: 68ch;
+}
+
+/* Sidebar */
+.noticia-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: sticky;
+  top: calc(var(--header-h) + var(--space-6));
+}
+
+.sidebar-card {
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+.sidebar-card__title {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.share-btns { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.related-list { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.related-item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  text-decoration: none;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  transition: all var(--duration-fast);
+}
+.related-item:hover {
+  border-color: var(--color-brand);
+  background: rgba(27,79,114,0.05);
+}
+.related-item span:first-child { font-size: 1.4rem; flex-shrink: 0; }
+.related-item__title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  line-height: var(--leading-snug);
+  margin-bottom: 4px;
+}
+.related-item__date {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+
+.sidebar-card--cta {
+  background: var(--gradient-ocean);
+  border-color: transparent;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+.sidebar-card--cta span:first-child { font-size: 2rem; }
+.sidebar-card--cta h4 {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: white;
+}
+.sidebar-card--cta p { font-size: var(--text-sm); color: rgba(255,255,255,0.7); max-width: none; }
+
+.ruta-nav {
+  padding-top: var(--space-10);
+  margin-top: var(--space-10);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Breadcrumbs */
+.breadcrumbs { margin-bottom: var(--space-8); }
+.breadcrumbs__list { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-1); list-style: none; }
+.breadcrumbs__item { display: flex; align-items: center; gap: var(--space-1); }
+.breadcrumbs__link { font-size: var(--text-xs); font-weight: var(--weight-medium); color: rgba(255,255,255,0.5); text-decoration: none; transition: color var(--duration-fast); }
+.breadcrumbs__link:hover { color: var(--color-accent); }
+.breadcrumbs__sep { font-size: var(--text-xs); color: rgba(255,255,255,0.25); }
+.breadcrumbs__current { font-size: var(--text-xs); font-weight: var(--weight-semibold); color: var(--color-accent); }
+
+@media (max-width: 1024px) {
+  .noticia-layout { grid-template-columns: 1fr; }
+  .noticia-sidebar { position: static; display: grid; grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .noticia-sidebar { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+/* Copiar enlace al portapapeles */
+document.getElementById('copyLink')?.addEventListener('click', async (e) => {
+  const btn = e.currentTarget as HTMLButtonElement;
+  const url = btn.dataset.url ?? window.location.href;
+  try {
+    await navigator.clipboard.writeText(url);
+    btn.textContent = '✅ ¡Copiado!';
+    setTimeout(() => { btn.textContent = '🔗 Copiar enlace'; }, 2000);
+  } catch {
+    btn.textContent = '❌ Error al copiar';
+  }
+});
+</script>

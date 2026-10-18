@@ -1,0 +1,21 @@
+{
+  "name": "el-burgao-web",
+  "description": "Web de la Asociación Autocaravanista El Burgao — Autocaravanistas de Canarias",
+  "version": "3.0.0",
+  "private": true,
+  "author": "Jhonn V. Ardila Jara",
+  "type": "module",
+  "scripts": {
+    "dev":     "astro dev",
+    "build":   "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^4.15.0",
+    "@fontsource/inter": "^5.0.0",
+    "@fontsource/playfair-display": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.17.1"
+  }
+}

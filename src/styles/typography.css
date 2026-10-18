@@ -1,0 +1,265 @@
+/* ═══════════════════════════════════════════════════════════════
+   EL BURGAO — TIPOGRAFÍA
+   src/styles/typography.css
+
+   Sistema tipográfico completo.
+   Playfair Display (display/títulos) + Inter (cuerpo/UI)
+═══════════════════════════════════════════════════════════════ */
+
+
+/* ── CARGA DE FUENTES ───────────────────────────────────────── */
+/* Las fuentes se referencian desde BaseLayout.astro vía Google Fonts
+   con preconnect + display=swap. Aquí solo los custom properties. */
+
+
+/* ── ESCALA TIPOGRÁFICA FLUIDA ──────────────────────────────── */
+/* clamp(mínimo, ideal, máximo) — sin saltos en breakpoints */
+
+h1, .h1 {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-4xl), 7vw, var(--text-7xl));
+  font-weight: var(--weight-black);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-text);
+}
+
+h2, .h2 {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-3xl), 4.5vw, var(--text-5xl));
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-text);
+}
+
+h3, .h3 {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-xl), 2.5vw, var(--text-3xl));
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  color: var(--color-text);
+}
+
+h4, .h4 {
+  font-family: var(--font-body);
+  font-size: clamp(var(--text-lg), 2vw, var(--text-xl));
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-normal);
+  color: var(--color-text);
+}
+
+h5, .h5 {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-normal);
+  color: var(--color-text);
+}
+
+h6, .h6 {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+p {
+  color: var(--color-text-muted);
+  line-height: var(--leading-relaxed);
+  max-width: 65ch; /* Línea óptima de lectura */
+}
+
+/* Reset de max-width para contenedores que lo necesiten */
+.prose p, .unrestricted p { max-width: none; }
+
+
+/* ── COMPONENTES DE TEXTO REUTILIZABLES ─────────────────────── */
+
+/* Eyebrow — etiqueta sobre los títulos de sección */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-brand);
+  padding: var(--space-1) var(--space-3);
+  background: rgba(27, 79, 114, 0.08);
+  border: 1px solid rgba(27, 79, 114, 0.18);
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-4);
+  width: fit-content;
+}
+
+/* Eyebrow sobre fondos oscuros */
+.eyebrow--light {
+  color: var(--color-accent);
+  background: rgba(201, 169, 110, 0.12);
+  border-color: rgba(201, 169, 110, 0.25);
+}
+
+/* Display — título hero máximo */
+.display {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-5xl), 9vw, var(--text-8xl));
+  font-weight: var(--weight-black);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-snug);
+}
+
+/* Lead — párrafo introductorio destacado */
+.lead {
+  font-size: clamp(var(--text-lg), 2vw, var(--text-xl));
+  color: var(--color-text-muted);
+  line-height: var(--leading-relaxed);
+  max-width: 56ch;
+}
+
+/* Caption — texto pequeño de apoyo */
+.caption {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-wide);
+}
+
+/* Label — etiquetas de UI */
+.label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-wide);
+}
+
+
+/* ── PROSE — Contenido de artículos ─────────────────────────── */
+
+.prose {
+  max-width: 65ch;
+}
+
+.prose h2 { margin-top: var(--space-10); margin-bottom: var(--space-4); }
+.prose h3 { margin-top: var(--space-8);  margin-bottom: var(--space-3); }
+.prose h4 { margin-top: var(--space-6);  margin-bottom: var(--space-2); }
+
+.prose p  { margin-bottom: var(--space-5); }
+
+.prose a {
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(27, 79, 114, 0.4);
+  transition: text-decoration-color var(--duration-fast);
+}
+.prose a:hover {
+  text-decoration-color: var(--color-brand);
+}
+
+.prose ul, .prose ol {
+  margin-bottom: var(--space-5);
+  padding-left: var(--space-6);
+}
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose li { margin-bottom: var(--space-2); }
+
+.prose strong { color: var(--color-text); }
+
+.prose blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: var(--space-5);
+  margin-block: var(--space-6);
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.prose img {
+  border-radius: var(--radius-lg);
+  margin-block: var(--space-8);
+  box-shadow: var(--shadow-lg);
+}
+
+.prose code {
+  background: var(--color-bg-alt);
+  padding: var(--space-0-5) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: 0.875em;
+}
+
+.prose pre {
+  background: var(--primitive-basalt-900);
+  color: var(--primitive-neutral-50);
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin-block: var(--space-6);
+}
+.prose pre code {
+  background: none;
+  padding: 0;
+  font-size: var(--text-sm);
+}
+
+
+/* ── CABECERA DE SECCIÓN ─────────────────────────────────────── */
+
+.section-header {
+  text-align: center;
+  max-width: var(--container-sm);
+  margin-inline: auto;
+  margin-bottom: var(--space-12);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-3xl), 4vw, var(--text-5xl));
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+.section-desc {
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  line-height: var(--leading-relaxed);
+  max-width: 52ch;
+  margin-inline: auto;
+}
+
+/* Títulos de sección sobre fondos oscuros */
+.section-header--inverted .section-title,
+.section--dark .section-title,
+.section--ocean .section-title,
+.section--accent .section-title {
+  color: var(--color-text-inverse);
+}
+
+.section-header--inverted .section-desc,
+.section--dark .section-desc,
+.section--ocean .section-desc,
+.section--accent .section-desc {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.section-header--inverted .eyebrow {
+  color: var(--color-accent);
+  background: rgba(201, 169, 110, 0.12);
+  border-color: rgba(201, 169, 110, 0.25);
+}
+
+/* Alineación izquierda (para secciones about, etc.) */
+.section-header--left {
+  text-align: left;
+  margin-inline: 0;
+}
+.section-header--left .section-desc { margin-inline: 0; }
+.section-header--left .eyebrow { margin-inline: 0; }

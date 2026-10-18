@@ -1,0 +1,254 @@
+/* ═══════════════════════════════════════════════════════════════
+   EL BURGAO — RESET & BASE GLOBAL
+   src/styles/global.css
+
+   Reset moderno + estilos base.
+   Se importa UNA SOLA VEZ desde BaseLayout.astro.
+═══════════════════════════════════════════════════════════════ */
+
+@import './tokens.css';
+@import './typography.css';
+@import './utilities.css';
+@import './dark-mode.css';
+
+
+/* ── RESET MODERNO ──────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Hinting tipográfico */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Respetar preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  overflow-x: hidden;
+  /* Transición suave al cambiar de tema */
+  transition:
+    background-color var(--duration-slow) var(--ease-out),
+    color var(--duration-slow) var(--ease-out);
+}
+
+/* Media */
+img, svg, video, canvas, audio, iframe, embed, object {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+img {
+  /* Evita el salto de layout mientras carga */
+  aspect-ratio: attr(width) / attr(height);
+}
+
+/* Listas */
+ul, ol { list-style: none; }
+
+/* Links */
+a {
+  color: var(--color-brand);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+a:hover {
+  color: var(--color-brand-light);
+}
+
+/* Focus visible — accesibilidad */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
+}
+
+/* Botones */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Inputs */
+input, select, textarea, button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Tablas */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* HR */
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin-block: var(--space-8);
+}
+
+/* Strong */
+strong, b { font-weight: var(--weight-bold); }
+
+/* Code */
+code, kbd, pre, samp {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* Mark */
+mark {
+  background: rgba(201, 169, 110, 0.25);
+  color: inherit;
+  border-radius: var(--radius-xs);
+  padding: 0 var(--space-1);
+}
+
+
+/* ── SKIP LINK (accesibilidad) ──────────────────────────────── */
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--space-4);
+  z-index: var(--z-top);
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-md);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  transition: top var(--duration-fast);
+}
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+
+/* ── CONTAINER ──────────────────────────────────────────────── */
+
+.container {
+  width: 100%;
+  max-width: var(--container-xl);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+.container--sm  { max-width: var(--container-sm); }
+.container--md  { max-width: var(--container-md); }
+.container--lg  { max-width: var(--container-lg); }
+.container--2xl { max-width: var(--container-2xl); }
+
+
+/* ── SECCIONES BASE ─────────────────────────────────────────── */
+
+.section {
+  padding-block: var(--space-20);
+}
+
+.section--sm {
+  padding-block: var(--space-12);
+}
+
+.section--lg {
+  padding-block: var(--space-28);
+}
+
+/* Variantes de fondo */
+.section--dark {
+  background: var(--gradient-section-dark);
+  color: var(--color-text-inverse);
+}
+
+.section--ocean {
+  background: var(--gradient-ocean);
+  color: var(--color-text-inverse);
+}
+
+.section--accent {
+  background: var(--gradient-sunset);
+  color: var(--color-text-inverse);
+}
+
+.section--alt {
+  background: var(--color-bg-alt);
+}
+
+
+/* ── BACK TO TOP ────────────────────────────────────────────── */
+
+.back-to-top {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  width: 48px;
+  height: 48px;
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xl);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-dropdown);
+  transition: all var(--duration-base) var(--ease-out);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+}
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.back-to-top:hover {
+  background: var(--color-accent);
+  color: var(--color-brand-dark);
+  transform: translateY(-4px);
+}
+
+@media (max-width: 768px) {
+  .back-to-top {
+    bottom: var(--space-4);
+    right: var(--space-4);
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* El atributo hidden siempre oculta, aunque un componente defina display */
+[hidden] { display: none !important; }

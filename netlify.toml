@@ -1,0 +1,22 @@
+# netlify.toml
+# ─────────────────────────────────────────────────────────────
+# Configuración de despliegue para Netlify.
+# ─────────────────────────────────────────────────────────────
+
+[build]
+  command   = "npm run build"
+  publish   = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Dev local con Netlify CLI
+[dev]
+  command = "npm run dev"
+  port    = 4321
+
+# Formularios Netlify (inscripcion + contacto)
+# Se detectan automáticamente por data-netlify="true" en los <form>
+
+# Redirects ya están en /public/_redirects
+# Headers ya están en /public/_headers

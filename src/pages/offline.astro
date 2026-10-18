@@ -1,0 +1,231 @@
+---
+/**
+ * offline.astro → /offline
+ * ─────────────────────────────────────────────────────────────
+ * Página de fallback offline para la PWA.
+ * El Service Worker sirve esta página cuando no hay red
+ * y la página solicitada no está en caché.
+ */
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sin conexión — El Burgao</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/assets/icons/icon.svg" type="image/svg+xml" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0d2a3d;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .card {
+      max-width: 480px;
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+    }
+
+    .icon { width: 72px; height: 72px; margin-bottom: 1.5rem; display: block; margin-inline: auto; border-radius: 16px; }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: white;
+    }
+
+    p {
+      color: rgba(255,255,255,0.65);
+      line-height: 1.65;
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #C9A96E;
+      color: #0d2a3d;
+      border: none;
+      border-radius: 999px;
+      padding: 0.875rem 2rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.15s;
+      font-family: inherit;
+    }
+    .btn:hover { background: #d4b87a; transform: translateY(-2px); }
+    .btn:active { transform: scale(0.97); }
+
+    .available-pages {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .available-pages h2 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 1rem;
+    }
+
+    .pages-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      list-style: none;
+    }
+
+    .pages-list a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.875rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .pages-list a:hover {
+      background: rgba(201,169,110,0.15);
+      border-color: rgba(201,169,110,0.3);
+      color: #C9A96E;
+    }
+
+    .status {
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #e74c3c;
+      margin-right: 0.35rem;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.5rem; }
+      h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+
+    <img class="icon" src="/assets/icons/icon-192.png" alt="" width="72" height="72" aria-hidden="true" />
+
+    <h1>Sin conexión</h1>
+
+    <p>
+      No podemos conectarnos a internet ahora mismo.
+      Cuando recuperes la señal, El Burgao seguirá aquí esperándote.
+    </p>
+
+    <button class="btn" onclick="tryReload()" id="retryBtn">
+      <span aria-hidden="true">↻</span>
+      Reintentar conexión
+    </button>
+
+    <!-- Páginas disponibles offline (las cacheadas por el SW) -->
+    <div class="available-pages">
+      <h2>Disponible sin conexión</h2>
+      <ul class="pages-list" role="list">
+        <li><a href="/">🏠 Inicio</a></li>
+        <li><a href="/noticias">📰 Noticias</a></li>
+        <li><a href="/eventos">📅 Eventos</a></li>
+        <li><a href="/rutas">🗺️ Rutas</a></li>
+        <li><a href="/contacto">📬 Contacto</a></li>
+      </ul>
+    </div>
+
+    <p class="status">
+      <span class="status-dot" id="statusDot" aria-hidden="true"></span>
+      <span id="statusText">Sin conexión</span>
+    </p>
+
+  </div>
+
+  <script>
+    // Intentar recargar
+    function tryReload() {
+      const btn = document.getElementById('retryBtn');
+      btn.textContent = 'Comprobando…';
+      btn.disabled = true;
+
+      fetch('/', { method: 'HEAD', cache: 'no-store' })
+        .then(() => {
+          window.location.reload();
+        })
+        .catch(() => {
+          btn.innerHTML = '<span aria-hidden="true">↻</span> Reintentar conexión';
+          btn.disabled = false;
+        });
+    }
+
+    // Monitorizar la conexión
+    const dot  = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+
+    function updateStatus() {
+      if (navigator.onLine) {
+        dot.style.background  = '#27AE60';
+        text.textContent = 'Conexión restaurada — recargando…';
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        dot.style.background  = '#e74c3c';
+        text.textContent = 'Sin conexión';
+      }
+    }
+
+    window.addEventListener('online',  updateStatus);
+    window.addEventListener('offline', updateStatus);
+    updateStatus();
+
+    // Auto-reintentar cada 30 segundos
+    setInterval(() => {
+      if (!navigator.onLine) return;
+      fetch('/', { method: 'HEAD', cache: 'no-store' })
+        .then(() => window.location.reload())
+        .catch(() => {});
+    }, 30000);
+  </script>
+
+</body>
+</html>

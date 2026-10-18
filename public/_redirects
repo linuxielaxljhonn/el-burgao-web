@@ -1,0 +1,20 @@
+# Redirects para Netlify
+# ─────────────────────────────────────────────
+
+# Alias útiles
+/blog          /noticias               301
+/blog/*        /noticias/:splat        301
+/news          /noticias               301
+/agenda        /eventos                301
+/calendar      /eventos                301
+/join          /hazte-socio            301
+/unete         /hazte-socio            301
+/estatutos     /la-asociacion#estatutos 301
+
+# Área de socios: se recuperará en la fase de integración
+/socios        /hazte-socio            302
+/socios/*      /hazte-socio            302
+/verify        /                       302
+
+# Fallback 404
+/*             /404.html               404

@@ -1,0 +1,258 @@
+---
+/**
+ * BaseLayout.astro — v3 (fuentes locales, sin terceros)
+ * ─────────────────────────────────────────────────────────────
+ * Mejoras Fase 7:
+ * - Fuentes con preload + font-display:swap
+ * - CSS crítico inline para LCP
+ * - Script de dark mode minificado
+ * - theme-color dinámico para dark mode
+ * - Schema.org mejorado con LocalBusiness
+ * - Preload de imagen hero cuando aplica
+ */
+
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import A11y   from '../components/ui/A11y.astro';
+import siteConfig, { isPendiente } from '../config/site.ts';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/playfair-display/700.css';
+import '@fontsource/playfair-display/900.css';
+import '@fontsource/playfair-display/700-italic.css';
+import '../styles/global.css';
+
+export interface Props {
+  title?:        string;
+  description?:  string;
+  image?:        string;
+  canonical?:    string;
+  noindex?:      boolean;
+  bodyClass?:    string;
+  preloadHero?:  boolean;
+}
+
+const {
+  title,
+  description = siteConfig.description,
+  image       = siteConfig.ogImage,
+  canonical,
+  noindex     = false,
+  bodyClass   = '',
+  preloadHero = false,
+} = Astro.props;
+
+const pageTitle    = title ? `${title} — ${siteConfig.name}` : siteConfig.fullTitle;
+const canonicalURL = canonical
+  ? new URL(canonical, siteConfig.url)
+  : new URL(Astro.url.pathname, siteConfig.url);
+
+const ogImageURL = new URL(image, siteConfig.url).toString();
+
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type":       "Organization",
+      "@id":         `${siteConfig.url}/#organization`,
+      "name":        siteConfig.name,
+      "url":         siteConfig.url,
+      "description": siteConfig.description,
+      "foundingDate": String(siteConfig.foundedYear),
+      "logo": {
+        "@type": "ImageObject",
+        "url":   `${siteConfig.url}/assets/icons/icon-512.png`,
+        "width": 512, "height": 512,
+      },
+      "address": {
+        "@type":           "PostalAddress",
+        "addressRegion":   "Islas Canarias",
+        "addressCountry":  "ES",
+      },
+      ...(isPendiente(siteConfig.contact.email) ? {} : { "contactPoint": {
+        "@type":       "ContactPoint",
+        "email":       siteConfig.contact.email,
+        "contactType": "customer service",
+        "availableLanguage": "Spanish",
+      }}),
+      "sameAs": siteConfig.social.map(s => s.url).filter(Boolean),
+    },
+    {
+      "@type":  "WebSite",
+      "@id":    `${siteConfig.url}/#website`,
+      "url":    siteConfig.url,
+      "name":   siteConfig.name,
+      "inLanguage": "es",
+      "publisher": { "@id": `${siteConfig.url}/#organization` },
+      "potentialAction": {
+        "@type":       "SearchAction",
+        "target":      `${siteConfig.url}/?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
+};
+---
+
+<!DOCTYPE html>
+<html lang="es" data-theme="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ── PRIMARIO ── -->
+  <title>{pageTitle}</title>
+  <meta name="description"    content={description} />
+  <meta name="author"         content={siteConfig.name} />
+  <meta name="generator"      content="Astro 4" />
+  <meta name="robots"         content={noindex ? 'noindex,nofollow' : 'index,follow,max-snippet:-1,max-image-preview:large'} />
+  <link rel="canonical"       href={canonicalURL.toString()} />
+
+  <!-- ── OPEN GRAPH ── -->
+  <meta property="og:title"       content={pageTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content={canonicalURL.toString()} />
+  <meta property="og:image"       content={ogImageURL} />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name"   content={siteConfig.name} />
+  <meta property="og:locale"      content="es_ES" />
+
+  <!-- ── TWITTER CARD ── -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content={pageTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image"       content={ogImageURL} />
+
+  <!-- ── SCHEMA.ORG ── -->
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <!-- Fuentes alojadas en la propia web (@fontsource): sin llamadas a Google (RGPD) -->
+
+  <!-- ── FAVICON ── -->
+  <link rel="icon"             href="/assets/icons/icon.svg" type="image/svg+xml" />
+  <link rel="icon"             href="/assets/icons/icon-96.png" sizes="96x96" type="image/png" />
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
+
+  <!-- ── PWA ── -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color"                        content="#1B4F72" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color"                        content="#050f18" media="(prefers-color-scheme: dark)" />
+  <meta name="mobile-web-app-capable"             content="yes" />
+  <meta name="apple-mobile-web-app-capable"       content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title"         content={siteConfig.shortName} />
+
+  <!-- ── DARK MODE — script inline mínimo para evitar FOUC ── -->
+  <script is:inline>
+    (function(){
+      var s=localStorage.getItem('burgao-theme');
+      var d=window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme',s||(d?'dark':'light'));
+    })();
+  </script>
+
+  <!-- ── CSS CRÍTICO INLINE (LCP) ── -->
+  <!-- El import global.css en frontmatter inyecta el CSS vía Vite/Astro -->
+  <!-- Este bloque cubre el above-the-fold para que no haya FOUC -->
+  <style is:inline>
+    body{font-family:'Inter',system-ui,sans-serif;margin:0;background:#FAF8F5;color:#2C3E50}
+    [data-theme="dark"] body{background:#0d1117;color:#FAF8F5}
+    .skip-link{position:absolute;top:-100px;left:1rem;z-index:9999;background:#1B4F72;color:#fff;padding:.5rem 1.25rem;border-radius:999px;font-weight:600;font-size:.875rem;transition:top .15s}
+    .skip-link:focus{top:1rem}
+    .site-header{position:fixed;top:0;left:0;right:0;height:72px;z-index:100}
+  </style>
+
+  <!-- Slot para metadatos adicionales por página -->
+  <slot name="head" />
+</head>
+
+<body class={bodyClass}>
+
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+
+  <Header />
+
+  <main id="main-content" tabindex="-1">
+    <slot />
+  </main>
+
+  <Footer />
+
+  <!-- Back to top -->
+  <button
+    class="back-to-top"
+    id="backToTop"
+    aria-label="Volver al inicio de la página"
+    hidden
+  >↑</button>
+
+  <!-- Toast container -->
+  <div
+    class="toast-container"
+    id="toastContainer"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+  ></div>
+
+  <!-- Scripts globales — Astro los bundlea y defer automáticamente -->
+  <script>
+    import '../scripts/main.ts';
+    import '../scripts/reveal.ts';
+    import '../scripts/search.ts';
+    import '../scripts/performance.ts';
+  </script>
+
+  <!-- PWA — inline para no bloquear -->
+  <script is:inline>
+    if('serviceWorker' in navigator){
+      window.addEventListener('load',function(){
+        navigator.serviceWorker.register('/sw.js').then(function(reg){
+          reg.addEventListener('updatefound',function(){
+            var nw=reg.installing;
+            nw.addEventListener('statechange',function(){
+              if(nw.state==='installed'&&navigator.serviceWorker.controller){
+                var t=document.createElement('div');
+                t.className='toast toast--accent';
+                t.innerHTML='🔄 Nueva versión — <button onclick="location.reload()" style="margin-left:.5rem;background:var(--color-accent);color:var(--color-brand-dark);border:none;border-radius:999px;padding:3px 10px;font-weight:700;cursor:pointer;font-size:.8rem">Actualizar</button>';
+                var c=document.getElementById('toastContainer');
+                if(c) c.appendChild(t);
+              }
+            });
+          });
+        }).catch(function(e){console.warn('[SW]',e);});
+      });
+    }
+
+    var _dp=null;
+    window.addEventListener('beforeinstallprompt',function(e){
+      e.preventDefault();_dp=e;
+      if(!window.matchMedia('(display-mode: standalone)').matches){
+        var b=document.createElement('button');
+        b.className='btn btn--secondary btn--sm';
+        b.style.cssText='position:fixed;bottom:5rem;right:1.5rem;z-index:50;box-shadow:var(--shadow-xl);animation:fade-in .4s ease';
+        b.textContent='📲 Instalar app';
+        b.addEventListener('click',async function(){
+          if(!_dp)return;
+          _dp.prompt();
+          var r=await _dp.userChoice;
+          if(r.outcome==='accepted')b.remove();
+          _dp=null;
+        });
+        document.body.appendChild(b);
+        setTimeout(function(){b&&b.remove();},8000);
+      }
+    });
+  </script>
+
+  <!-- Accesibilidad global -->
+  <A11y />
+
+  <slot name="scripts" />
+
+</body>
+</html>

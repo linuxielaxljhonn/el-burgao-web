@@ -1,0 +1,38 @@
+---
+/** cookies.astro — Política de cookies. */
+import PageLayout from '../layouts/PageLayout.astro';
+---
+<PageLayout
+  title="Política de cookies"
+  description="Política de cookies de la web de la Asociación Autocaravanista El Burgao."
+  heading="Política de cookies"
+  emoji="🍪"
+  eyebrow="🍪 Legal"
+  breadcrumbs={[{ label: 'Cookies', href: '/cookies' }]}
+  noindex={true}
+>
+  <div class="section">
+    <div class="container">
+      <div class="prose legal-prose">
+        <p><strong>Esta web no utiliza cookies publicitarias ni de seguimiento</strong>, por eso no te mostramos un banner de consentimiento.</p>
+        <h2>Qué guardamos en tu navegador</h2>
+        <table>
+          <thead><tr><th scope="col">Nombre</th><th scope="col">Para qué</th><th scope="col">Duración</th></tr></thead>
+          <tbody>
+            <tr><td><code>burgao-theme</code></td><td>Recordar si prefieres el tema claro u oscuro</td><td>Hasta que lo borres</td></tr>
+          </tbody>
+        </table>
+        <p>Además, la web puede guardar una copia de las páginas para que funcionen sin conexión (caché de la aplicación). No contiene datos personales.</p>
+        <h2>Estadísticas de visitas</h2>
+        <p>Si en el futuro se miden visitas, se hará con una herramienta sin cookies que no identifica a las personas, y se indicará aquí.</p>
+        <h2>Cómo borrarlo</h2>
+        <p>Puedes borrar estos datos desde la configuración de privacidad de tu navegador.</p>
+      </div>
+    </div>
+  </div>
+</PageLayout>
+<style>
+.legal-prose { max-width: var(--container-md, 760px); margin-inline: auto; }
+.legal-prose table { width: 100%; border-collapse: collapse; }
+.legal-prose th, .legal-prose td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid var(--color-border); }
+</style>

@@ -1,0 +1,174 @@
+---
+/**
+ * A11y.astro
+ * src/components/ui/A11y.astro
+ * ─────────────────────────────────────────────────────────────
+ * Componente de accesibilidad global WCAG 2.2 AA.
+ * Se incluye una sola vez en BaseLayout.
+ *
+ * Incluye:
+ * - Anuncio de cambios de ruta para screen readers
+ * - Gestión de foco al navegar
+ * - Detector de navegación por teclado (muestra outline)
+ * - Live region para mensajes dinámicos
+ */
+---
+
+<!-- Live region para anuncios de screen reader -->
+<div
+  id="a11y-announcer"
+  role="status"
+  aria-live="polite"
+  aria-atomic="true"
+  class="sr-only"
+></div>
+
+<!-- Región para alertas urgentes -->
+<div
+  id="a11y-alert"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+  class="sr-only"
+></div>
+
+<script>
+/**
+ * Gestión de accesibilidad global
+ */
+(function initA11y() {
+
+  // ── Detector de navegación por teclado ──────────────────────
+  // Muestra outline solo cuando se navega con teclado,
+  // lo oculta cuando se usa ratón.
+  let usingKeyboard = false;
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      usingKeyboard = true;
+      document.body.classList.add('using-keyboard');
+    }
+  });
+
+  window.addEventListener('mousedown', () => {
+    usingKeyboard = false;
+    document.body.classList.remove('using-keyboard');
+  });
+
+  // ── Anunciador para screen readers ──────────────────────────
+  const announcer = document.getElementById('a11y-announcer');
+
+  function announce(message: string, priority: 'polite' | 'assertive' = 'polite') {
+    if (!announcer) return;
+    // Limpiar antes de anunciar (para que el SR lo detecte como cambio)
+    announcer.textContent = '';
+    setTimeout(() => {
+      announcer.textContent = message;
+    }, 50);
+  }
+
+  // Exponer globalmente
+  (window as any).a11yAnnounce = announce;
+
+  // ── Gestión de foco al cargar la página ─────────────────────
+  // Si la URL tiene un hash, mover el foco al elemento
+  const hash = window.location.hash;
+  if (hash) {
+    const target = document.querySelector(hash);
+    if (target) {
+      setTimeout(() => {
+        (target as HTMLElement).focus?.();
+      }, 100);
+    }
+  }
+
+  // ── Mejorar links externos ───────────────────────────────────
+  // Añadir indicación visual y de SR para links que abren en nueva pestaña
+  document.querySelectorAll<HTMLAnchorElement>('a[target="_blank"]').forEach(link => {
+    if (!link.getAttribute('aria-label')?.includes('nueva pestaña') &&
+        !link.querySelector('.sr-only')) {
+      const notice = document.createElement('span');
+      notice.className = 'sr-only';
+      notice.textContent = ' (abre en nueva pestaña)';
+      link.appendChild(notice);
+    }
+  });
+
+  // ── Skip link mejorado ───────────────────────────────────────
+  const skipLink = document.querySelector('.skip-link');
+  const mainContent = document.getElementById('main-content');
+
+  skipLink?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (mainContent) {
+      mainContent.tabIndex = -1;
+      mainContent.focus();
+      // Scroll suave al contenido
+      mainContent.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  // ── Mejorar controles de formulario ─────────────────────────
+  // Asociar mensajes de error con sus inputs via aria-describedby
+  document.querySelectorAll('.form-group').forEach(group => {
+    const input = group.querySelector<HTMLInputElement>('input, select, textarea');
+    const error = group.querySelector('.form-error');
+
+    if (input && error) {
+      const errorId = `error-${Math.random().toString(36).slice(2, 9)}`;
+      error.id = errorId;
+      input.setAttribute('aria-describedby', errorId);
+      input.setAttribute('aria-invalid', 'false');
+
+      // Actualizar aria-invalid cuando hay error
+      const observer = new MutationObserver(() => {
+        const hasError = error.textContent?.trim() !== '';
+        input.setAttribute('aria-invalid', hasError ? 'true' : 'false');
+      });
+      observer.observe(error, { childList: true, characterData: true, subtree: true });
+    }
+  });
+
+  // ── Mejorar los details/summary ─────────────────────────────
+  // Añadir aria-expanded a los <summary>
+  document.querySelectorAll('details').forEach(details => {
+    const summary = details.querySelector('summary');
+    if (!summary) return;
+
+    function updateAria() {
+      summary!.setAttribute('aria-expanded', details.open ? 'true' : 'false');
+    }
+
+    updateAria();
+    details.addEventListener('toggle', updateAria);
+  });
+
+  // ── Detectar animaciones preferidas ─────────────────────────
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('reduce-motion');
+  }
+
+})();
+</script>
+
+<style is:global>
+/* Solo mostrar outline cuando se navega con teclado */
+body:not(.using-keyboard) *:focus {
+  outline: none;
+}
+
+body.using-keyboard *:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
+}
+
+/* Reduce motion global */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+</style>

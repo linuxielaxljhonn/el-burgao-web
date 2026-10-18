@@ -1,0 +1,51 @@
+---
+/**
+ * gracias.astro
+ * Página de confirmación tras enviar cualquier formulario.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="¡Mensaje enviado!" noindex={true}>
+  <div class="gracias-page">
+    <div class="gracias-page__bg" aria-hidden="true"></div>
+    <div class="container gracias-page__content">
+      <div class="gracias-card">
+        <span class="gracias-card__icon" aria-hidden="true">✉️</span>
+        <h1 class="gracias-card__title">¡Recibido!</h1>
+        <p class="gracias-card__desc">
+          Hemos recibido tu mensaje. Te responderemos en menos de 48 horas
+          en el correo que nos has indicado.
+        </p>
+        <div class="gracias-card__actions">
+          <a href="/" class="btn btn--primary btn--lg">Volver al inicio</a>
+          <a href="/eventos" class="btn btn--ghost btn--lg">Ver próximos eventos</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+.gracias-page {
+  min-height: 100vh; position:relative;
+  display:flex; align-items:center;
+  background: var(--primitive-ocean-950);
+}
+.gracias-page__bg { position:absolute; inset:0; background:var(--gradient-hero); opacity:0.85; }
+.gracias-page__content {
+  position:relative; z-index:1;
+  display:flex; justify-content:center;
+  padding-block: var(--space-20);
+}
+.gracias-card {
+  text-align:center; max-width:480px;
+  display:flex; flex-direction:column; align-items:center; gap:var(--space-5);
+}
+.gracias-card__icon { font-size:5rem; animation:bounce-y 2s ease-in-out infinite; }
+.gracias-card__title {
+  font-family:var(--font-display); font-size:var(--text-5xl); font-weight:var(--weight-black);
+  color:white; line-height:var(--leading-tight);
+}
+.gracias-card__desc { font-size:var(--text-lg); color:rgba(255,255,255,0.65); line-height:var(--leading-relaxed); max-width:42ch; }
+.gracias-card__actions { display:flex; gap:var(--space-4); flex-wrap:wrap; justify-content:center; margin-top:var(--space-2); }
+</style>

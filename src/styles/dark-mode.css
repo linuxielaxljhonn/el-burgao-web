@@ -1,0 +1,541 @@
+/* ═══════════════════════════════════════════════════════════════
+   EL BURGAO — DARK MODE COMPLETO
+   src/styles/dark-mode.css
+
+   Overrides específicos de dark mode para componentes que no
+   se adaptan automáticamente con los tokens semánticos.
+   Se importa al final de global.css.
+
+   PRINCIPIO: Los tokens semánticos (--color-bg, --color-text…)
+   ya cambian en dark mode. Este archivo cubre casos especiales
+   donde se usan colores fijos o gradientes que necesitan ajuste.
+═══════════════════════════════════════════════════════════════ */
+
+/* ── TRANSICIÓN GLOBAL SUAVE ────────────────────────────────── */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+/* Excepciones — elementos que NO deben transicionar */
+button,
+a,
+input,
+select,
+textarea,
+[data-no-transition] {
+  transition-property: color, background-color, border-color,
+                       box-shadow, opacity, transform, gap;
+}
+
+
+/* ── HEADER ─────────────────────────────────────────────────── */
+[data-theme="dark"] .site-header.is-scrolled {
+  background: rgba(5, 15, 24, 0.97);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .header-nav__link:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .header-search-btn:hover,
+[data-theme="dark"] .header-theme-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .search-panel {
+  background: rgba(5, 15, 24, 0.99);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .search-panel__input {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .mobile-menu__panel {
+  background: var(--primitive-basalt-950);
+}
+
+[data-theme="dark"] .mobile-menu__link:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+
+/* ── HERO ────────────────────────────────────────────────────── */
+/* El hero ya tiene fondo oscuro por defecto — OK en ambos modos */
+[data-theme="dark"] .hero {
+  background: #020a12;
+}
+
+
+/* ── SECCIONES ───────────────────────────────────────────────── */
+[data-theme="dark"] .section--alt {
+  background: var(--primitive-basalt-900);
+}
+
+[data-theme="dark"] .about-value-tag {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .about-stat-mini {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+}
+
+/* ── CARDS ───────────────────────────────────────────────────── */
+[data-theme="dark"] .card {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .card--hoverable:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* ── NOTICIAS ────────────────────────────────────────────────── */
+[data-theme="dark"] .news-featured {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .news-featured__title,
+[data-theme="dark"] .news-card__title {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .news-featured__excerpt,
+[data-theme="dark"] .news-card__excerpt {
+  color: var(--color-text-muted);
+}
+
+/* ── FORMULARIOS ─────────────────────────────────────────────── */
+[data-theme="dark"] .form-input {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .form-input:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+[data-theme="dark"] .form-input:focus {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--color-brand-light);
+  box-shadow: 0 0 0 3px rgba(36, 113, 163, 0.2);
+}
+
+[data-theme="dark"] .form-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+[data-theme="dark"] select.form-input option {
+  background: var(--primitive-basalt-900);
+  color: var(--color-text);
+}
+
+/* ── BOTONES ─────────────────────────────────────────────────── */
+[data-theme="dark"] .btn--outline {
+  color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .btn--outline:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: white;
+}
+
+/* ── FILTROS ─────────────────────────────────────────────────── */
+[data-theme="dark"] .filter-btn {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .filter-btn:hover {
+  border-color: var(--color-brand-light);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="dark"] .filter-btn.is-active {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: white;
+}
+
+[data-theme="dark"] .filter-btn__count {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-subtle);
+}
+
+
+/* ── GALERÍA PREVIEW ─────────────────────────────────────────── */
+[data-theme="dark"] .gallery-preview-item {
+  opacity: 0.85;
+}
+
+[data-theme="dark"] .gallery-preview-item:hover {
+  opacity: 1;
+}
+
+
+/* ── RUTAS ───────────────────────────────────────────────────── */
+[data-theme="dark"] .ruta-card__title,
+[data-theme="dark"] .ruta-card__isla {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .ruta-card__excerpt {
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .ruta-card__detail {
+  color: var(--color-text-subtle);
+}
+
+[data-theme="dark"] .ruta-card__highlights {
+  border-top-color: var(--color-border);
+}
+
+[data-theme="dark"] .ruta-card__highlights li {
+  color: var(--color-text-muted);
+}
+
+
+/* ── SIDEBAR RUTAS/NOTICIAS ──────────────────────────────────── */
+[data-theme="dark"] .sidebar-card {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .sidebar-card__title {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .sidebar-list li {
+  color: var(--color-text-muted);
+}
+
+
+/* ── EVENTOS ─────────────────────────────────────────────────── */
+[data-theme="dark"] .evento-full-card {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .evento-full-card:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(201, 169, 110, 0.2);
+}
+
+[data-theme="dark"] .evento-date-badge {
+  background: rgba(201, 169, 110, 0.08);
+  border-color: rgba(201, 169, 110, 0.15);
+}
+
+[data-theme="dark"] .evento-full-card__title {
+  color: var(--color-text);
+}
+
+
+/* ── CALENDARIO ──────────────────────────────────────────────── */
+[data-theme="dark"] .view-btn {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .view-btn.is-active {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: white;
+}
+
+[data-theme="dark"] .eventos-pasados {
+  border-top-color: var(--color-border);
+}
+
+[data-theme="dark"] .eventos-pasados__toggle {
+  color: var(--color-text-muted);
+}
+
+/* ── CONTACTO ────────────────────────────────────────────────── */
+[data-theme="dark"] .contact-card {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .contact-card:not(.contact-card--static):hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .contact-card__value {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .faq-item {
+  border-bottom-color: var(--color-border);
+}
+
+[data-theme="dark"] .faq-item__q {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .contacto-form-wrap {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .contacto-social__link {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--color-border);
+}
+
+
+/* ── SOCIOS / LOGIN ──────────────────────────────────────────── */
+[data-theme="dark"] .login-card {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .login-card__title {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .login-footer {
+  border-top-color: var(--color-border);
+}
+
+/* Dashboard socios */
+[data-theme="dark"] .dash-card {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .dash-card__heading {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .member-summary__row {
+  border-bottom-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .dash-event-item {
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .dash-event-item:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] .dash-event-info strong {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .dash-news-list a {
+  color: var(--color-text-muted);
+  border-bottom-color: var(--color-border);
+}
+
+[data-theme="dark"] .dash-doc-item {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] .dash-doc-item__name {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .historial-table th {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-text-subtle);
+}
+
+[data-theme="dark"] .historial-table td {
+  border-bottom-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .historial-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+
+/* ── PROSE / ARTÍCULOS ───────────────────────────────────────── */
+[data-theme="dark"] .prose h2,
+[data-theme="dark"] .prose h3,
+[data-theme="dark"] .prose h4 {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .prose p,
+[data-theme="dark"] .prose li {
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .prose strong {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .prose blockquote {
+  border-left-color: var(--color-accent);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .prose code {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-accent-light);
+}
+
+[data-theme="dark"] .prose a {
+  color: var(--primitive-ocean-400);
+  text-decoration-color: rgba(127, 179, 211, 0.4);
+}
+
+
+/* ── PAGE LAYOUT ─────────────────────────────────────────────── */
+[data-theme="dark"] .page-body {
+  background: var(--color-bg);
+}
+
+[data-theme="dark"] .ruta-nav {
+  border-top-color: var(--color-border);
+}
+
+
+/* ── FOOTER ──────────────────────────────────────────────────── */
+/* El footer ya es oscuro por defecto — OK en ambos modos */
+[data-theme="dark"] .footer-links a {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="dark"] .footer-links a:hover {
+  color: var(--color-accent);
+}
+
+
+/* ── NOTICIAS ARCHIVO ────────────────────────────────────────── */
+[data-theme="dark"] .news-archive-card {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .news-archive-card__title {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .news-archive-card__excerpt {
+  color: var(--color-text-muted);
+}
+
+
+/* ── OTROS EVENTOS ───────────────────────────────────────────── */
+[data-theme="dark"] .otro-evento {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .otro-evento:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .otro-evento__title {
+  color: var(--color-text);
+}
+
+
+/* ── RELATED ITEMS ───────────────────────────────────────────── */
+[data-theme="dark"] .related-item {
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .related-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .related-item__title {
+  color: var(--color-text);
+}
+
+
+/* ── INSCRIPCIÓN ─────────────────────────────────────────────── */
+[data-theme="dark"] .inscripcion-benefit {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+
+/* ── VERIFY PAGE ─────────────────────────────────────────────── */
+[data-theme="dark"] .verify-card {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .verify-name {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .verify-details {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .verify-detail__label {
+  color: var(--color-text-subtle);
+}
+
+[data-theme="dark"] .verify-detail__value {
+  color: var(--color-text);
+}
+
+
+/* ── BADGE SISTEMA ───────────────────────────────────────────── */
+[data-theme="dark"] .badge--brand {
+  background: rgba(36, 113, 163, 0.15);
+  border-color: rgba(36, 113, 163, 0.25);
+}
+
+[data-theme="dark"] .badge--success {
+  background: rgba(39, 174, 96, 0.15);
+  color: #52be80;
+}
+
+
+/* ── PRIVACIDAD ──────────────────────────────────────────────── */
+[data-theme="dark"] .privacidad-prose h2,
+[data-theme="dark"] .privacidad-prose strong {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .privacidad-prose p,
+[data-theme="dark"] .privacidad-prose li {
+  color: var(--color-text-muted);
+}
+
+
+/* ── SCROLL REVEAL — prevenir parpadeo en dark ───────────────── */
+[data-theme="dark"] [data-reveal] {
+  will-change: opacity, transform;
+}
+
+
+/* ── REDUCE MOTION — siempre respetar ────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

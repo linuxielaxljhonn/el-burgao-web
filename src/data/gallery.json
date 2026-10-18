@@ -1,0 +1,114 @@
+{
+  "_comentario": "Galería de fotos de El Burgao. Cada entrada es una foto. Para añadir una foto real: sube el archivo a /public/assets/img/galeria/ y pon su nombre en 'src'. Mientras 'src' esté vacío (\"\") se muestra un placeholder automático — así puedes ir sustituyendo poco a poco.",
+
+  "items": [
+    {
+      "id": "concentracion-primavera-2025-01",
+      "src": "",
+      "alt": "Concentración de primavera 2025 en Maspalomas",
+      "caption": "Concentración Primavera 2025 — Maspalomas",
+      "category": "eventos",
+      "date": "2025-04-12",
+      "emoji": "🏕️"
+    },
+    {
+      "id": "ruta-teide-01",
+      "src": "",
+      "alt": "Autocaravanas en ruta hacia el Teide al amanecer",
+      "caption": "Ruta al Teide al amanecer",
+      "category": "rutas",
+      "date": "2025-03-02",
+      "emoji": "🌋"
+    },
+    {
+      "id": "dunas-corralejo-01",
+      "src": "",
+      "alt": "Dunas de Corralejo, Fuerteventura",
+      "caption": "Dunas de Corralejo",
+      "category": "paisajes",
+      "date": "2025-02-18",
+      "emoji": "🏜️"
+    },
+    {
+      "id": "flota-socios-maspalomas-01",
+      "src": "",
+      "alt": "Flota de autocaravanas de socios en Maspalomas",
+      "caption": "Flota de socios en Maspalomas",
+      "category": "vehiculos",
+      "date": "2025-04-13",
+      "emoji": "🚐"
+    },
+    {
+      "id": "atardecer-hervideros-01",
+      "src": "",
+      "alt": "Puesta de sol en Los Hervideros, Lanzarote",
+      "caption": "Puesta de sol — Los Hervideros",
+      "category": "paisajes",
+      "date": "2025-01-20",
+      "emoji": "🌅"
+    },
+    {
+      "id": "parque-anaga-01",
+      "src": "",
+      "alt": "Parque Natural de Anaga, Tenerife",
+      "caption": "Parque Natural de Anaga",
+      "category": "rutas",
+      "date": "2024-11-30",
+      "emoji": "🌿"
+    },
+    {
+      "id": "taller-mecanica-2025-01",
+      "src": "",
+      "alt": "Taller de mecánica básica para socios",
+      "caption": "Taller de mecánica básica",
+      "category": "eventos",
+      "date": "2025-05-10",
+      "emoji": "🔧"
+    },
+    {
+      "id": "asamblea-general-2025-01",
+      "src": "",
+      "alt": "Asamblea general de socios 2025",
+      "caption": "Asamblea General 2025",
+      "category": "eventos",
+      "date": "2025-03-22",
+      "emoji": "📋"
+    },
+    {
+      "id": "ruta-nocturna-timanfaya-01",
+      "src": "",
+      "alt": "Ruta nocturna por el Parque Nacional de Timanfaya",
+      "caption": "Ruta nocturna — Timanfaya",
+      "category": "rutas",
+      "date": "2025-05-30",
+      "emoji": "🌌"
+    },
+    {
+      "id": "concentracion-otono-2025-01",
+      "src": "",
+      "alt": "Concentración de otoño 2025",
+      "caption": "Concentración de Otoño 2025",
+      "category": "eventos",
+      "date": "2025-10-04",
+      "emoji": "🍂"
+    },
+    {
+      "id": "vehiculos-detalle-01",
+      "src": "",
+      "alt": "Detalle de autocaravana camperizada de un socio",
+      "caption": "Camperizado a medida — socio de Gran Canaria",
+      "category": "vehiculos",
+      "date": "2025-02-08",
+      "emoji": "🛠️"
+    },
+    {
+      "id": "paisaje-la-palma-01",
+      "src": "",
+      "alt": "Mirador en La Palma",
+      "caption": "Mirador — La Palma",
+      "category": "paisajes",
+      "date": "2024-12-15",
+      "emoji": "🏞️"
+    }
+  ]
+}

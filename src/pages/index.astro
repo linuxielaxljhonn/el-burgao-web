@@ -1,0 +1,379 @@
+---
+/**
+ * index.astro
+ * ─────────────────────────────────────────────────────────────
+ * Página principal de El Burgao.
+ * Ensambla todos los componentes de sección.
+ *
+ * Para añadir una sección nueva:
+ * 1. Crear el componente en /src/components/sections/
+ * 2. Importarlo aquí
+ * 3. Añadirlo en el orden deseado
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero               from '../components/sections/Hero.astro';
+import SectionNoticias    from '../components/sections/SectionNoticias.astro';
+import SectionEventos     from '../components/sections/SectionEventos.astro';
+import SectionBeneficios  from '../components/sections/SectionBeneficios.astro';
+import siteConfig from '../config/site.ts';
+
+// Datos para Schema local en esta página
+const schemaPage = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": siteConfig.fullTitle,
+  "description": siteConfig.description,
+  "url": siteConfig.url,
+  "inLanguage": "es",
+};
+---
+
+<BaseLayout
+  title={undefined}
+  description={siteConfig.description}
+>
+
+  <!-- Schema adicional -->
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(schemaPage)} />
+
+  <!-- ── HERO ── -->
+  <Hero />
+
+  <!-- ── SOBRE NOSOTROS ── -->
+  <section class="section" id="sobre-nosotros" aria-labelledby="about-title">
+    <div class="container">
+      <div class="about-layout">
+
+        <!-- Mapa / Ilustración de Canarias -->
+        <div class="about-visual" data-reveal="left">
+          <div class="about-map-card">
+            <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" aria-label="Mapa de las Islas Canarias" role="img">
+              <!-- Fondo oceánico -->
+              <rect width="400" height="280" fill="#1B4F72" rx="16"/>
+              <rect width="400" height="280" fill="url(#oceanGrad)" rx="16" opacity="0.6"/>
+              <defs>
+                <radialGradient id="oceanGrad" cx="50%" cy="50%" r="70%">
+                  <stop offset="0%"   stop-color="#2980b9" stop-opacity="0.4"/>
+                  <stop offset="100%" stop-color="#0d2a3d" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+
+              <!-- Islas — representación simplificada y aproximada -->
+              <!-- Gran Canaria -->
+              <ellipse cx="185" cy="175" rx="28" ry="24" fill="#C9A96E" opacity="0.9"/>
+              <text x="185" y="178" text-anchor="middle" font-size="8" fill="white" font-weight="bold">Gran Canaria</text>
+
+              <!-- Tenerife -->
+              <ellipse cx="110" cy="155" rx="34" ry="20" fill="#C9A96E" opacity="0.85"/>
+              <text x="110" y="158" text-anchor="middle" font-size="8" fill="white" font-weight="bold">Tenerife</text>
+
+              <!-- Lanzarote -->
+              <ellipse cx="295" cy="120" rx="22" ry="14" fill="#C9A96E" opacity="0.8"/>
+              <text x="295" y="123" text-anchor="middle" font-size="7" fill="white" font-weight="bold">Lanzarote</text>
+
+              <!-- Fuerteventura -->
+              <ellipse cx="270" cy="155" rx="20" ry="26" fill="#C9A96E" opacity="0.8"/>
+              <text x="270" y="158" text-anchor="middle" font-size="7" fill="white" font-weight="bold">Fuerte.</text>
+
+              <!-- La Palma -->
+              <ellipse cx="55" cy="120" rx="14" ry="20" fill="#C9A96E" opacity="0.75"/>
+              <text x="55" y="123" text-anchor="middle" font-size="6.5" fill="white" font-weight="bold">La Palma</text>
+
+              <!-- La Gomera -->
+              <ellipse cx="88" cy="185" rx="11" ry="10" fill="#C9A96E" opacity="0.75"/>
+              <text x="88" y="188" text-anchor="middle" font-size="6" fill="white" font-weight="bold">Gomera</text>
+
+              <!-- El Hierro -->
+              <ellipse cx="60" cy="210" rx="10" ry="9" fill="#C9A96E" opacity="0.7"/>
+              <text x="60" y="213" text-anchor="middle" font-size="6" fill="white" font-weight="bold">Hierro</text>
+
+              <!-- La Graciosa -->
+              <ellipse cx="308" cy="98" rx="8" ry="6" fill="#C9A96E" opacity="0.65"/>
+              <text x="308" y="100" text-anchor="middle" font-size="5.5" fill="white" font-weight="bold">Graciosa</text>
+
+              <!-- Iconos de autocaravana en cada isla (simplificados) -->
+              {/* Autocaravanas pequeñas decorativas */}
+              <text x="170" y="160" font-size="14">🚐</text>
+              <text x="96" y="142" font-size="12">🚐</text>
+              <text x="282" y="107" font-size="10">🚐</text>
+
+              <!-- Texto inferior -->
+              <text x="200" y="260" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.4)" font-style="italic">
+                7 islas · 1 comunidad
+              </text>
+            </svg>
+          </div>
+
+          <!-- Stats visuales -->
+          <div class="about-stats-grid">
+            {[
+              { number: '424', label: 'Socios', emoji: '👥' },
+              { number: '10+', label: 'Años',   emoji: '📅' },
+              { number: '7',   label: 'Islas',  emoji: '🏝️' },
+              { number: '€30', label: 'Cuota',  emoji: '💳' },
+            ].map(stat => (
+              <div class="about-stat-mini">
+                <span aria-hidden="true">{stat.emoji}</span>
+                <strong>{stat.number}</strong>
+                <span>{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Texto -->
+        <div class="about-text" data-reveal="right">
+          <p class="eyebrow">🏕️ Quiénes somos</p>
+          <h2 class="section-title" id="about-title" style="text-align:left; margin-bottom:var(--space-4)">
+            Una familia que rueda<br>por las Canarias
+          </h2>
+          <p>
+            El Burgao nació en {siteConfig.foundedYear} con una idea simple:
+            <em>explorar las Islas Canarias en autocaravana no tiene que ser una aventura solitaria</em>.
+            Hoy reunimos a cientos de familias autocaravanistas de todas las islas.
+          </p>
+          <p>
+            Organizamos encuentros, rutas, reuniones y asambleas, y defendemos
+            los intereses de los autocaravanistas ante las administraciones.
+            Compartimos información sobre áreas de pernocta, normativa vigente
+            y los mejores rincones del archipiélago que solo se descubren sobre ruedas.
+          </p>
+
+          <!-- Valores -->
+          <div class="about-values" role="list" aria-label="Valores de la asociación">
+            {[
+              '🌊 Canarias primero',
+              '🌿 Turismo sostenible',
+              '🤝 Comunidad',
+              '🗺️ Aventura responsable',
+            ].map(v => (
+              <span class="about-value-tag" role="listitem">{v}</span>
+            ))}
+          </div>
+
+          <a href="/la-asociacion" class="btn btn--secondary" style="width:fit-content; margin-top:var(--space-4)">
+            Conocer más sobre la asociación
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AGENDA ── -->
+  <SectionEventos />
+
+  <!-- ── NOTICIAS Y ANUNCIOS ── -->
+  <SectionNoticias />
+
+  <!-- ── GALERÍA (preview) ── -->
+  <section class="section section--alt" id="galeria" aria-labelledby="galeria-title">
+    <div class="container">
+      <header class="section-header" data-reveal="up">
+        <p class="eyebrow">📸 Galería</p>
+        <h2 class="section-title" id="galeria-title">La vida en la carretera</h2>
+        <p class="section-desc">
+          Volcanes, dunas, atardeceres y mucha comunidad.
+          Así se vive El Burgao.
+        </p>
+      </header>
+
+      <!-- Grid galería (placeholder hasta tener fotos reales) -->
+      <div class="gallery-preview-grid" data-reveal="up" data-delay="100">
+        {[
+          { emoji: '🌋', caption: 'Ruta Teide al amanecer',          color: '#1B4F72' },
+          { emoji: '🏕️', caption: 'Concentración Primavera 2024',    color: '#2C3E50' },
+          { emoji: '🏜️', caption: 'Dunas de Corralejo',              color: '#6b4c1a' },
+          { emoji: '🚐', caption: 'Flota de socios en Maspalomas',   color: '#1a4a35' },
+          { emoji: '🌅', caption: 'Puesta de sol Los Hervideros',    color: '#7a2020' },
+          { emoji: '🌿', caption: 'Parque Natural de Anaga',         color: '#1a4a1a' },
+        ].map((item, i) => (
+          <figure
+            class="gallery-preview-item"
+            style={`background:${item.color};`}
+            data-delay={`${i * 80}`}
+          >
+            <div class="gallery-preview-item__img" aria-hidden="true">
+              <span>{item.emoji}</span>
+            </div>
+            <figcaption class="gallery-preview-item__caption">{item.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <div class="section-footer" data-reveal="up">
+        <a href="/galeria" class="btn btn--outline">
+          Ver galería completa
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BENEFICIOS ── -->
+  <SectionBeneficios />
+
+</BaseLayout>
+
+<style>
+/* ── ABOUT ──────────────────────────────────────────────────── */
+.about-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-16);
+  align-items: center;
+}
+
+.about-visual {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.about-map-card {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+}
+
+.about-map-card svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.about-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+}
+
+.about-stat-mini {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.about-stat-mini span:first-child { font-size: 1.4rem; }
+.about-stat-mini strong {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-brand);
+}
+.about-stat-mini span:last-child {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.about-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.about-text p {
+  color: var(--color-text-muted);
+  line-height: var(--leading-relaxed);
+  max-width: 52ch;
+}
+
+.about-text p em {
+  color: var(--color-brand);
+  font-style: italic;
+}
+
+.about-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.about-value-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+}
+
+/* ── GALERÍA PREVIEW ────────────────────────────────────────── */
+.gallery-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 220px);
+  gap: var(--space-4);
+  margin-bottom: var(--space-10);
+}
+
+.gallery-preview-item {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+.gallery-preview-item:hover { transform: scale(1.02); }
+.gallery-preview-item:hover .gallery-preview-item__caption { opacity: 1; }
+
+.gallery-preview-item__img {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  opacity: 0.5;
+}
+
+.gallery-preview-item__caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-4);
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+  color: white;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  opacity: 0;
+  transition: opacity var(--duration-base);
+}
+
+/* Hacer el primero más grande */
+.gallery-preview-item:first-child {
+  grid-column: span 2;
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .about-layout { grid-template-columns: 1fr; }
+  .about-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .gallery-preview-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
+  .gallery-preview-item:first-child { grid-column: span 2; }
+}
+
+@media (max-width: 640px) {
+  .gallery-preview-grid { grid-template-columns: 1fr; }
+  .gallery-preview-item:first-child { grid-column: span 1; }
+  .gallery-preview-grid { grid-template-rows: repeat(6, 180px); }
+  .about-stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+</style>

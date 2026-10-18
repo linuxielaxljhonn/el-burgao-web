@@ -1,0 +1,63 @@
+{
+  "name": "Asociación El Burgao — Autocaravanistas de Canarias",
+  "short_name": "El Burgao",
+  "description": "Comunidad de autocaravanistas en las Islas Canarias. Agenda, rutas y pernoctas en Canarias.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0d2a3d",
+  "theme_color": "#1B4F72",
+  "lang": "es",
+  "dir": "ltr",
+  "categories": ["travel", "lifestyle", "social"],
+  "icons": [
+    { "src": "/assets/icons/icon-72.png",   "sizes": "72x72",     "type": "image/png" },
+    { "src": "/assets/icons/icon-96.png",   "sizes": "96x96",     "type": "image/png" },
+    { "src": "/assets/icons/icon-128.png",  "sizes": "128x128",   "type": "image/png" },
+    { "src": "/assets/icons/icon-144.png",  "sizes": "144x144",   "type": "image/png" },
+    { "src": "/assets/icons/icon-152.png",  "sizes": "152x152",   "type": "image/png" },
+    { "src": "/assets/icons/icon-192.png",  "sizes": "192x192",   "type": "image/png" },
+    { "src": "/assets/icons/icon-384.png",  "sizes": "384x384",   "type": "image/png" },
+    { "src": "/assets/icons/icon-512.png",  "sizes": "512x512",   "type": "image/png" },
+    { "src": "/assets/icons/icon-512.png",  "sizes": "512x512",   "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/img/screenshot-desktop.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Página principal en escritorio"
+    },
+    {
+      "src": "/assets/img/screenshot-mobile.jpg",
+      "sizes": "390x844",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Página principal en móvil"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Noticias",
+      "short_name": "Noticias",
+      "description": "Últimas noticias de la asociación",
+      "url": "/noticias",
+      "icons": [{ "src": "/assets/icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Eventos",
+      "short_name": "Eventos",
+      "description": "Próximos eventos y concentraciones",
+      "url": "/eventos",
+      "icons": [{ "src": "/assets/icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Rutas y pernoctas",
+      "short_name": "Rutas",
+      "description": "Rutas, paradas y pernoctas en Canarias",
+      "url": "/rutas",
+      "icons": [{ "src": "/assets/icons/icon-96.png", "sizes": "96x96" }]
+    }
+  ]
+}

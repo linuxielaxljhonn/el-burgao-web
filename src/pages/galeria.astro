@@ -1,0 +1,340 @@
+---
+/**
+ * galeria.astro
+ * ─────────────────────────────────────────────────────────────
+ * Página /galeria — Fotos de encuentros, rutas, paisajes y vehículos.
+ * Datos desde /src/data/gallery.json (no toca código para añadir fotos).
+ *
+ * Para añadir fotos reales:
+ *   1. Sube el archivo a /public/assets/img/galeria/
+ *   2. Rellena el campo "src" de la entrada correspondiente en gallery.json
+ * Mientras "src" esté vacío se muestra un placeholder elegante,
+ * así nunca hay imágenes rotas.
+ */
+
+import PageLayout from '../layouts/PageLayout.astro';
+import OptimizedImage from '../components/ui/OptimizedImage.astro';
+import galleryData from '../data/gallery.json';
+
+interface GalleryItem {
+  id:       string;
+  src:      string;
+  alt:      string;
+  caption:  string;
+  category: 'eventos' | 'rutas' | 'paisajes' | 'vehiculos' | 'general';
+  date:     string;
+  emoji:    string;
+}
+
+const items = (galleryData.items as GalleryItem[])
+  .slice()
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+const categoryLabels: Record<string, string> = {
+  eventos:   'Encuentros',
+  rutas:     'Rutas',
+  paisajes:  'Paisajes',
+  vehiculos: 'Vehículos',
+  general:   'General',
+};
+
+const categoryColors: Record<string, string> = {
+  eventos:   '#2C3E50',
+  rutas:     '#1B4F72',
+  paisajes:  '#1a4a35',
+  vehiculos: '#6b4c1a',
+  general:   '#7a2020',
+};
+
+const categories = [...new Set(items.map(i => i.category))];
+const totalFotosReales = items.filter(i => i.src).length;
+---
+
+<PageLayout
+  title="Galería de fotos"
+  description="Fotos de encuentros, rutas, paisajes y vehículos de los socios de la Asociación El Burgao por las Islas Canarias."
+  heading="La vida en la carretera"
+  subheading="Encuentros, rutas, paisajes y vehículos de la comunidad. Si eres socio y quieres compartir tus fotos, escríbenos desde la página de contacto."
+  emoji="📸"
+  eyebrow="📸 Galería"
+  breadcrumbs={[{ label: 'Galería', href: '/galeria' }]}
+>
+
+  <section class="section">
+    <div class="container">
+
+      <!-- ── FILTROS ── -->
+      <div class="galeria-filters" role="group" aria-label="Filtrar fotos por categoría">
+        <button class="filter-btn is-active" data-filter="all">
+          Todas <span class="filter-btn__count">{items.length}</span>
+        </button>
+        {categories.map(cat => {
+          const count = items.filter(i => i.category === cat).length;
+          return (
+            <button class="filter-btn" data-filter={cat}>
+              {categoryLabels[cat] ?? cat}
+              <span class="filter-btn__count">{count}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {totalFotosReales === 0 && (
+        <p class="galeria-notice">
+          📷 Esta galería todavía no tiene fotos reales subidas — se muestran marcadores de posición.
+          En cuanto se suban las fotos a <code>/public/assets/img/galeria/</code> y se referencien en
+          <code>gallery.json</code>, aparecerán aquí automáticamente.
+        </p>
+      )}
+
+      <!-- ── GRID DE FOTOS ── -->
+      <div class="galeria-grid" id="galeriaGrid" role="list" aria-label="Fotos de la galería">
+        {items.map((item, i) => (
+          <figure
+            class="galeria-card"
+            role="listitem"
+            data-categoria={item.category}
+            data-reveal="up"
+            data-delay={`${(i % 4) * 80}`}
+          >
+            {item.src ? (
+              <OptimizedImage
+                src={item.src}
+                alt={item.alt}
+                width={480}
+                height={360}
+                rounded
+                caption={item.caption}
+              />
+            ) : (
+              <div
+                class="galeria-card__placeholder"
+                style={`background:${categoryColors[item.category] ?? '#1B4F72'};`}
+              >
+                <span class="galeria-card__emoji" aria-hidden="true">{item.emoji}</span>
+                <figcaption class="galeria-card__caption">{item.caption}</figcaption>
+              </div>
+            )}
+          </figure>
+        ))}
+      </div>
+
+      <!-- Estado vacío (JS lo muestra si no hay resultados) -->
+      <div class="galeria-empty" id="galeriaEmpty" hidden>
+        <span aria-hidden="true">📸</span>
+        <p>No hay fotos en esta categoría todavía.</p>
+      </div>
+
+      <!-- CTA -->
+      <div class="galeria-cta section" data-reveal="up">
+        <div class="galeria-cta__card card">
+          <div class="galeria-cta__body">
+            <span class="galeria-cta__emoji" aria-hidden="true">📷</span>
+            <div>
+              <h3 class="galeria-cta__title">¿Tienes fotos de algún encuentro?</h3>
+              <p class="galeria-cta__text">
+                Comparte tus fotos de rutas, concentraciones o tu vehículo con la comunidad.
+              </p>
+            </div>
+          </div>
+          <a href="/contacto" class="btn btn--primary">Enviar fotos</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</PageLayout>
+
+<style>
+/* ── FILTROS (mismo patrón que /rutas) ──────────────────────── */
+.galeria-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-raised);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.filter-btn:hover {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+  background: rgba(27,79,114,0.06);
+}
+
+.filter-btn.is-active {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: white;
+}
+
+.filter-btn__count {
+  font-size: var(--text-xs);
+  background: rgba(255,255,255,0.2);
+  border-radius: var(--radius-full);
+  padding: 1px 6px;
+  font-weight: var(--weight-bold);
+  line-height: 1.6;
+}
+.filter-btn:not(.is-active) .filter-btn__count {
+  background: var(--color-bg-alt);
+  color: var(--color-text-subtle);
+}
+
+/* ── AVISO MODO PLACEHOLDER ──────────────────────────────────── */
+.galeria-notice {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  background: var(--color-bg-alt);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-8);
+  line-height: var(--leading-relaxed);
+}
+.galeria-notice code {
+  font-size: 0.85em;
+  background: rgba(0,0,0,0.06);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── GRID ───────────────────────────────────────────────────── */
+.galeria-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-5);
+  margin-bottom: var(--space-12);
+}
+
+.galeria-card.is-hidden { display: none; }
+
+.galeria-card__placeholder {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+.galeria-card__placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12) 0%, transparent 60%);
+}
+.galeria-card:hover .galeria-card__placeholder { transform: scale(1.02); }
+
+.galeria-card__emoji {
+  font-size: 3rem;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+}
+
+.galeria-card__caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: var(--space-3);
+  font-size: var(--text-xs);
+  color: rgba(255,255,255,0.92);
+  background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+  text-align: center;
+}
+
+/* ── ESTADO VACÍO ───────────────────────────────────────────── */
+.galeria-empty {
+  text-align: center;
+  padding: var(--space-16) 0;
+  color: var(--color-text-muted);
+}
+.galeria-empty span {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: var(--space-3);
+  opacity: 0.5;
+}
+
+/* ── CTA ────────────────────────────────────────────────────── */
+.galeria-cta__card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  padding: var(--space-8);
+}
+.galeria-cta__body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+.galeria-cta__emoji { font-size: 2.5rem; line-height: 1; }
+.galeria-cta__title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-1);
+}
+.galeria-cta__text {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  max-width: 50ch;
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .galeria-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .galeria-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
+  .galeria-cta__card { flex-direction: column; align-items: stretch; }
+}
+@media (max-width: 480px) {
+  .galeria-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+/* Filtro de fotos por categoría (mismo patrón que /rutas) */
+(function () {
+  const btns  = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const cards = document.querySelectorAll<HTMLElement>('.galeria-card');
+  const empty = document.getElementById('galeriaEmpty');
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter ?? 'all';
+
+      btns.forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+
+      let visible = 0;
+      cards.forEach(card => {
+        const categoria = card.dataset.categoria;
+        const show = filter === 'all' || categoria === filter;
+        card.classList.toggle('is-hidden', !show);
+        if (show) visible++;
+      });
+
+      if (empty) {
+        empty.hidden = visible > 0;
+      }
+    });
+  });
+})();
+</script>

@@ -1,0 +1,257 @@
+---
+/**
+ * noticias/index.astro
+ * ─────────────────────────────────────────────────────────────
+ * Archivo de noticias con filtro por categoría.
+ */
+
+import PageLayout from '../../layouts/PageLayout.astro';
+import { getCollection } from 'astro:content';
+
+const noticias = await getCollection('noticias', ({ data }) => !data.draft);
+noticias.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const categorias = [...new Set(noticias.map(n => n.data.category))];
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('es-ES', {
+    day: 'numeric', month: 'long', year: 'numeric'
+  });
+}
+
+const categoryColors: Record<string, string> = {
+  'Evento':      '#1B4F72',
+  'Ruta':        '#27AE60',
+  'Normativa':   '#8e44ad',
+  'Comunidad':   '#C9A96E',
+  'Consejo':     '#e67e22',
+  'Galería':     '#2C3E50',
+  'Asociación':  '#c0392b',
+  'General':     '#7f8c8d',
+};
+---
+
+<PageLayout
+  title="Noticias"
+  description="Últimas noticias de la Asociación El Burgao: eventos, rutas, normativa y novedades de la comunidad autocaravanista de Canarias."
+  heading="Noticias"
+  subheading="Todo lo que pasa en El Burgao y en la comunidad autocaravanista de las Islas Canarias."
+  emoji="📰"
+  eyebrow="📰 Actualidad"
+  breadcrumbs={[{ label: 'Noticias', href: '/noticias' }]}
+>
+
+  <section class="section">
+    <div class="container">
+
+      <!-- Filtros por categoría -->
+      <div class="news-filters" role="group" aria-label="Filtrar por categoría">
+        <button class="filter-btn is-active" data-filter="all">
+          Todas <span class="filter-btn__count">{noticias.length}</span>
+        </button>
+        {categorias.map(cat => {
+          const count = noticias.filter(n => n.data.category === cat).length;
+          return (
+            <button class="filter-btn" data-filter={cat}
+              style={`--cat-color: ${categoryColors[cat] ?? '#888'}`}>
+              {cat}
+              <span class="filter-btn__count">{count}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <!-- Grid de noticias -->
+      <div class="news-archive-grid" id="newsGrid">
+        {noticias.map((noticia, i) => (
+          <article
+            class="news-archive-card card card--hoverable"
+            data-category={noticia.data.category}
+            data-reveal="up"
+            data-delay={`${(i % 3) * 80}`}
+          >
+            <div class="news-archive-card__img"
+              style={`background:linear-gradient(135deg, ${categoryColors[noticia.data.category] ?? '#1B4F72'} 0%, #0d2a3d 100%)`}>
+              <span class="news-archive-card__emoji" aria-hidden="true">{noticia.data.emoji}</span>
+              <span class="news-archive-card__cat">{noticia.data.category}</span>
+              {noticia.data.featured && (
+                <span class="news-archive-card__featured">⭐</span>
+              )}
+            </div>
+            <div class="news-archive-card__body">
+              <time class="news-archive-card__date" datetime={noticia.data.date.toISOString()}>
+                {formatDate(noticia.data.date)}
+              </time>
+              <h2 class="news-archive-card__title">{noticia.data.title}</h2>
+              <p class="news-archive-card__excerpt">{noticia.data.excerpt}</p>
+              {noticia.data.tags.length > 0 && (
+                <div class="news-archive-card__tags" aria-label="Etiquetas">
+                  {noticia.data.tags.slice(0, 3).map(tag => (
+                    <span class="news-archive-card__tag">#{tag}</span>
+                  ))}
+                </div>
+              )}
+              <a href={`/noticias/${noticia.slug}`} class="news-archive-card__link">
+                Leer noticia
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div id="newsEmpty" hidden class="rutas-empty">
+        <span>📰</span>
+        <p>No hay noticias en esta categoría todavía.</p>
+      </div>
+
+    </div>
+  </section>
+
+</PageLayout>
+
+<style>
+.news-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-10);
+}
+/* Reutiliza .filter-btn de rutas.astro — se aplica globalmente */
+
+.news-archive-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+.news-archive-card { display: flex; flex-direction: column; }
+
+.news-archive-card__img {
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.news-archive-card__emoji {
+  font-size: 4rem;
+  opacity: 0.4;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+}
+.news-archive-card__cat {
+  position: absolute;
+  bottom: var(--space-3);
+  left: var(--space-3);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.news-archive-card__featured {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  font-size: 1.2rem;
+}
+
+.news-archive-card__body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+}
+.news-archive-card__date {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  font-weight: var(--weight-medium);
+}
+.news-archive-card__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  color: var(--color-text);
+  letter-spacing: var(--tracking-snug);
+}
+.news-archive-card__excerpt {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: var(--leading-relaxed);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.news-archive-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.news-archive-card__tag {
+  font-size: var(--text-2xs);
+  color: var(--color-brand);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+}
+.news-archive-card__link {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-brand);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: auto;
+  transition: gap var(--duration-fast);
+  width: fit-content;
+}
+.news-archive-card__link:hover { gap: var(--space-3); }
+
+.rutas-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-20);
+  color: var(--color-text-subtle);
+  font-size: var(--text-lg);
+  text-align: center;
+}
+.rutas-empty span { font-size: 3rem; }
+
+@media (max-width: 1024px) { .news-archive-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px)  { .news-archive-grid { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+(function () {
+  const btns  = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const cards = document.querySelectorAll<HTMLElement>('.news-archive-card');
+  const empty = document.getElementById('newsEmpty');
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter ?? 'all';
+      btns.forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      let visible = 0;
+      cards.forEach(card => {
+        const cat  = card.dataset.category;
+        const show = filter === 'all' || cat === filter;
+        card.classList.toggle('is-hidden', !show);
+        if (show) visible++;
+      });
+      if (empty) empty.hidden = visible > 0;
+    });
+  });
+})();
+</script>

@@ -1,0 +1,23 @@
+# robots.txt — Asociación El Burgao
+# https://elburgao.org
+
+User-agent: *
+Allow: /
+
+# No indexar área privada ni páginas de utilidad
+Disallow: /admin/
+Disallow: /gracias
+Disallow: /offline
+Disallow: /api/
+
+# No indexar archivos de datos
+Disallow: /search-index.json
+
+# Permitir imágenes y CSS para Google
+Allow: /assets/
+
+# Crawl-delay para bots agresivos
+Crawl-delay: 10
+
+# Sitemap
+Sitemap: https://elburgao.org/sitemap.xml

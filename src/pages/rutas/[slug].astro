@@ -1,0 +1,376 @@
+---
+/**
+ * /rutas/[slug].astro
+ * ─────────────────────────────────────────────────────────────
+ * Página de detalle de cada ruta.
+ * Astro genera una página estática por cada .md en /content/rutas/
+ */
+
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const rutas = await getCollection('rutas', ({ data }) => !data.draft);
+  return rutas.map(ruta => ({
+    params: { slug: ruta.slug },
+    props:  { ruta },
+  }));
+}
+
+const { ruta } = Astro.props;
+const { Content } = await ruta.render();
+
+const islaLabels: Record<string, string> = {
+  'gran-canaria':  'Gran Canaria',
+  'tenerife':      'Tenerife',
+  'lanzarote':     'Lanzarote',
+  'fuerteventura': 'Fuerteventura',
+  'la-palma':      'La Palma',
+  'la-gomera':     'La Gomera',
+  'el-hierro':     'El Hierro',
+  'la-graciosa':   'La Graciosa',
+};
+
+const difficultyColor: Record<string, string> = {
+  'Fácil':    '#27AE60',
+  'Moderada': '#C9A96E',
+  'Difícil':  '#e74c3c',
+};
+
+const islaLabel = islaLabels[ruta.data.isla] ?? ruta.data.isla;
+---
+
+<BaseLayout
+  title={ruta.data.title}
+  description={ruta.data.excerpt}
+>
+
+  <!-- Hero de ruta -->
+  <div class="ruta-hero">
+    <div class="ruta-hero__bg" aria-hidden="true"></div>
+    <div class="container ruta-hero__content">
+
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumbs" aria-label="Ruta de navegación">
+        <ol class="breadcrumbs__list">
+          <li class="breadcrumbs__item"><a href="/" class="breadcrumbs__link">Inicio</a></li>
+          <li class="breadcrumbs__item">
+            <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+            <a href="/rutas" class="breadcrumbs__link">Rutas</a>
+          </li>
+          <li class="breadcrumbs__item">
+            <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+            <span class="breadcrumbs__current" aria-current="page">{ruta.data.title}</span>
+          </li>
+        </ol>
+      </nav>
+
+      <div class="ruta-hero__text">
+        <div class="ruta-hero__tags">
+          <span class="badge badge--dark">🏝️ {islaLabel}</span>
+          <span
+            class="badge"
+            style={`background:${difficultyColor[ruta.data.difficulty]};color:white;`}
+          >
+            {ruta.data.difficulty}
+          </span>
+          {ruta.data.featured && <span class="badge badge--accent">⭐ Destacada</span>}
+        </div>
+        <h1 class="ruta-hero__title">{ruta.data.emoji} {ruta.data.title}</h1>
+        <p class="ruta-hero__excerpt">{ruta.data.excerpt}</p>
+
+        <!-- Stats rápidos -->
+        <div class="ruta-hero__stats">
+          <div class="ruta-hero__stat">
+            <span aria-label="Duración">⏱️</span>
+            <span>{ruta.data.duration}</span>
+          </div>
+          {ruta.data.distance && (
+            <div class="ruta-hero__stat">
+              <span aria-label="Distancia">📏</span>
+              <span>{ruta.data.distance}</span>
+            </div>
+          )}
+          <div class="ruta-hero__stat">
+            <span aria-label="Dificultad">📊</span>
+            <span>{ruta.data.difficulty}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="section">
+    <div class="container">
+      <div class="ruta-layout">
+
+        <!-- ── CUERPO MARKDOWN ── -->
+        <article class="ruta-prose prose">
+          <Content />
+        </article>
+
+        <!-- ── SIDEBAR ── -->
+        <aside class="ruta-sidebar">
+
+          <!-- Puntos de interés -->
+          {ruta.data.highlights.length > 0 && (
+            <div class="sidebar-card">
+              <h3 class="sidebar-card__title">📍 Puntos destacados</h3>
+              <ul class="sidebar-list">
+                {ruta.data.highlights.map(h => <li>{h}</li>)}
+              </ul>
+            </div>
+          )}
+
+          <!-- Servicios cercanos -->
+          {ruta.data.services.length > 0 && (
+            <div class="sidebar-card">
+              <h3 class="sidebar-card__title">🔧 Servicios en ruta</h3>
+              <ul class="sidebar-list sidebar-list--services">
+                {ruta.data.services.map(s => <li>{s}</li>)}
+              </ul>
+            </div>
+          )}
+
+          <!-- Descargas -->
+          <div class="sidebar-card sidebar-card--downloads">
+            <h3 class="sidebar-card__title">📥 Descargar</h3>
+            <div class="download-btns">
+              {ruta.data.gpxFile ? (
+                <a href={ruta.data.gpxFile} download class="btn btn--outline btn--sm btn--full">
+                  🗺️ Archivo GPX
+                </a>
+              ) : (
+                <span class="download-na">GPX — Próximamente</span>
+              )}
+              {ruta.data.pdfFile ? (
+                <a href={ruta.data.pdfFile} download class="btn btn--outline btn--sm btn--full">
+                  📄 Guía PDF
+                </a>
+              ) : (
+                <span class="download-na">PDF — Próximamente</span>
+              )}
+            </div>
+          </div>
+
+          <!-- CTA socio -->
+          <div class="sidebar-card sidebar-card--cta">
+            <span aria-hidden="true">🚐</span>
+            <h4>¿Has hecho esta ruta?</h4>
+            <p>Comparte tu experiencia con los socios de El Burgao.</p>
+            <a href="/contacto" class="btn btn--primary btn--sm btn--full">Compartir mi ruta</a>
+          </div>
+
+        </aside>
+      </div>
+
+      <!-- Navegación entre rutas -->
+      <nav class="ruta-nav" aria-label="Más rutas">
+        <a href="/rutas" class="btn btn--outline">
+          ← Volver a todas las rutas
+        </a>
+      </nav>
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+/* ── HERO ────────────────────────────────────────────────────── */
+.ruta-hero {
+  position: relative;
+  padding-top: calc(var(--header-h) + var(--space-12));
+  padding-bottom: var(--space-16);
+  background: var(--primitive-ocean-900);
+  overflow: hidden;
+}
+.ruta-hero__bg {
+  position: absolute; inset: 0;
+  background: var(--gradient-hero);
+  opacity: 0.85;
+}
+.ruta-hero__bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(201,169,110,0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.ruta-hero__content { position: relative; z-index: 1; }
+
+.ruta-hero__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.ruta-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl));
+  font-weight: var(--weight-black);
+  color: white;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-snug);
+  margin-bottom: var(--space-4);
+}
+
+.ruta-hero__excerpt {
+  font-size: clamp(var(--text-base), 2vw, var(--text-lg));
+  color: rgba(255,255,255,0.7);
+  line-height: var(--leading-relaxed);
+  max-width: 60ch;
+  margin-bottom: var(--space-6);
+}
+
+.ruta-hero__stats {
+  display: flex;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.ruta-hero__stat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+}
+
+/* ── LAYOUT ──────────────────────────────────────────────────── */
+.ruta-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: var(--space-12);
+  align-items: start;
+}
+
+/* ── PROSE ───────────────────────────────────────────────────── */
+.ruta-prose {
+  max-width: 70ch;
+}
+
+/* ── SIDEBAR ─────────────────────────────────────────────────── */
+.ruta-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: sticky;
+  top: calc(var(--header-h) + var(--space-6));
+}
+
+.sidebar-card {
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.sidebar-card__title {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  letter-spacing: var(--tracking-wide);
+  margin-bottom: var(--space-4);
+  text-transform: uppercase;
+}
+
+.sidebar-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sidebar-list li {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  padding-left: var(--space-4);
+  position: relative;
+  line-height: var(--leading-snug);
+}
+.sidebar-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-xs);
+}
+
+.sidebar-card--downloads .download-btns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.download-na {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  font-style: italic;
+  text-align: center;
+  padding: var(--space-2);
+}
+
+.sidebar-card--cta {
+  background: var(--gradient-ocean);
+  border-color: transparent;
+  color: white;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+.sidebar-card--cta span:first-child { font-size: 2rem; }
+.sidebar-card--cta h4 {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: white;
+}
+.sidebar-card--cta p {
+  font-size: var(--text-sm);
+  color: rgba(255,255,255,0.7);
+  max-width: none;
+}
+
+/* Nav inferior */
+.ruta-nav {
+  padding-top: var(--space-10);
+  margin-top: var(--space-10);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Breadcrumbs */
+.breadcrumbs { margin-bottom: var(--space-8); }
+.breadcrumbs__list { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-1); list-style: none; }
+.breadcrumbs__item { display: flex; align-items: center; gap: var(--space-1); }
+.breadcrumbs__link { font-size: var(--text-xs); font-weight: var(--weight-medium); color: rgba(255,255,255,0.5); text-decoration: none; transition: color var(--duration-fast); }
+.breadcrumbs__link:hover { color: var(--color-accent); }
+.breadcrumbs__sep { font-size: var(--text-xs); color: rgba(255,255,255,0.25); }
+.breadcrumbs__current { font-size: var(--text-xs); font-weight: var(--weight-semibold); color: var(--color-accent); }
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .ruta-layout {
+    grid-template-columns: 1fr;
+  }
+  .ruta-sidebar {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .ruta-sidebar { grid-template-columns: 1fr; }
+  .ruta-hero__stats { gap: var(--space-3); }
+}
+</style>
