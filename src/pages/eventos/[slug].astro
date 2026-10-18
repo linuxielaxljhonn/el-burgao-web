@@ -96,7 +96,7 @@ const isPast = evento.data.date < now;
             <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
             <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
-          <time datetime={evento.data.date.toISOString()}>{formatFecha(evento.data.date)}</time>
+          <time datetime={evento.data.date.toISOString()}>{formatFecha(evento.data.date)}{evento.data.time && ` · ${evento.data.time} h`}</time>
           {evento.data.endDate && (
             <> — <time datetime={evento.data.endDate.toISOString()}>{formatFecha(evento.data.endDate)}</time></>
           )}
@@ -132,6 +132,14 @@ const isPast = evento.data.date < now;
 
         <!-- Contenido markdown -->
         <article class="evento-prose prose">
+          {evento.data.image && (
+            <figure class="evento-cartel">
+              <img src={evento.data.image} alt={evento.data.imageAlt || `Cartel de ${evento.data.title}`} loading="lazy" decoding="async" />
+            </figure>
+          )}
+          {evento.data.poster && (
+            <p><a class="btn btn--outline btn--sm" href={evento.data.poster} target="_blank" rel="noopener">📄 Descargar documento (PDF)</a></p>
+          )}
           <Content />
           {/* Fallback si no hay contenido largo */}
           {evento.data.description && (
@@ -242,6 +250,9 @@ const isPast = evento.data.date < now;
 </BaseLayout>
 
 <style>
+.evento-cartel { margin: 0 0 var(--space-6); }
+.evento-cartel img { width: 100%; height: auto; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+
 .evento-hero {
   position: relative;
   padding-top: calc(var(--header-h) + var(--space-12));

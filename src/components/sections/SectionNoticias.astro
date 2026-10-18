@@ -11,11 +11,14 @@
 import { getCollection } from 'astro:content';
 
 // Cargar y ordenar noticias (más reciente primero, excluir drafts)
-const allNoticias = await getCollection('noticias', ({ data }) => !data.draft);
+// Los anuncios con fecha de caducidad pasada dejan de salir en portada
+const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+const allNoticias = await getCollection('noticias', ({ data }) =>
+  !data.draft && !(data.expires && data.expires < hoy));
 allNoticias.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const featured = allNoticias.find(n => n.data.featured) ?? allNoticias[0];
-const rest     = allNoticias.filter(n => n.slug !== featured.slug).slice(0, 3);
+const rest     = allNoticias.filter(n => n.slug !== featured?.slug).slice(0, 3);
 
 function formatDate(date: Date) {
   return date.toLocaleDateString('es-ES', {

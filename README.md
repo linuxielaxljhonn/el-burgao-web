@@ -31,7 +31,26 @@ Además:
 | `src/content/noticias/` | Noticias reales (las actuales son ejemplos) |
 | `public/assets/img/galeria/` | Fotos con permiso de publicación |
 
-## Añadir contenido (hasta que esté el editor de la fase 2)
+## Editor de contenidos (Pages CMS)
+
+La junta edita la web en **https://app.pagescms.org** sin tocar código.
+La configuración está en `.pages.yml`. Secciones:
+
+- **Agenda**: eventos, reuniones, asambleas, manifestaciones (con cartel y PDF).
+- **Noticias y anuncios**: los anuncios pueden tener fecha de caducidad.
+- **Rutas**.
+- **Galería de fotos**.
+- **Datos de la asociación**: contacto, datos legales, cuotas, redes, junta, estatutos.
+
+Cada cambio guardado se publica solo en 1–2 minutos (GitHub → Netlify).
+Imágenes en `public/assets/img/uploads/`, PDF en `public/docs/`.
+
+### Puesta en marcha (una vez, el administrador)
+1. Entrar en app.pagescms.org con GitHub.
+2. Instalar la GitHub App de Pages CMS solo en el repositorio `el-burgao-web`.
+3. Abrir el repositorio → Ajustes → Colaboradores → invitar por email a cada editor.
+
+## Añadir contenido a mano (alternativa)
 
 - **Evento / reunión / asamblea / manifestación:** nuevo `.md` en `src/content/eventos/`.
   Campo `type`: `Concentración`, `Ruta`, `Reunión`, `Asamblea`, `Manifestación`, `Formación`, `Social` u `Otro`.

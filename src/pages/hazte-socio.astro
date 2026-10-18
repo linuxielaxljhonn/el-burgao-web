@@ -12,9 +12,9 @@ const { cuota } = siteConfig;
 
 const faqs = [
   { q: '¿Cuánto cuesta?', a: `${cuota.alta} € el primer año (alta) y ${cuota.renovacion} € cada renovación anual.` },
-  { q: '¿Cómo pago la cuota?', a: 'Tras enviar la solicitud, la junta te enviará los datos para el pago. [PENDIENTE: forma de pago]' },
+  { q: '¿Cómo pago la cuota?', a: `Tras enviar la solicitud, la junta te enviará los datos para el pago. ${cuota.formaPago}` },
   { q: '¿Qué necesito para hacerme socio?', a: 'Rellenar la solicitud. No hace falta tener vehículo propio para unirte.' },
-  { q: '¿Cuándo se renueva?', a: '[PENDIENTE: periodo de renovación, p. ej. año natural]' },
+  { q: '¿Cuándo se renueva?', a: cuota.renovacionCuando },
 ];
 ---
 

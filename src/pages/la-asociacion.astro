@@ -2,25 +2,15 @@
 /**
  * la-asociacion.astro
  * Quiénes somos, qué hacemos, junta directiva, estatutos y datos registrales.
- * Para actualizar la junta: editar la lista `junta` de abajo.
- * Para publicar los estatutos: subir el PDF a /public/docs/estatutos.pdf
- * y poner `estatutosPdf` a '/docs/estatutos.pdf'.
+ * Junta, presentación y PDF de estatutos se editan en el editor de
+ * contenidos → «Datos de la asociación» (src/data/asociacion.json).
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import siteConfig from '../config/site.ts';
 
 const { foundedYear, legal, stats } = siteConfig;
 
-// PENDIENTE: confirmar con la junta
-const junta = [
-  { cargo: 'Presidencia',    nombre: '[PENDIENTE]' },
-  { cargo: 'Vicepresidencia', nombre: '[PENDIENTE]' },
-  { cargo: 'Secretaría',     nombre: '[PENDIENTE]' },
-  { cargo: 'Tesorería',      nombre: '[PENDIENTE]' },
-  { cargo: 'Vocalías',       nombre: '[PENDIENTE]' },
-];
-
-const estatutosPdf = '';   // ej. '/docs/estatutos.pdf'
+const { junta, estatutosPdf, presentacion } = siteConfig;
 
 const queHacemos = [
   { icon: '🏕️', title: 'Encuentros',        text: 'Jornadas de convivencia y concentraciones en distintas islas.' },
@@ -49,7 +39,9 @@ const queHacemos = [
           familias de todas las islas que comparten una forma de viajar libre, responsable
           y respetuosa con el entorno.
         </p>
-        <p class="asoc-pendiente">[PENDIENTE: texto de presentación e historia redactado por la junta]</p>
+        {presentacion
+          ? presentacion.split(/\n\s*\n/).map(par => <p>{par}</p>)
+          : <p class="asoc-pendiente">[PENDIENTE: texto de presentación e historia redactado por la junta]</p>}
       </div>
 
       <div class="asoc-grid" role="list">

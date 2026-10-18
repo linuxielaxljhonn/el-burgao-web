@@ -1,0 +1,453 @@
+# .pages.yml — Configuración del editor de contenidos (Pages CMS)
+# ─────────────────────────────────────────────────────────────
+# La junta edita la web en https://app.pagescms.org
+# Cada cambio guardado hace un commit en GitHub y Netlify publica la web
+# en 1–2 minutos.
+#
+# Si cambias campos aquí, revisa también src/content/config.ts.
+# Autor: Jhonn V. Ardila Jara
+
+media:
+  - name: imagenes
+    label: Imágenes
+    input: public/assets/img/uploads
+    output: /assets/img/uploads
+    categories: [image]
+    rename: safe
+  - name: documentos
+    label: Documentos (PDF)
+    input: public/docs
+    output: /docs
+    extensions: [pdf]
+    rename: safe
+
+content:
+
+  # ── AGENDA ─────────────────────────────────────────────────
+  - name: eventos
+    label: Agenda (eventos, reuniones, asambleas, manifestaciones)
+    type: collection
+    path: src/content/eventos
+    format: yaml-frontmatter
+    filename: "{year}-{month}-{day}-{primary}.md"
+    view:
+      fields: [title, date, type]
+      primary: title
+      sort: date
+      order: desc
+    fields:
+      - name: title
+        label: Título
+        type: string
+        required: true
+        options:
+          maxlength: 100
+      - name: type
+        label: Tipo
+        type: select
+        required: true
+        options:
+          values: [Concentración, Ruta, Reunión, Asamblea, Manifestación, Formación, Social, Otro]
+      - name: date
+        label: Fecha
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: time
+        label: Hora de inicio
+        type: string
+        description: "Formato 24 h, por ejemplo 10:00. Opcional."
+        pattern:
+          regex: "^$|^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+          message: "Usa el formato 10:00"
+      - name: endDate
+        label: Fecha de fin
+        type: date
+        description: "Solo si dura más de un día."
+        default: ""
+        options:
+          format: yyyy-MM-dd
+      - name: location
+        label: Lugar
+        type: string
+        required: true
+        description: "Ejemplo: Playa Blanca, Yaiza (Lanzarote)"
+      - name: isla
+        label: Isla
+        type: select
+        options:
+          values:
+            - { name: gran-canaria, label: Gran Canaria }
+            - { name: tenerife, label: Tenerife }
+            - { name: lanzarote, label: Lanzarote }
+            - { name: fuerteventura, label: Fuerteventura }
+            - { name: la-palma, label: La Palma }
+            - { name: la-gomera, label: La Gomera }
+            - { name: el-hierro, label: El Hierro }
+            - { name: la-graciosa, label: La Graciosa }
+            - { name: varias, label: Varias islas }
+      - name: description
+        label: Resumen
+        type: text
+        required: true
+        description: "Una o dos frases. Es lo que se ve en la portada y en la agenda."
+        options:
+          maxlength: 400
+      - name: image
+        label: Cartel o foto
+        type: image
+        options:
+          media: imagenes
+      - name: imageAlt
+        label: Descripción de la imagen
+        type: string
+        description: "Qué se ve en la imagen (para personas con discapacidad visual)."
+      - name: poster
+        label: Documento PDF (convocatoria, orden del día…)
+        type: file
+        options:
+          media: documentos
+      - name: price
+        label: Precio por persona (€)
+        type: number
+        description: "0 = gratuito"
+        options:
+          min: 0
+      - name: capacity
+        label: Plazas máximas
+        type: number
+        options:
+          min: 1
+      - name: registrationUrl
+        label: Enlace de inscripción
+        type: string
+        description: "Opcional: formulario externo para apuntarse."
+      - name: membersOnly
+        label: Solo para socios
+        type: boolean
+      - name: emoji
+        label: Emoji
+        type: string
+        description: "Un emoji para la tarjeta, por ejemplo 🏕️ 📋 📢"
+      - name: draft
+        label: Borrador (no publicar todavía)
+        type: boolean
+      - name: body
+        label: Información completa (programa, normas, cómo llegar…)
+        type: rich-text
+
+  # ── NOTICIAS Y ANUNCIOS ────────────────────────────────────
+  - name: noticias
+    label: Noticias y anuncios
+    type: collection
+    path: src/content/noticias
+    format: yaml-frontmatter
+    filename: "{year}-{month}-{day}-{primary}.md"
+    view:
+      fields: [title, date, category]
+      primary: title
+      sort: date
+      order: desc
+    fields:
+      - name: title
+        label: Título
+        type: string
+        required: true
+        options:
+          maxlength: 100
+      - name: category
+        label: Categoría
+        type: select
+        required: true
+        options:
+          values: [Anuncio, Asociación, Evento, Ruta, Normativa, Comunidad, Consejo, Galería, General]
+      - name: date
+        label: Fecha
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: expires
+        label: Caduca el
+        type: date
+        description: "Para anuncios: a partir de este día deja de salir en la portada."
+        default: ""
+        options:
+          format: yyyy-MM-dd
+      - name: excerpt
+        label: Resumen
+        type: text
+        required: true
+        options:
+          maxlength: 280
+      - name: featured
+        label: Destacar en portada
+        type: boolean
+      - name: image
+        label: Imagen
+        type: image
+        options:
+          media: imagenes
+      - name: imageAlt
+        label: Descripción de la imagen
+        type: string
+      - name: author
+        label: Autor
+        type: string
+        description: "Si se deja vacío: El Burgao"
+      - name: tags
+        label: Etiquetas
+        type: string
+        list: true
+      - name: emoji
+        label: Emoji
+        type: string
+      - name: draft
+        label: Borrador (no publicar todavía)
+        type: boolean
+      - name: body
+        label: Texto
+        type: rich-text
+
+  # ── RUTAS ──────────────────────────────────────────────────
+  - name: rutas
+    label: Rutas
+    type: collection
+    path: src/content/rutas
+    format: yaml-frontmatter
+    filename: "{primary}.md"
+    view:
+      fields: [title, isla]
+      primary: title
+      sort: title
+      order: asc
+    fields:
+      - name: title
+        label: Título
+        type: string
+        required: true
+      - name: isla
+        label: Isla
+        type: select
+        required: true
+        options:
+          values:
+            - { name: gran-canaria, label: Gran Canaria }
+            - { name: tenerife, label: Tenerife }
+            - { name: lanzarote, label: Lanzarote }
+            - { name: fuerteventura, label: Fuerteventura }
+            - { name: la-palma, label: La Palma }
+            - { name: la-gomera, label: La Gomera }
+            - { name: el-hierro, label: El Hierro }
+            - { name: la-graciosa, label: La Graciosa }
+      - name: excerpt
+        label: Resumen
+        type: text
+        required: true
+        options:
+          maxlength: 280
+      - name: difficulty
+        label: Dificultad
+        type: select
+        options:
+          values: [Fácil, Moderada, Difícil]
+      - name: duration
+        label: Duración
+        type: string
+        required: true
+        description: "Ejemplo: 3 días"
+      - name: distance
+        label: Distancia
+        type: string
+        description: "Ejemplo: ~180 km"
+      - name: highlights
+        label: Lugares destacados
+        type: string
+        list: true
+      - name: services
+        label: Servicios para autocaravanas (áreas, vaciado, agua…)
+        type: string
+        list: true
+      - name: lat
+        label: Latitud del punto de inicio
+        type: number
+      - name: lng
+        label: Longitud del punto de inicio
+        type: number
+      - name: image
+        label: Imagen
+        type: image
+        options:
+          media: imagenes
+      - name: imageAlt
+        label: Descripción de la imagen
+        type: string
+      - name: gpxFile
+        label: Archivo GPX
+        type: file
+        options:
+          media: documentos
+          extensions: [gpx]
+      - name: featured
+        label: Destacada
+        type: boolean
+      - name: order
+        label: Orden (menor = primero)
+        type: number
+      - name: emoji
+        label: Emoji
+        type: string
+      - name: draft
+        label: Borrador (no publicar todavía)
+        type: boolean
+      - name: body
+        label: Descripción por días
+        type: rich-text
+
+  # ── GALERÍA ────────────────────────────────────────────────
+  - name: galeria
+    label: Galería de fotos
+    type: file
+    path: src/data/gallery.json
+    fields:
+      - name: items
+        label: Fotos
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{caption}"
+        fields:
+          - name: id
+            label: Identificador
+            type: uuid
+            hidden: true
+          - name: src
+            label: Foto
+            type: image
+            options:
+              media: imagenes
+          - name: caption
+            label: Pie de foto
+            type: string
+            required: true
+          - name: alt
+            label: Descripción de la foto
+            type: string
+            required: true
+          - name: category
+            label: Categoría
+            type: select
+            options:
+              values:
+                - { name: eventos, label: Encuentros }
+                - { name: rutas, label: Rutas }
+                - { name: paisajes, label: Paisajes }
+                - { name: vehiculos, label: Vehículos }
+                - { name: general, label: General }
+          - name: date
+            label: Fecha
+            type: date
+            options:
+              format: yyyy-MM-dd
+          - name: emoji
+            label: Emoji (si no hay foto)
+            type: string
+
+  # ── DATOS DE LA ASOCIACIÓN ─────────────────────────────────
+  - name: asociacion
+    label: Datos de la asociación (contacto, cuotas, junta…)
+    type: file
+    path: src/data/asociacion.json
+    fields:
+      - name: contacto
+        label: Contacto
+        type: object
+        fields:
+          - name: email
+            label: Email público
+            type: string
+          - name: telefono
+            label: Teléfono
+            type: string
+          - name: whatsapp
+            label: WhatsApp (con prefijo, ej. 34600111222)
+            type: string
+          - name: emailJunta
+            label: Email que recibe los formularios
+            type: string
+            description: "Informativo. Los avisos se configuran en Netlify → Formas → Notificaciones."
+      - name: legal
+        label: Datos legales
+        type: object
+        fields:
+          - name: cif
+            label: CIF
+            type: string
+          - name: registro
+            label: N.º de registro de asociaciones
+            type: string
+          - name: domicilio
+            label: Domicilio social
+            type: string
+      - name: cuotas
+        label: Cuotas
+        type: object
+        fields:
+          - name: alta
+            label: Cuota de alta (€)
+            type: number
+            required: true
+          - name: renovacion
+            label: Renovación anual (€)
+            type: number
+            required: true
+          - name: nota
+            label: Nota sobre la cuota
+            type: string
+          - name: formaPago
+            label: Forma de pago
+            type: text
+          - name: renovacionCuando
+            label: Cuándo se renueva
+            type: string
+      - name: redes
+        label: Redes sociales (enlaces completos)
+        type: object
+        fields:
+          - name: facebook
+            label: Facebook
+            type: string
+          - name: instagram
+            label: Instagram
+            type: string
+          - name: whatsapp
+            label: Grupo o canal de WhatsApp
+            type: string
+          - name: youtube
+            label: YouTube
+            type: string
+      - name: sociosAprox
+        label: Número aproximado de socios
+        type: number
+      - name: presentacion
+        label: Presentación e historia (página La asociación)
+        type: text
+        description: "Separa los párrafos con una línea en blanco."
+      - name: junta
+        label: Junta directiva
+        type: object
+        list: true
+        fields:
+          - name: cargo
+            label: Cargo
+            type: string
+          - name: nombre
+            label: Nombre
+            type: string
+      - name: estatutosPdf
+        label: Estatutos (PDF)
+        type: file
+        options:
+          media: documentos

@@ -2,70 +2,81 @@
  * content/config.ts
  * ─────────────────────────────────────────────────────────────
  * Esquemas de las Content Collections de Astro.
- * Define la "forma" de cada tipo de contenido con TypeScript.
  *
- * Beneficios:
- * - Errores de tipo en build si falta un campo obligatorio
- * - Autocompletado en el editor
- * - Validación automática de fechas, slugs, etc.
+ * Estos esquemas son TOLERANTES a propósito: el editor de contenidos
+ * (Pages CMS, en /admin de app.pagescms.org) puede guardar campos vacíos
+ * como "" o null. Un campo vacío se trata como "sin valor" en lugar de
+ * romper la publicación de la web.
  *
- * Para añadir una noticia: crear un .md en /src/content/noticias/
- * Para añadir un evento:   crear un .md en /src/content/eventos/
- * etc. — nunca tocar código JS/HTML.
+ * Si cambias un campo aquí, cambia también .pages.yml (raíz del repo).
  */
 
 import { defineCollection, z } from 'astro:content';
 
-// ── NOTICIAS ──────────────────────────────────────────────────
+// ── Ayudantes: "" / null → sin valor ─────────────────────────
+const vacio = (v: unknown) => (v === '' || v === null ? undefined : v);
+const texto      = () => z.preprocess(vacio, z.string().optional());
+const fecha      = () => z.coerce.date();
+const fechaOpc   = () => z.preprocess(vacio, z.coerce.date().optional());
+const numeroOpc  = () => z.preprocess(vacio, z.coerce.number().optional());
+const numero     = (d: number) => z.preprocess(vacio, z.coerce.number().default(d));
+const booleano   = (d = false) => z.preprocess(vacio, z.boolean().default(d));
+const lista      = () => z.preprocess(v => (v == null ? [] : v), z.array(z.string()).default([]));
+const emoji      = (d: string) => z.preprocess(vacio, z.string().default(d));
+
+const ISLAS = [
+  'gran-canaria', 'tenerife', 'lanzarote', 'fuerteventura',
+  'la-palma', 'la-gomera', 'el-hierro', 'la-graciosa',
+] as const;
+
+// ── NOTICIAS Y ANUNCIOS ───────────────────────────────────────
 const noticiasCollection = defineCollection({
   type: 'content',
   schema: z.object({
-    title:     z.string().max(100),
-    excerpt:   z.string().max(280),
-    date:      z.date(),
+    title:     z.string(),
+    excerpt:   z.string(),
+    date:      fecha(),
     category:  z.enum([
-      'Evento', 'Ruta', 'Normativa', 'Comunidad',
-      'Consejo', 'Galería', 'Asociación', 'General'
-    ]),
-    emoji:     z.string().emoji().default('📰'),
-    featured:  z.boolean().default(false),
-    draft:     z.boolean().default(false),
-    // Imagen opcional (cuando haya fotos reales)
-    image:     z.string().optional(),
-    imageAlt:  z.string().optional(),
-    // Autor opcional
-    author:    z.string().default('El Burgao'),
-    // Tags para SEO y filtrado futuro
-    tags:      z.array(z.string()).default([]),
+      'Anuncio', 'Evento', 'Ruta', 'Normativa', 'Comunidad',
+      'Consejo', 'Galería', 'Asociación', 'General',
+    ]).default('General'),
+    emoji:     emoji('📰'),
+    featured:  booleano(),
+    draft:     booleano(),
+    // Anuncios: deja de mostrarse en portada a partir de esta fecha
+    expires:   fechaOpc(),
+    image:     texto(),
+    imageAlt:  texto(),
+    author:    z.preprocess(vacio, z.string().default('El Burgao')),
+    tags:      lista(),
   }),
 });
 
-// ── EVENTOS ───────────────────────────────────────────────────
+// ── EVENTOS (encuentros, reuniones, asambleas, manifestaciones…) ─
 const eventosCollection = defineCollection({
   type: 'content',
   schema: z.object({
-    title:       z.string().max(100),
-    description: z.string().max(400),
-    date:        z.date(),
-    endDate:     z.date().optional(),
+    title:       z.string(),
+    description: z.string(),
+    date:        fecha(),
+    time:        texto(),          // "10:00" (opcional)
+    endDate:     fechaOpc(),
     location:    z.string(),
-    isla:        z.enum([
-      'gran-canaria', 'tenerife', 'lanzarote', 'fuerteventura',
-      'la-palma', 'la-gomera', 'el-hierro', 'la-graciosa', 'varias'
-    ]).optional(),
+    isla:        z.preprocess(vacio, z.enum([...ISLAS, 'varias']).optional()),
     type:        z.enum([
       'Concentración', 'Ruta', 'Reunión', 'Asamblea',
-      'Manifestación', 'Formación', 'Social', 'Otro'
+      'Manifestación', 'Formación', 'Social', 'Otro',
     ]),
-    emoji:       z.string().emoji().default('📅'),
-    tag:         z.string().optional(),
-    // Para inscripciones futuras
-    capacity:    z.number().optional(),
-    price:       z.number().default(0),
-    registrationUrl: z.string().url().optional(),
-    // Solo socios
-    membersOnly: z.boolean().default(false),
-    draft:       z.boolean().default(false),
+    emoji:       emoji('📅'),
+    tag:         texto(),
+    image:       texto(),          // cartel o foto
+    imageAlt:    texto(),
+    poster:      texto(),          // PDF (orden del día, convocatoria…)
+    capacity:    numeroOpc(),
+    price:       numero(0),
+    registrationUrl: texto(),
+    membersOnly: booleano(),
+    draft:       booleano(),
   }),
 });
 
@@ -73,57 +84,46 @@ const eventosCollection = defineCollection({
 const rutasCollection = defineCollection({
   type: 'content',
   schema: z.object({
-    title:       z.string().max(100),
-    excerpt:     z.string().max(280),
-    isla:        z.enum([
-      'gran-canaria', 'tenerife', 'lanzarote', 'fuerteventura',
-      'la-palma', 'la-gomera', 'el-hierro', 'la-graciosa'
-    ]),
+    title:       z.string(),
+    excerpt:     z.string(),
+    isla:        z.enum(ISLAS),
     difficulty:  z.enum(['Fácil', 'Moderada', 'Difícil']).default('Fácil'),
-    duration:    z.string(),          // "2 días", "1 semana"
-    distance:    z.string().optional(), // "150 km"
-    emoji:       z.string().emoji().default('🗺️'),
-    image:       z.string().optional(),
-    imageAlt:    z.string().optional(),
-    // Archivos descargables (path relativo a /public)
-    gpxFile:     z.string().optional(),
-    kmlFile:     z.string().optional(),
-    pdfFile:     z.string().optional(),
-    // Puntos de interés en formato libre
-    highlights:  z.array(z.string()).default([]),
-    services:    z.array(z.string()).default([]),
-    // Coordenadas del punto de inicio (para mapa futuro)
-    lat:         z.number().optional(),
-    lng:         z.number().optional(),
-    draft:       z.boolean().default(false),
-    featured:    z.boolean().default(false),
-    order:       z.number().default(99),
+    duration:    z.string(),
+    distance:    texto(),
+    emoji:       emoji('🗺️'),
+    image:       texto(),
+    imageAlt:    texto(),
+    gpxFile:     texto(),
+    kmlFile:     texto(),
+    pdfFile:     texto(),
+    highlights:  lista(),
+    services:    lista(),
+    lat:         numeroOpc(),
+    lng:         numeroOpc(),
+    draft:       booleano(),
+    featured:    booleano(),
+    order:       numero(99),
   }),
 });
 
-// ── GALERÍA ───────────────────────────────────────────────────
-// La galería se gestiona con JSON en /src/data/gallery.json
-// (más práctico que múltiples .md para datos sin texto largo)
-// Este collection es opcional para álbumes con descripción extensa.
+// ── GALERÍA (álbumes con texto largo; las fotos sueltas van en gallery.json)
 const galeriaCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title:       z.string(),
-    date:        z.date(),
+    date:        fecha(),
     category:    z.enum(['rutas', 'eventos', 'paisajes', 'vehiculos', 'general']),
-    emoji:       z.string().emoji().default('📸'),
-    coverImage:  z.string().optional(),
+    emoji:       emoji('📸'),
+    coverImage:  texto(),
     images:      z.array(z.object({
       src:     z.string(),
       alt:     z.string(),
-      caption: z.string().optional(),
+      caption: texto(),
     })).default([]),
-    draft:       z.boolean().default(false),
+    draft:       booleano(),
   }),
 });
 
-
-// ── EXPORTAR COLECCIONES ──────────────────────────────────────
 export const collections = {
   noticias: noticiasCollection,
   eventos:  eventosCollection,

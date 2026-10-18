@@ -9,10 +9,18 @@
  * con la junta. Mientras sigan así, la web los muestra tal cual
  * para que se vea qué queda por completar.
  *
+ * Los datos que cambian (contacto, redes, cuotas, junta…) están en
+ * src/data/asociacion.json y se editan desde el editor de contenidos
+ * (sección «Datos de la asociación»). Un campo vacío se muestra como
+ * [PENDIENTE: …] para que se vea qué falta.
+ *
  * Autor de la web: Jhonn V. Ardila Jara
  */
 
+import datos from '../data/asociacion.json';
+
 const PENDIENTE = (que: string) => `[PENDIENTE: ${que}]`;
+const o = (v: string | undefined, que: string) => (v && v.trim()) ? v.trim() : PENDIENTE(que);
 
 const foundedYear = 2014;
 
@@ -38,44 +46,51 @@ const siteConfig = {
   // ── Fundación y cifras ──────────────────────────────────────
   foundedYear,
   stats: {
-    socios: 400,                                   // PENDIENTE: confirmar cifra
+    socios: datos.sociosAprox || 400,
     años:   new Date().getFullYear() - foundedYear, // se calcula solo
     islas:  8,
   },
 
   // ── Contacto (un solo origen para toda la web) ─────────────
   contact: {
-    email:        PENDIENTE('email de la asociación'),
-    telefono:     PENDIENTE('teléfono'),
-    whatsapp:     '',      // solo dígitos con prefijo, ej. "34600111222". Vacío = no se muestra
+    email:        o(datos.contacto.email, 'email de la asociación'),
+    telefono:     o(datos.contacto.telefono, 'teléfono'),
+    // solo dígitos con prefijo, ej. "34600111222". Vacío = no se muestra
+    whatsapp:     (datos.contacto.whatsapp || '').replace(/\D/g, ''),
     location:     'Islas Canarias, España',
-    // Email que recibe solicitudes de alta y sugerencias (se configura en Netlify)
-    emailJunta:   PENDIENTE('email que recibe los formularios'),
+    emailJunta:   o(datos.contacto.emailJunta, 'email que recibe los formularios'),
   },
 
   // ── Datos legales (aviso legal y privacidad) ───────────────
   legal: {
     razonSocial:  'Asociación Autocaravanista El Burgao',
-    cif:          PENDIENTE('CIF'),
-    registro:     PENDIENTE('n.º de inscripción en el Registro de Asociaciones de Canarias'),
-    domicilio:    PENDIENTE('domicilio social'),
+    cif:          o(datos.legal.cif, 'CIF'),
+    registro:     o(datos.legal.registro, 'n.º de inscripción en el Registro de Asociaciones de Canarias'),
+    domicilio:    o(datos.legal.domicilio, 'domicilio social'),
   },
 
   // ── Cuotas ──────────────────────────────────────────────────
   cuota: {
-    alta:        30,   // primer año
-    renovacion:  25,   // años siguientes
+    alta:        datos.cuotas.alta,        // primer año
+    renovacion:  datos.cuotas.renovacion,  // años siguientes
     moneda:      'EUR',
-    nota:        'Una cuota por vehículo y unidad familiar',  // PENDIENTE: confirmar
+    nota:        datos.cuotas.nota,
+    formaPago:   o(datos.cuotas.formaPago, 'forma de pago'),
+    renovacionCuando: o(datos.cuotas.renovacionCuando, 'periodo de renovación'),
   },
 
   // ── Redes sociales ──────────────────────────────────────────
   // Deja url vacía ('') para ocultar una red.
   social: [
-    { name: 'Facebook',  url: '', icon: 'facebook'  },
-    { name: 'Instagram', url: '', icon: 'instagram' },
-    { name: 'WhatsApp',  url: '', icon: 'whatsapp'  },
+    { name: 'Facebook',  url: datos.redes.facebook  || '', icon: 'facebook'  },
+    { name: 'Instagram', url: datos.redes.instagram || '', icon: 'instagram' },
+    { name: 'WhatsApp',  url: datos.redes.whatsapp  || '', icon: 'whatsapp'  },
   ],
+
+  // ── Página La asociación ────────────────────────────────────
+  presentacion: datos.presentacion || '',
+  junta:        datos.junta.map(j => ({ cargo: j.cargo, nombre: o(j.nombre, 'nombre') })),
+  estatutosPdf: datos.estatutosPdf || '',
 
   // ── Navegación principal ────────────────────────────────────
   nav: [

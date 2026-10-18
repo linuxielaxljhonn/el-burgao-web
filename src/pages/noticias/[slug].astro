@@ -113,6 +113,11 @@ const articleSchema = {
 
         <!-- Contenido principal -->
         <article class="noticia-prose prose">
+          {noticia.data.image && (
+            <figure class="noticia-imagen">
+              <img src={noticia.data.image} alt={noticia.data.imageAlt || noticia.data.title} loading="lazy" decoding="async" />
+            </figure>
+          )}
           <Content />
         </article>
 
@@ -185,6 +190,9 @@ const articleSchema = {
 </BaseLayout>
 
 <style>
+.noticia-imagen { margin: 0 0 var(--space-6); }
+.noticia-imagen img { width: 100%; height: auto; border-radius: var(--radius-lg); }
+
 .noticia-hero {
   position: relative;
   padding-top: calc(var(--header-h) + var(--space-12));
