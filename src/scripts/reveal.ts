@@ -48,4 +48,16 @@
   document.querySelectorAll('[data-reveal]').forEach(el => {
     observer.observe(el);
   });
+
+  // Red de seguridad: si el observador no se dispara (navegadores antiguos,
+  // pestañas en segundo plano, vistas previas), mostrar lo que esté en pantalla
+  // y, al hacer scroll, lo que vaya entrando. El contenido nunca queda oculto.
+  const revealVisible = () => {
+    document.querySelectorAll('[data-reveal]:not(.is-revealed)').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('is-revealed');
+    });
+  };
+  setTimeout(revealVisible, 1200);
+  window.addEventListener('scroll', revealVisible, { passive: true });
 })();
