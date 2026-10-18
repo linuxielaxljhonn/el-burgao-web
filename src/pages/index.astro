@@ -100,7 +100,7 @@ const schemaPage = {
 
               <!-- Texto inferior -->
               <text x="200" y="260" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.4)" font-style="italic">
-                7 islas · 1 comunidad
+                {siteConfig.stats.islas} islas · 1 comunidad
               </text>
             </svg>
           </div>
@@ -108,10 +108,10 @@ const schemaPage = {
           <!-- Stats visuales -->
           <div class="about-stats-grid">
             {[
-              { number: '424', label: 'Socios', emoji: '👥' },
-              { number: '10+', label: 'Años',   emoji: '📅' },
-              { number: '7',   label: 'Islas',  emoji: '🏝️' },
-              { number: '€30', label: 'Cuota',  emoji: '💳' },
+              { number: `${siteConfig.stats.socios}`, label: 'Socios', emoji: '👥' },
+              { number: `${siteConfig.stats.años}`,   label: 'Años',   emoji: '📅' },
+              { number: `${siteConfig.stats.islas}`,  label: 'Islas',  emoji: '🏝️' },
+              { number: `${siteConfig.cuota.alta} €`, label: 'Alta',   emoji: '💳' },
             ].map(stat => (
               <div class="about-stat-mini">
                 <span aria-hidden="true">{stat.emoji}</span>
