@@ -149,7 +149,7 @@ const siteConfig = {
   // con el que se creó la clave en https://web3forms.com
   formularios: {
     endpoint: 'https://api.web3forms.com/submit',
-    clave:    '',
+    clave:    'be8c4fd4-c527-4b4d-82f2-a2b2b1a59d5b',
   },
 
   // ── Autoría ─────────────────────────────────────────────────
