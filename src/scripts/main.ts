@@ -146,6 +146,13 @@ function animateCounter(el: HTMLElement, target: number, duration = 1800) {
   }, { threshold: 0.5 });
 
   counters.forEach(c => observer.observe(c));
+
+  // Red de seguridad: si la animación no llega a ejecutarse
+  // (pestaña en segundo plano, navegador antiguo…), mostrar la cifra real.
+  setTimeout(() => counters.forEach(c => {
+    const target = parseInt(c.dataset.counter || '0', 10);
+    if (c.textContent === '0' && target > 0) c.textContent = target.toLocaleString('es-ES');
+  }), 4000);
 })();
 
 
