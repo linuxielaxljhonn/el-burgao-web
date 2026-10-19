@@ -46,3 +46,6 @@ ui-debug.log
 # Caché
 .cache/
 .parcel-cache/
+
+# Cloudflare wrangler (local)
+.wrangler/
