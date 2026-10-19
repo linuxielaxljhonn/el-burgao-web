@@ -1,4 +1,4 @@
-# Redirects para Netlify
+# Redirecciones (Cloudflare)
 # ─────────────────────────────────────────────
 
 # Alias útiles
@@ -16,5 +16,4 @@
 /socios/*      /hazte-socio            302
 /verify        /                       302
 
-# Fallback 404
-/*             /404.html               404
+# La página 404 la gestiona Cloudflare (wrangler.jsonc → not_found_handling)
