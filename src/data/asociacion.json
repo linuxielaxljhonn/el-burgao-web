@@ -1,36 +1,25 @@
 {
-  "contacto": {
-    "email": "",
-    "telefono": "",
-    "whatsapp": "",
-    "emailJunta": ""
-  },
-  "legal": {
-    "cif": "",
-    "registro": "",
-    "domicilio": ""
-  },
   "cuotas": {
     "alta": 30,
     "renovacion": 25,
-    "nota": "Una cuota por vehículo y unidad familiar",
-    "formaPago": "",
-    "renovacionCuando": ""
+    "nota": "Una cuota por vehículo y unidad familiar"
   },
-  "redes": {
-    "facebook": "",
-    "instagram": "",
-    "whatsapp": "",
-    "youtube": ""
-  },
-  "sociosAprox": 400,
-  "presentacion": "",
+  "sociosAprox": 438,
   "junta": [
-    { "cargo": "Presidencia", "nombre": "" },
-    { "cargo": "Vicepresidencia", "nombre": "" },
-    { "cargo": "Secretaría", "nombre": "" },
-    { "cargo": "Tesorería", "nombre": "" },
-    { "cargo": "Vocalías", "nombre": "" }
-  ],
-  "estatutosPdf": ""
+    {
+      "cargo": "Presidencia"
+    },
+    {
+      "cargo": "Vicepresidencia"
+    },
+    {
+      "cargo": "Secretaría"
+    },
+    {
+      "cargo": "Tesorería"
+    },
+    {
+      "cargo": "Vocalías"
+    }
+  ]
 }
