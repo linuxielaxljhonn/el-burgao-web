@@ -30,7 +30,7 @@ const juntaD: { cargo?: string; nombre?: string }[] = Array.isArray(datos.junta)
 const PENDIENTE = (que: string) => `[PENDIENTE: ${que}]`;
 const o = (v: string | undefined, que: string) => (v && v.trim()) ? v.trim() : PENDIENTE(que);
 
-const foundedYear = Number(datos.anioFundacion) || 2021;
+const foundedYear = Number(datos.anioFundacion) || 2020;
 
 const siteConfig = {
 
@@ -56,6 +56,7 @@ const siteConfig = {
   stats: {
     socios: Number(datos.sociosAprox) || 400,
     años:   new Date().getFullYear() - foundedYear, // se calcula solo
+    encuentros: Number(datos.encuentros) || 0,     // encuentros de socios celebrados
     islas:  8,
   },
 

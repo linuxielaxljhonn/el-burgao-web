@@ -115,7 +115,7 @@ const schemaPage = {
           <div class="about-stats-grid">
             {[
               { number: `${siteConfig.stats.socios}`, label: 'Socios', emoji: '👥' },
-              { number: `${siteConfig.stats.años}`,   label: 'Años',   emoji: '📅' },
+              { number: `${siteConfig.stats.encuentros || siteConfig.stats.años}`, label: siteConfig.stats.encuentros ? 'Encuentros' : 'Años', emoji: '🏕️' },
               { number: `${siteConfig.stats.islas}`,  label: 'Islas',  emoji: '🏝️' },
               { number: `${siteConfig.cuota.alta} €`, label: 'Alta',   emoji: '💳' },
             ].map(stat => (
@@ -132,20 +132,11 @@ const schemaPage = {
         <div class="about-text" data-reveal="right">
           <p class="eyebrow">🏕️ Quiénes somos</p>
           <h2 class="section-title" id="about-title" style="text-align:left; margin-bottom:var(--space-4)">
-            Una familia que rueda<br>por las Canarias
+            De una protesta entre amigos<br>a una asociación de todas las islas
           </h2>
-          <p>
-            El Burgao nació en {siteConfig.foundedYear} con una idea simple:
-            <em>explorar las Islas Canarias en autocaravana no tiene que ser una aventura solitaria</em>.
-            En pocos años hemos crecido muy deprisa gracias a la respuesta de los socios,
-            y hoy reunimos a cientos de familias autocaravanistas de todas las islas.
-          </p>
-          <p>
-            Organizamos encuentros, rutas, reuniones y asambleas, y defendemos
-            los intereses de los autocaravanistas ante las administraciones.
-            Compartimos información sobre áreas de pernocta, normativa vigente
-            y los mejores rincones del archipiélago que solo se descubren sobre ruedas.
-          </p>
+          {siteConfig.presentacion
+            ? siteConfig.presentacion.split(/\n\s*\n/).slice(0, 2).map(par => <p>{par}</p>)
+            : <p>El Burgao nació en {siteConfig.foundedYear} para defender los intereses de los autocaravanistas de Canarias.</p>}
 
           <!-- Valores -->
           <div class="about-values" role="list" aria-label="Valores de la asociación">
@@ -160,7 +151,7 @@ const schemaPage = {
           </div>
 
           <div style="display:flex; gap:var(--space-3); flex-wrap:wrap; margin-top:var(--space-4)">
-            <a href="/la-asociacion" class="btn btn--secondary">Conocer la asociación</a>
+            <a href="/la-asociacion" class="btn btn--secondary">Leer nuestra historia</a>
             <a href="/mapa" class="btn btn--outline">📍 Mapa de áreas y pernoctas</a>
           </div>
         </div>

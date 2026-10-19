@@ -22,9 +22,9 @@ const queHacemos = [
 
 <PageLayout
   title="La asociación"
-  description="Quiénes somos: la Asociación Autocaravanista El Burgao reúne a familias autocaravanistas de las Islas Canarias desde 2021."
+  description="Quiénes somos: la Asociación Autocaravanista El Burgao reúne a familias autocaravanistas de las Islas Canarias desde 2020."
   heading="La asociación"
-  subheading={`Autocaravanistas de Canarias unidos desde ${foundedYear}.`}
+  subheading={`Autocaravanistas de Canarias unidos desde el 30 de julio de ${foundedYear}.`}
   emoji="🚐"
   eyebrow="🚐 Quiénes somos"
   breadcrumbs={[{ label: 'La asociación', href: '/la-asociacion' }]}
@@ -32,13 +32,7 @@ const queHacemos = [
   <section class="section">
     <div class="container">
       <div class="prose asoc-prose">
-        <h2>Quiénes somos</h2>
-        <p>
-          El Burgao nació en {foundedYear} con una idea sencilla: explorar las Islas Canarias en
-          autocaravana no tiene por qué ser una aventura solitaria. En pocos años ha crecido muy
-          deprisa gracias a la respuesta de los socios, y hoy reúne a cientos de familias que
-          comparten una forma de viajar libre, responsable y respetuosa con el entorno.
-        </p>
+        <h2>Nuestra historia</h2>
         {presentacion
           ? presentacion.split(/\n\s*\n/).map(par => <p>{par}</p>)
           : <p class="asoc-pendiente">[PENDIENTE: texto de presentación e historia redactado por la junta]</p>}

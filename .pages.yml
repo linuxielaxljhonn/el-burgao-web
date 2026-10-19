@@ -683,6 +683,10 @@ content:
       - name: anioFundacion
         label: Año de fundación
         type: number
+      - name: encuentros
+        label: Encuentros de socios celebrados
+        type: number
+        description: "Se muestra en la portada. Súmale uno tras cada encuentro."
       - name: portada
         label: Imagen de la portada (sección «Quiénes somos»)
         type: object

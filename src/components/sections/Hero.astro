@@ -77,8 +77,8 @@ const { stats, navCta } = siteConfig;
         <span class="hero-stat__label">Socios (aprox.)</span>
       </div>
       <div class="hero-stat hero-stat--divider" role="listitem">
-        <span class="hero-stat__number" data-counter={stats.años} aria-label={`${stats.años} años`}>0</span>
-        <span class="hero-stat__label">Años de historia</span>
+        <span class="hero-stat__number" data-counter={stats.encuentros || stats.años} aria-label={stats.encuentros ? `${stats.encuentros} encuentros` : `${stats.años} años`}>0</span>
+        <span class="hero-stat__label">{stats.encuentros ? 'Encuentros de socios' : 'Años de historia'}</span>
       </div>
       <div class="hero-stat" role="listitem">
         <span class="hero-stat__number" aria-label={`${stats.islas} islas`}>{stats.islas}</span>
