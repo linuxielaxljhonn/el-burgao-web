@@ -1,0 +1,22 @@
+name: Transcribir audio (temporal)
+on:
+  push:
+    paths: ['transcripcion/voz.ogg', 'transcripcion/transcribir.py']
+permissions:
+  contents: write
+jobs:
+  transcribir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install faster-whisper
+      - run: python transcripcion/transcribir.py
+      - name: Guardar texto
+        run: |
+          git config user.name "transcriptor"
+          git config user.email "actions@users.noreply.github.com"
+          git add transcripcion/texto.txt
+          git commit -m "Transcripción del audio"
+          git push
