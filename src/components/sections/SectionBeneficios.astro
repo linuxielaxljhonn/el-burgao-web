@@ -14,7 +14,7 @@ const { ctaHref = '/hazte-socio' } = Astro.props as { ctaHref?: string };
 const beneficios = [
   { icon: '🏕️', title: 'Encuentros',          desc: 'Jornadas de convivencia y concentraciones en distintas islas a lo largo del año.' },
   { icon: '🗺️', title: 'Rutas y pernoctas',   desc: 'Rutas, paradas y lugares de pernocta recomendados y comprobados por socios.' },
-  { icon: '💳', title: 'Carnet de socio',     desc: 'Acredita tu condición de socio en eventos y en las empresas colaboradoras.' },
+  { icon: '💳', title: 'Carnet de socio',     desc: 'Descuentos en gasolineras, talleres, ITV, neumáticos y más de 40 empresas colaboradoras.' },
   { icon: '⛴️', title: 'Viajar entre islas',  desc: 'Información y ventajas para embarcar con tu vehículo entre islas.' },
   { icon: '📢', title: 'Defensa del sector',  desc: 'Representación ante administraciones y seguimiento de la normativa canaria.' },
   { icon: '📰', title: 'Avisos y normativa',  desc: 'Novedades sobre áreas de autocaravanas, ordenanzas y señalización.' },
@@ -55,6 +55,7 @@ const beneficios = [
         <span class="beneficios-cta__amount">{cuota.alta} €</span>
         <span class="beneficios-cta__period">el primer año · renovación {cuota.renovacion} €</span>
       </div>
+      <a href="/ventajas" class="btn btn--ghost btn--lg">Ver empresas con descuento</a>
       <a href={ctaHref} class="btn btn--primary btn--lg">
         Quiero ser socio
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">

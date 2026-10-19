@@ -1,0 +1,144 @@
+---
+/**
+ * ventajas.astro — Directorio de empresas colaboradoras con descuento para socios.
+ * Datos: src/data/ventajas.json (editor → «Ventajas de socio»).
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import { CATEGORIAS_VENTAJAS as CAT } from '../config/ventajas.ts';
+import { ISLAS_LABEL } from '../config/lugares.ts';
+import datosJson from '../data/ventajas.json';
+
+type Empresa = { nombre: string; categoria: string; actividad?: string; isla: string; direccion?: string; telefono?: string; web?: string; descuento: string; oculta?: boolean };
+const datos: any = datosJson ?? {};
+const empresas: Empresa[] = (Array.isArray(datos.empresas) ? datos.empresas : [])
+  .filter((e: Empresa) => e && e.nombre && e.oculta !== true);
+
+const ORDEN_ISLAS = ['lanzarote', 'fuerteventura', 'gran-canaria', 'tenerife', 'la-palma', 'la-gomera', 'el-hierro', 'la-graciosa'];
+const islas = ORDEN_ISLAS.filter(i => empresas.some(e => e.isla === i));
+const categorias = Object.keys(CAT).filter(c => empresas.some(e => e.categoria === c));
+const porIsla = islas.map(i => ({
+  isla: i,
+  empresas: empresas.filter(e => e.isla === i)
+    .sort((a, b) => Object.keys(CAT).indexOf(a.categoria) - Object.keys(CAT).indexOf(b.categoria) || a.nombre.localeCompare(b.nombre, 'es')),
+}));
+const tel = (t?: string) => (t || '').replace(/[^\d+]/g, '');
+const mapsUrl = (e: Empresa) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${e.nombre}, ${e.direccion || ''}, ${ISLAS_LABEL[e.isla] || ''}`)}`;
+---
+
+<PageLayout
+  title="Ventajas para socios"
+  description={`${empresas.length} empresas colaboradoras en Canarias con descuentos para socios de El Burgao: gasolineras, talleres, ITV, neumáticos, camping, navieras y más.`}
+  heading="Ventajas para socios"
+  subheading={`${empresas.length} empresas colaboradoras con descuentos presentando tu carnet de socio.`}
+  emoji="💳"
+  eyebrow="💳 Hazte socio"
+  breadcrumbs={[{ label: 'Ventajas', href: '/ventajas' }]}
+>
+  <section class="section">
+    <div class="container">
+
+      <p class="vent-aviso">
+        Presenta tu <strong>carnet de socio en vigor</strong>. {datos.nota && datos.nota.replace(/Presenta tu carnet de socio en vigor\.?/i, '')}
+        {datos.actualizado && <span>Actualizado: {datos.actualizado}.</span>}
+      </p>
+
+      <form class="vent-filtros" id="ventFiltros" onsubmit="return false" aria-label="Filtrar empresas">
+        <input type="search" id="ventBuscar" class="form-input" placeholder="Buscar empresa, producto o pueblo…" aria-label="Buscar" />
+        <select id="ventIsla" class="form-input form-select" aria-label="Isla">
+          <option value="">Todas las islas</option>
+          {islas.map(i => <option value={i}>{ISLAS_LABEL[i]}</option>)}
+        </select>
+        <select id="ventCat" class="form-input form-select" aria-label="Categoría">
+          <option value="">Todas las categorías</option>
+          {categorias.map(c => <option value={c}>{CAT[c].emoji} {CAT[c].label}</option>)}
+        </select>
+      </form>
+      <p class="vent-contador" id="ventContador" aria-live="polite">{empresas.length} empresas</p>
+
+      {porIsla.map(g => (
+        <section class="vent-isla" data-isla={g.isla}>
+          <h2 class="vent-isla__titulo">{ISLAS_LABEL[g.isla]} <span>{g.empresas.length}</span></h2>
+          <ul class="vent-grid" role="list">
+            {g.empresas.map(e => {
+              const c = CAT[e.categoria] ?? CAT.ocio;
+              return (
+                <li class="vent-card" style={`--c:${c.color}`} data-cat={e.categoria}
+                    data-texto={`${e.nombre} ${e.actividad ?? ''} ${e.direccion ?? ''} ${e.descuento}`.toLowerCase()}>
+                  <span class="vent-card__cat">{c.emoji} {e.actividad || c.label}</span>
+                  <h3 class="vent-card__nombre">{e.nombre}</h3>
+                  <p class="vent-card__desc">{e.descuento}</p>
+                  <div class="vent-card__info">
+                    {e.direccion && <a href={mapsUrl(e)} target="_blank" rel="noopener">📍 {e.direccion}</a>}
+                    {e.telefono && <a href={`tel:${tel(e.telefono)}`}>📞 {e.telefono}</a>}
+                    {e.web && <a href={e.web} target="_blank" rel="noopener">🌐 {e.web.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}</a>}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+
+      <p class="vent-vacio" id="ventVacio" hidden>No hay empresas con esos filtros.</p>
+
+      <div class="vent-cta card">
+        <div>
+          <h2>¿Aún no eres socio?</h2>
+          <p>Hazte socio y empieza a ahorrar en combustible, talleres, ITV y travesías entre islas.</p>
+        </div>
+        <a href="/hazte-socio" class="btn btn--primary">Hazte socio</a>
+      </div>
+      <p class="vent-pie">¿Tienes un negocio y quieres colaborar con la asociación? <a href="/contacto">Escríbenos</a>.</p>
+    </div>
+  </section>
+</PageLayout>
+
+<script>
+  const buscar = document.getElementById('ventBuscar') as HTMLInputElement;
+  const isla = document.getElementById('ventIsla') as HTMLSelectElement;
+  const cat = document.getElementById('ventCat') as HTMLSelectElement;
+  const contador = document.getElementById('ventContador')!;
+  const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  function filtrar() {
+    const q = norm(buscar.value.trim());
+    let total = 0;
+    document.querySelectorAll<HTMLElement>('.vent-isla').forEach(sec => {
+      let n = 0;
+      const okIsla = !isla.value || sec.dataset.isla === isla.value;
+      sec.querySelectorAll<HTMLElement>('.vent-card').forEach(card => {
+        const ok = okIsla && (!cat.value || card.dataset.cat === cat.value) && (!q || norm(card.dataset.texto || '').includes(q));
+        card.hidden = !ok; if (ok) n++;
+      });
+      sec.hidden = n === 0; total += n;
+    });
+    contador.textContent = `${total} empresa${total === 1 ? '' : 's'}`;
+    document.getElementById('ventVacio')!.hidden = total > 0;
+  }
+  [buscar, isla, cat].forEach(el => el.addEventListener('input', filtrar));
+</script>
+
+<style>
+.vent-aviso { padding: var(--space-4) var(--space-5); border-radius: var(--radius-md); background: rgba(201,169,110,.15); border: 1px solid rgba(201,169,110,.4); font-size: var(--text-sm); color: var(--color-text); margin-bottom: var(--space-5); }
+.vent-aviso span { color: var(--color-text-muted); }
+.vent-filtros { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--space-3); }
+.vent-contador { font-size: .8rem; color: var(--color-text-muted); margin: var(--space-2) 0 var(--space-6); }
+.vent-isla { margin-bottom: var(--space-10); }
+.vent-isla__titulo { font-family: var(--font-display); font-size: var(--text-2xl); color: var(--color-text); margin-bottom: var(--space-4); display: flex; align-items: baseline; gap: .6rem; }
+.vent-isla__titulo span { font-family: var(--font-body); font-size: .8rem; font-weight: 600; color: var(--color-text-muted); }
+.vent-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4); }
+.vent-card { position: relative; padding: var(--space-5) var(--space-5) var(--space-4) calc(var(--space-5) + 4px); background: var(--color-bg-raised); border: 1px solid var(--color-border); border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: var(--space-2); overflow: hidden; }
+.vent-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--c); }
+.vent-card__cat { font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--c); }
+.vent-card__nombre { font-size: 1.02rem; font-weight: 700; color: var(--color-text); margin: 0; line-height: 1.3; }
+.vent-card__desc { margin: 0; font-weight: 600; color: #9a6b1e; font-size: .92rem; line-height: 1.4; }
+:global([data-theme="dark"]) .vent-card__desc { color: #e2c48e; }
+.vent-card__info { display: flex; flex-direction: column; gap: .25rem; font-size: .8rem; margin-top: auto; padding-top: var(--space-2); }
+.vent-card__info a { color: var(--color-text-muted); text-decoration: none; }
+.vent-card__info a:hover { color: var(--color-brand); text-decoration: underline; }
+.vent-vacio { text-align: center; color: var(--color-text-muted); padding: var(--space-8) 0; }
+.vent-cta { margin-top: var(--space-6); padding: var(--space-6); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+.vent-cta h2 { font-family: var(--font-display); font-size: var(--text-xl); margin: 0 0 var(--space-1); color: var(--color-text); }
+.vent-cta p { margin: 0; color: var(--color-text-muted); }
+.vent-pie { font-size: .85rem; color: var(--color-text-muted); margin-top: var(--space-4); }
+@media (max-width: 720px) { .vent-filtros { grid-template-columns: 1fr; } }
+</style>

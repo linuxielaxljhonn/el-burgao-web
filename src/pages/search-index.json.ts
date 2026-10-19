@@ -21,6 +21,8 @@ export const GET: APIRoute = async () => {
     { type: 'pagina', title: 'Rutas',        excerpt: 'Rutas en autocaravana por las islas Canarias. Itinerarios detallados.',              url: '/rutas',     emoji: '🗺️', tags: ['rutas','itinerarios','canarias','viaje'] },
     { type: 'pagina', title: 'Contacto',     excerpt: 'Contacta con la Asociación El Burgao por email, WhatsApp o formulario.',               url: '/contacto',  emoji: '📬', tags: ['contacto','email','whatsapp'] },
     { type: 'pagina', title: 'La asociación', excerpt: 'Quiénes somos, junta directiva y estatutos.', url: '/la-asociacion', emoji: '🚐', tags: ['asociacion','junta','estatutos'] },
+    { type: 'pagina', title: 'Ventajas para socios', excerpt: 'Empresas colaboradoras con descuentos: gasolineras, talleres, ITV, neumáticos, navieras…', url: '/ventajas', emoji: '💳', tags: ['ventajas','descuentos','empresas','colaboradoras','gasolinera','taller','itv','naviera'] },
+    { type: 'pagina', title: 'Mapa', excerpt: 'Áreas, pernoctas, vaciado y agua en Canarias', url: '/mapa', emoji: '📍', tags: ['mapa','areas','pernocta','vaciado','agua','lavado'] },
     { type: 'pagina', title: 'Hazte socio', excerpt: 'Cuotas, ventajas y solicitud de alta.', url: '/hazte-socio', emoji: '✋', tags: ['socios','alta','cuota','inscripcion'] },
 
     // Noticias

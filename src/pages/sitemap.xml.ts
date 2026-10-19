@@ -41,6 +41,7 @@ export const GET: APIRoute = async () => {
   ${url('/hazte-socio',   now, '0.8', 'yearly')}
   ${url('/galeria',       now, '0.5', 'monthly')}
   ${url('/mapa',          now, '0.9', 'weekly')}
+  ${url('/ventajas',      now, '0.8', 'monthly')}
   ${url('/sugerir-lugar', now, '0.4', 'yearly')}
 
   <!-- Noticias -->

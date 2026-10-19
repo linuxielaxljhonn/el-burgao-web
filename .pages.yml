@@ -429,6 +429,84 @@ content:
         label: Descripción y consejos
         type: rich-text
 
+  # ── VENTAJAS DE SOCIO ──────────────────────────────────────
+  - name: ventajas
+    label: Ventajas de socio (empresas colaboradoras)
+    type: file
+    path: src/data/ventajas.json
+    fields:
+      - name: actualizado
+        label: Fecha de actualización
+        type: string
+        description: "Ej.: 2026-10"
+      - name: nota
+        label: Nota general
+        type: text
+      - name: empresas
+        label: Empresas
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{nombre} — {descuento}"
+        fields:
+          - name: nombre
+            label: Empresa
+            type: string
+            required: true
+          - name: categoria
+            label: Categoría
+            type: select
+            required: true
+            options:
+              values:
+                - { name: gasolineras, label: Gasolineras }
+                - { name: alimentacion, label: Alimentación y restauración }
+                - { name: automocion, label: Automoción y talleres }
+                - { name: camping, label: Camping y accesorios }
+                - { name: electricidad, label: Electricidad }
+                - { name: aluminio, label: Aluminio }
+                - { name: pinturas, label: Pinturas }
+                - { name: textil, label: Textil y lavandería }
+                - { name: ocio, label: Ocio y servicios }
+                - { name: navieras, label: Navieras y transporte }
+                - { name: seguros, label: Seguros }
+          - name: actividad
+            label: Actividad
+            type: string
+            description: "Ej.: Neumáticos, ITV, Gasolinera…"
+          - name: isla
+            label: Isla
+            type: select
+            required: true
+            options:
+              values:
+                - { name: lanzarote, label: Lanzarote }
+                - { name: fuerteventura, label: Fuerteventura }
+                - { name: gran-canaria, label: Gran Canaria }
+                - { name: tenerife, label: Tenerife }
+                - { name: la-palma, label: La Palma }
+                - { name: la-gomera, label: La Gomera }
+                - { name: el-hierro, label: El Hierro }
+                - { name: la-graciosa, label: La Graciosa }
+          - name: descuento
+            label: Descuento para socios
+            type: text
+            required: true
+          - name: direccion
+            label: Dirección
+            type: string
+          - name: telefono
+            label: Teléfono
+            type: string
+          - name: web
+            label: Web
+            type: string
+          - name: oculta
+            label: Ocultar en la web
+            type: boolean
+            description: "Márcalo para ocultarla sin borrarla (convenio caducado, etc.)."
+
   # ── GALERÍA ────────────────────────────────────────────────
   - name: galeria
     label: Galería de fotos
