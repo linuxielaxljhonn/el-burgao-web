@@ -1,0 +1,138 @@
+---
+/**
+ * viajar-entre-islas.astro — Ferris entre islas con autocaravana o camper.
+ * Datos editables: src/data/viajar.json (editor → «Viajar entre islas»).
+ * Los porcentajes de descuento NO se publican aquí: están en /ventajas (con clave).
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import datosJson from '../data/viajar.json';
+
+const d: any = datosJson ?? {};
+const navieras: any[] = (Array.isArray(d.navieras) ? d.navieras : []).filter(n => n && n.nombre);
+const rutas: any[] = (Array.isArray(d.rutas) ? d.rutas : []).filter(r => r && r.islas);
+const convenio = d.convenio ?? {};
+
+const consejos = [
+  { t: 'Reserva con antelación', x: 'Las plazas para vehículos altos son limitadas. En verano, Semana Santa, puentes y fines de semana se agotan antes. Reserva en cuanto sepas la fecha.' },
+  { t: 'Declara las medidas reales', x: 'El precio va por largo y alto del vehículo. Mide con portabicis, cofre, escalera o placas solares incluidos. Si declaras menos, pueden cobrarte la diferencia en el puerto o no dejarte embarcar.' },
+  { t: 'Llega con tiempo', x: 'Los vehículos embarcan antes que los pasajeros. Respeta la hora de presentación que indique tu billete (normalmente 1 hora antes o más) y ten a mano el billete y la documentación.' },
+  { t: 'Cierra el gas', x: 'Cierra las bombonas antes de embarcar y apaga la nevera a gas y la calefacción. Es una norma de seguridad de todas las navieras.' },
+  { t: 'Prepara lo que vas a necesitar', x: 'Durante la travesía no se puede bajar al garaje. Sube contigo la medicación, comida, abrigo y lo de las mascotas.' },
+  { t: 'Cuidado con las rampas', x: 'Si tu autocaravana tiene mucho voladizo trasero, sube y baja las rampas despacio y en diagonal si te lo indican, para no rozar los bajos.' },
+  { t: 'Depósitos vacíos', x: 'Viaja con aguas grises y negras vacías y sin cargar de más el depósito limpio: menos peso, menos olores y llegas listo para pernoctar.' },
+  { t: 'Mascotas', x: 'Cada naviera tiene sus normas (cabina, perrera a bordo o dentro del vehículo en trayectos cortos). Consúltalas al reservar.' },
+  { t: 'Descuento de residente', x: 'El descuento de residente canario se aplica al billete de las personas. Consulta con la naviera las condiciones del vehículo.' },
+];
+---
+
+<PageLayout
+  title="Viajar entre islas con autocaravana"
+  description="Ferris entre las islas Canarias con autocaravana o camper: navieras que llevan vehículos, rutas, consejos para embarcar y descuento para socios de El Burgao."
+  heading="Viajar entre islas"
+  subheading="Ferris con autocaravana o camper: navieras, rutas y consejos para embarcar."
+  emoji="⛴️"
+  eyebrow="⛴️ Ferris"
+  breadcrumbs={[{ label: 'Viajar entre islas', href: '/viajar-entre-islas' }]}
+>
+  <section class="section">
+    <div class="container vi">
+
+      {d.intro && <p class="vi-intro">{d.intro}</p>}
+
+      {convenio.naviera && (
+        <div class="vi-convenio card">
+          <div>
+            <p class="vi-convenio__eyebrow">💳 Ventaja para socios</p>
+            <h2>Descuento en {convenio.naviera}</h2>
+            <p>{convenio.texto}</p>
+            {convenio.confirmado === false && convenio.nota && <p class="vi-convenio__nota">ℹ️ {convenio.nota}</p>}
+          </div>
+          <div class="vi-convenio__btns">
+            <a href="/ventajas" class="btn btn--primary">Ver en Ventajas</a>
+            <a href="/hazte-socio" class="btn btn--ghost">Hazte socio</a>
+          </div>
+        </div>
+      )}
+
+      <h2 class="vi-h2">Navieras</h2>
+      <ul class="vi-navieras" role="list">
+        {navieras.map(n => (
+          <li class="vi-naviera card">
+            <div class="vi-naviera__top">
+              <h3>{n.nombre}</h3>
+              <span class={`vi-tag ${n.vehiculos ? 'vi-tag--si' : 'vi-tag--no'}`}>{n.vehiculos ? '🚐 Lleva vehículos' : '🚶 Solo pasajeros'}</span>
+            </div>
+            {n.antes && <p class="vi-naviera__antes">{n.antes}</p>}
+            <p>{n.descripcion}</p>
+            {n.web && <a href={n.web} target="_blank" rel="noopener" class="vi-link">Horarios y reservas ↗</a>}
+          </li>
+        ))}
+      </ul>
+
+      <h2 class="vi-h2">Conexiones principales</h2>
+      <p class="vi-sub">Orientativo: horarios, frecuencias y compañías cambian según la temporada. Comprueba siempre en la web de la naviera antes de planificar.</p>
+      <div class="vi-tabla-wrap">
+        <table class="vi-tabla">
+          <thead><tr><th scope="col">Islas</th><th scope="col">Puertos</th><th scope="col">Navieras</th><th scope="col">Nota</th></tr></thead>
+          <tbody>
+            {rutas.map(r => (
+              <tr><th scope="row">{r.islas}</th><td>{r.puertos}</td><td>{r.navieras}</td><td>{r.nota}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="vi-sub">🚶 A <strong>La Graciosa</strong> solo hay barcos de pasajeros desde Órzola (Lanzarote).</p>
+
+      <h2 class="vi-h2">Consejos para embarcar con la autocaravana</h2>
+      <ol class="vi-consejos" role="list">
+        {consejos.map((c, i) => (
+          <li class="vi-consejo"><span class="vi-consejo__n">{i + 1}</span><div><h3>{c.t}</h3><p>{c.x}</p></div></li>
+        ))}
+      </ol>
+
+      <div class="vi-pie card">
+        <p>📍 Al llegar, busca dónde pernoctar y vaciar en el <a href="/mapa">mapa de áreas y servicios</a>, o inspírate con nuestras <a href="/rutas">rutas por isla</a>.</p>
+        {d.actualizado && <p class="vi-act">Información revisada: {d.actualizado}. ¿Ves algo que ha cambiado? <a href="/contacto">Avísanos</a>.</p>}
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+.vi-intro { font-size: var(--text-lg); color: var(--color-text); max-width: 70ch; margin-bottom: var(--space-6); }
+.vi-convenio { padding: var(--space-6); display: flex; justify-content: space-between; align-items: center; gap: var(--space-5); flex-wrap: wrap; border: 1px solid rgba(201,169,110,.5); background: rgba(201,169,110,.10); margin-bottom: var(--space-10); }
+.vi-convenio h2 { font-family: var(--font-display); font-size: var(--text-2xl); margin: 0 0 var(--space-2); color: var(--color-text); }
+.vi-convenio p { margin: 0; color: var(--color-text-muted); max-width: 60ch; }
+.vi-convenio__eyebrow { font-size: .75rem !important; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #9a6b1e !important; margin-bottom: var(--space-1) !important; }
+:global([data-theme="dark"]) .vi-convenio__eyebrow { color: #e2c48e !important; }
+.vi-convenio__nota { font-size: .8rem; margin-top: var(--space-2) !important; }
+.vi-convenio__btns { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+.vi-h2 { font-family: var(--font-display); font-size: var(--text-2xl); color: var(--color-text); margin: var(--space-10) 0 var(--space-4); }
+.vi-sub { font-size: .85rem; color: var(--color-text-muted); margin: 0 0 var(--space-4); }
+.vi-navieras { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4); }
+.vi-naviera { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
+.vi-naviera__top { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-2); flex-wrap: wrap; }
+.vi-naviera h3 { margin: 0; font-size: 1.05rem; color: var(--color-text); }
+.vi-naviera p { margin: 0; font-size: .9rem; color: var(--color-text-muted); }
+.vi-naviera__antes { font-size: .75rem !important; font-style: italic; }
+.vi-tag { font-size: .7rem; font-weight: 700; padding: .2rem .55rem; border-radius: 999px; white-space: nowrap; }
+.vi-tag--si { background: rgba(46,125,50,.12); color: #2e7d32; }
+.vi-tag--no { background: rgba(120,120,120,.15); color: var(--color-text-muted); }
+:global([data-theme="dark"]) .vi-tag--si { color: #81c784; }
+.vi-link { margin-top: auto; padding-top: var(--space-2); font-size: .85rem; font-weight: 600; color: var(--color-brand); }
+.vi-tabla-wrap { overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-lg); margin-bottom: var(--space-3); }
+.vi-tabla { width: 100%; border-collapse: collapse; font-size: .88rem; min-width: 640px; }
+.vi-tabla th, .vi-tabla td { padding: .7rem .9rem; text-align: left; border-bottom: 1px solid var(--color-border); vertical-align: top; color: var(--color-text); }
+.vi-tabla thead th { background: var(--color-bg-raised); font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--color-text-muted); }
+.vi-tabla tbody th { font-weight: 700; white-space: nowrap; }
+.vi-tabla td:last-child { color: var(--color-text-muted); }
+.vi-tabla tbody tr:last-child > * { border-bottom: 0; }
+.vi-consejos { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-4); }
+.vi-consejo { display: flex; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-bg-raised); }
+.vi-consejo__n { flex: 0 0 2rem; height: 2rem; border-radius: 50%; display: grid; place-items: center; background: var(--color-brand); color: #fff; font-weight: 700; font-size: .9rem; }
+.vi-consejo h3 { margin: 0 0 .25rem; font-size: .98rem; color: var(--color-text); }
+.vi-consejo p { margin: 0; font-size: .87rem; color: var(--color-text-muted); line-height: 1.5; }
+.vi-pie { margin-top: var(--space-10); padding: var(--space-5); }
+.vi-pie p { margin: 0; color: var(--color-text); }
+.vi-act { margin-top: var(--space-2) !important; font-size: .8rem; color: var(--color-text-muted) !important; }
+</style>

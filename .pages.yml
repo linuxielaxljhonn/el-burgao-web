@@ -476,6 +476,82 @@ content:
         label: Descripción y consejos
         type: rich-text
 
+  # ── VIAJAR ENTRE ISLAS ─────────────────────────────────────
+  - name: viajar
+    label: Viajar entre islas (navieras y rutas)
+    type: file
+    path: src/data/viajar.json
+    fields:
+      - name: actualizado
+        label: Fecha de revisión
+        type: string
+        description: "Ej.: 2026-10"
+      - name: intro
+        label: Texto de introducción
+        type: text
+      - name: convenio
+        label: Convenio con la naviera (descuento para socios)
+        type: object
+        fields:
+          - name: naviera
+            label: Naviera del convenio
+            type: string
+          - name: texto
+            label: Texto
+            type: text
+            description: "No pongas aquí el porcentaje: se ve en Ventajas solo con la clave de socio."
+          - name: confirmado
+            label: Convenio confirmado
+            type: boolean
+          - name: nota
+            label: Nota si no está confirmado
+            type: string
+      - name: navieras
+        label: Navieras
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{nombre}"
+        fields:
+          - name: nombre
+            label: Naviera
+            type: string
+            required: true
+          - name: antes
+            label: Nombre anterior
+            type: string
+          - name: web
+            label: Web de horarios y reservas
+            type: string
+          - name: vehiculos
+            label: Lleva vehículos
+            type: boolean
+          - name: descripcion
+            label: Descripción
+            type: text
+      - name: rutas
+        label: Conexiones
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{islas}"
+        fields:
+          - name: islas
+            label: Islas
+            type: string
+            required: true
+          - name: puertos
+            label: Puertos
+            type: string
+          - name: navieras
+            label: Navieras
+            type: string
+          - name: nota
+            label: Nota
+            type: string
+
   # ── VENTAJAS DE SOCIO ──────────────────────────────────────
   - name: ventajas
     label: Ventajas de socio (empresas colaboradoras)

@@ -1,0 +1,45 @@
+{
+  "actualizado": "2026-10",
+  "intro": "Cruzar de isla con la autocaravana o la camper es fácil si se prepara con tiempo. Aquí tienes las navieras que llevan vehículos, las conexiones principales y lo que conviene saber antes de embarcar.",
+  "convenio": {
+    "naviera": "Baleària Canarias",
+    "texto": "Los socios de El Burgao tienen descuento en la naviera colaboradora. Consulta el porcentaje y las condiciones en Ventajas (con tu clave de socio).",
+    "confirmado": false,
+    "nota": "Convenio heredado de Naviera Armas, pendiente de confirmar con Baleària."
+  },
+  "navieras": [
+    {
+      "nombre": "Baleària Canarias",
+      "antes": "Antes Naviera Armas / Trasmediterránea",
+      "web": "https://www.baleariacanarias.com",
+      "vehiculos": true,
+      "descripcion": "Ferris convencionales y rápidos entre casi todas las islas y con Cádiz. En 2026 Baleària asumió las líneas de Armas Trasmediterránea en Canarias; durante un tiempo convivirán las dos marcas."
+    },
+    {
+      "nombre": "Fred. Olsen Express",
+      "antes": "",
+      "web": "https://www.fredolsen.es",
+      "vehiculos": true,
+      "descripcion": "Ferris rápidos (trimaranes y catamaranes) en las rutas más cortas: Lanzarote–Fuerteventura, Gran Canaria–Tenerife (Agaete), Gran Canaria–Fuerteventura y Tenerife con La Gomera, La Palma y El Hierro. También enlaza con Huelva."
+    },
+    {
+      "nombre": "Líneas Romero y Biosfera Express",
+      "antes": "",
+      "web": "",
+      "vehiculos": false,
+      "descripcion": "Barcos de pasajeros entre Órzola (Lanzarote) y Caleta de Sebo (La Graciosa). No llevan vehículos: deja la autocaravana aparcada en Órzola respetando la normativa municipal."
+    }
+  ],
+  "rutas": [
+    { "islas": "Lanzarote ↔ Fuerteventura", "puertos": "Playa Blanca ↔ Corralejo", "navieras": "Fred. Olsen · Baleària", "nota": "La más corta y frecuente (unos 30 min)" },
+    { "islas": "Lanzarote ↔ Gran Canaria", "puertos": "Arrecife ↔ Las Palmas", "navieras": "Baleària", "nota": "Travesía larga; consulta días" },
+    { "islas": "Lanzarote ↔ Tenerife", "puertos": "Arrecife ↔ Santa Cruz de Tenerife", "navieras": "Baleària", "nota": "Pocas salidas semanales; si no, vía Gran Canaria" },
+    { "islas": "Fuerteventura ↔ Gran Canaria", "puertos": "Morro Jable ↔ Las Palmas · Puerto del Rosario ↔ Las Palmas", "navieras": "Fred. Olsen · Baleària", "nota": "" },
+    { "islas": "Gran Canaria ↔ Tenerife", "puertos": "Agaete ↔ Santa Cruz · Las Palmas ↔ Santa Cruz", "navieras": "Fred. Olsen (Agaete) · Baleària (Las Palmas)", "nota": "Muchas salidas diarias" },
+    { "islas": "Tenerife ↔ La Gomera", "puertos": "Los Cristianos ↔ San Sebastián de La Gomera", "navieras": "Fred. Olsen · Baleària", "nota": "Muchas salidas diarias" },
+    { "islas": "Tenerife ↔ La Palma", "puertos": "Los Cristianos / Santa Cruz ↔ Santa Cruz de La Palma", "navieras": "Fred. Olsen · Baleària", "nota": "" },
+    { "islas": "Tenerife ↔ El Hierro", "puertos": "Los Cristianos ↔ La Estaca", "navieras": "Fred. Olsen · Baleària", "nota": "Pocas salidas diarias: reserva con tiempo" },
+    { "islas": "La Gomera ↔ La Palma", "puertos": "San Sebastián ↔ Santa Cruz de La Palma", "navieras": "Consultar", "nota": "Pocas salidas" },
+    { "islas": "Península ↔ Canarias", "puertos": "Cádiz ↔ varias islas · Huelva ↔ Tenerife / Gran Canaria", "navieras": "Baleària (Cádiz) · Fred. Olsen (Huelva)", "nota": "Travesías de más de un día" }
+  ]
+}
