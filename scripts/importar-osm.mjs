@@ -5,12 +5,13 @@
 // Uso: node scripts/importar-osm.mjs   (lo ejecuta la acción de GitHub)
 import { writeFile } from 'node:fs/promises';
 
-const Q = `[out:json][timeout:120];
-area["ISO3166-2"="ES-CN"]->.a;
+// Rectángulo que cubre las Islas Canarias (sur, oeste, norte, este)
+const BBOX = '27.55,-18.25,29.50,-13.30';
+const Q = `[out:json][timeout:150][bbox:${BBOX}];
 (
-  nwr["tourism"="caravan_site"](area.a);
-  nwr["amenity"="sanitary_dump_station"](area.a);
-  nwr["tourism"="camp_site"](area.a);
+  nwr["tourism"="caravan_site"];
+  nwr["amenity"="sanitary_dump_station"];
+  nwr["tourism"="camp_site"];
 );
 out center tags;`;
 
@@ -27,12 +28,13 @@ for (const url of SERVIDORES) {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'el-burgao-web/1.0 (asociacion autocaravanista)' },
       body: 'data=' + encodeURIComponent(Q),
+      signal: AbortSignal.timeout(170_000),
     });
     if (!r.ok) throw new Error(r.status);
     datos = await r.json();
     console.log('OK', url, datos.elements.length);
     break;
-  } catch (e) { console.log('Fallo', url, e.message); }
+  } catch (e) { console.log(`::warning::Fallo ${url}: ${e.message}`); }
 }
 if (!datos) process.exit(1);
 
@@ -67,4 +69,4 @@ await writeFile('src/data/osm-lugares.json', JSON.stringify({
   actualizado: new Date().toISOString().slice(0, 10),
   lugares,
 }, null, 1) + '\n');
-console.log('Guardados', lugares.length);
+console.log(`::notice::Guardados ${lugares.length} lugares`);
