@@ -5,6 +5,10 @@
     "nota": "Una cuota por vehículo y unidad familiar"
   },
   "sociosAprox": 440,
+  "portada": {
+    "imagen": "/assets/img/uploads/burgao-7-islas.jpg",
+    "alt": "La Carretera Nos Une..."
+  },
   "junta": [
     {
       "cargo": "Presidencia"
