@@ -3,6 +3,7 @@ export const TIPOS_LUGAR = {
   area:      { label: 'Área de autocaravanas',   emoji: '🅿️', color: '#1B4F72' },
   pernocta:  { label: 'Pernocta tolerada',       emoji: '🌙', color: '#6c3483' },
   servicio:  { label: 'Vaciado y agua',          emoji: '🚰', color: '#117a65' },
+  lavado:    { label: 'Lavado de autocaravanas', emoji: '🧽', color: '#5dade2' },
   camping:   { label: 'Camping',                 emoji: '🏕️', color: '#b9770e' },
   parada:    { label: 'Parada de día',           emoji: '📍', color: '#2e86c1' },
   prohibido: { label: 'Prohibido / conflictivo', emoji: '⛔', color: '#c0392b' },

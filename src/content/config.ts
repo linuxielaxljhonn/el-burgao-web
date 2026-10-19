@@ -112,7 +112,7 @@ const lugaresCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title:        z.string(),
-    tipo:         z.enum(['area', 'pernocta', 'servicio', 'camping', 'parada', 'prohibido']),
+    tipo:         z.enum(['area', 'pernocta', 'servicio', 'lavado', 'camping', 'parada', 'prohibido']),
     isla:         z.enum(ISLAS),
     municipio:    texto(),
     lat:          z.coerce.number(),
