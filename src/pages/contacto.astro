@@ -3,7 +3,7 @@
  * contacto.astro
  * ─────────────────────────────────────────────────────────────
  * Página de contacto con formulario accesible + datos de contacto.
- * Netlify Forms para el backend (sin servidor).
+ * Web3Forms para el envío (sin servidor).
  */
 
 import PageLayout from '../layouts/PageLayout.astro';
@@ -150,12 +150,12 @@ const motivosContacto = [
             novalidate
             name="contacto"
             method="POST"
-            data-netlify="true"
-            netlify-honeypot="bot-field"
-            action="/gracias"
+            action={siteConfig.formularios.endpoint}
           >
-            <input type="hidden" name="form-name" value="contacto" />
-            <p hidden><label>No rellenar: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+            <input type="hidden" name="access_key" value={siteConfig.formularios.clave} />
+            <input type="hidden" name="subject" value="Mensaje de contacto — web El Burgao" />
+            <input type="hidden" name="from_name" value="Web El Burgao" />
+            <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true" />
 
             <div class="form-row">
               <div class="form-group">
@@ -395,13 +395,10 @@ const motivosContacto = [
 
     try {
       const data = new FormData(form);
-      const res  = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(data as any).toString(),
-      });
+      const res  = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+      const json = await res.json().catch(() => ({}));
 
-      if (res.ok) {
+      if (res.ok && json.success) {
         form.hidden = true;
         success.removeAttribute('hidden');
         success.scrollIntoView({ behavior:'smooth', block:'center' });

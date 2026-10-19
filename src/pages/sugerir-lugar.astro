@@ -1,7 +1,7 @@
 ---
 /**
  * sugerir-lugar.astro — Los socios proponen lugares (o correcciones).
- * Llega por Netlify Forms (formulario «sugerencia-lugar») al email de la junta,
+ * Llega por Web3Forms al email de la junta,
  * que lo revisa y lo publica desde el editor → «Lugares del mapa».
  */
 import PageLayout from '../layouts/PageLayout.astro';
@@ -19,10 +19,12 @@ import siteConfig from '../config/site.ts';
 >
   <section class="section">
     <div class="container">
-      <form class="sug-form card" name="sugerencia-lugar" method="POST" action="/gracias"
-            data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data">
-        <input type="hidden" name="form-name" value="sugerencia-lugar" />
-        <p hidden><label>No rellenar: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+      <form class="sug-form card" name="sugerencia-lugar" method="POST" action={siteConfig.formularios.endpoint}>
+        <input type="hidden" name="access_key" value={siteConfig.formularios.clave} />
+          <input type="hidden" name="subject" value="Sugerencia de lugar para el mapa — web El Burgao" />
+          <input type="hidden" name="from_name" value="Web El Burgao" />
+          <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true" />
+        <input type="hidden" name="redirect" id="s-redirect" value="" />
 
         <div class="form-group">
           <label class="form-label" for="s-nombre">Nombre o descripción del lugar <span class="required">*</span></label>
@@ -75,10 +77,7 @@ import siteConfig from '../config/site.ts';
             placeholder="Precio, estancia máxima, límites de altura o longitud, señales, ruido, cuándo estuviste…"></textarea>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="s-foto">Foto (opcional, máx. 8 MB)</label>
-          <input id="s-foto" type="file" name="foto" accept="image/*" class="form-input" />
-        </div>
+        <p class="form-hint sug-foto">📷 ¿Tienes fotos del lugar? Envíalas por WhatsApp o email a la junta indicando el nombre del lugar.</p>
 
         <div class="form-row">
           <div class="form-group">
@@ -94,7 +93,7 @@ import siteConfig from '../config/site.ts';
         <div class="form-group">
           <label class="checkbox-label">
             <input type="checkbox" name="rgpd" required />
-            <span>Acepto la <a href="/privacidad" target="_blank" rel="noopener">política de privacidad</a>. La foto y los datos del lugar podrán publicarse en la web; tu nombre y email no. <span class="required">*</span></span>
+            <span>Acepto la <a href="/privacidad" target="_blank" rel="noopener">política de privacidad</a>. Los datos del lugar podrán publicarse en la web; tu nombre y email no. <span class="required">*</span></span>
           </label>
           <p class="form-legal">Responsable: {siteConfig.legal.razonSocial}. Finalidad: revisar y publicar la sugerencia.</p>
         </div>
@@ -106,6 +105,7 @@ import siteConfig from '../config/site.ts';
 </PageLayout>
 
 <script>
+  (document.getElementById('s-redirect') as HTMLInputElement).value = location.origin + '/gracias/';
   const p = new URLSearchParams(location.search).get('corregir');
   if (p) {
     (document.getElementById('s-tipo') as HTMLSelectElement).value = 'correccion';

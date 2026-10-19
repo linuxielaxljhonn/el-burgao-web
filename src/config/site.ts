@@ -48,7 +48,7 @@ const siteConfig = {
   // ── URLs ────────────────────────────────────────────────────
   // Cambiar cuando la junta apruebe el dominio definitivo
   // (también en astro.config.mjs → site).
-  url:     'https://elburgao.org',
+  url:     'https://el-burgao.pages.dev',
   ogImage: '/assets/img/og-image.jpg',
 
   // ── Fundación y cifras ──────────────────────────────────────
@@ -143,6 +143,14 @@ const siteConfig = {
     { value: 'furgoneta',    label: 'Furgoneta camperizada' },
     { value: 'otro',         label: 'Otro' },
   ],
+
+  // ── Formularios (Web3Forms) ─────────────────────────────────
+  // Clave pública de Web3Forms (no es secreta). Los envíos llegan al email
+  // con el que se creó la clave en https://web3forms.com
+  formularios: {
+    endpoint: 'https://api.web3forms.com/submit',
+    clave:    '',
+  },
 
   // ── Autoría ─────────────────────────────────────────────────
   author: 'Jhonn V. Ardila Jara',

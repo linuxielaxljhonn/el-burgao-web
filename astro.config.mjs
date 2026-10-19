@@ -8,7 +8,7 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
 
   // URL canónica del sitio (usada por sitemap y OG tags)
-  site: 'https://elburgao.org',
+  site: 'https://el-burgao.pages.dev',
 
   // Generación estática por defecto (0 JS salvo islas interactivas)
   output: 'static',

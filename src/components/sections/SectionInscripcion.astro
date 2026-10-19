@@ -4,7 +4,7 @@
  * ─────────────────────────────────────────────────────────────
  * Formulario de inscripción como socio.
  * Accesible, validación HTML5 + JS suave.
- * Envío con Netlify Forms: la solicitud llega por email a la junta.
+ * Envío con Web3Forms: la solicitud llega por email a la junta.
  */
 
 import siteConfig from '../../config/site.ts';
@@ -65,13 +65,13 @@ const { cuota, islas, vehiculos, legal } = siteConfig;
           novalidate
           name="inscripcion"
           method="POST"
-          data-netlify="true"
-          netlify-honeypot="bot-field"
-          action="/gracias"
+          action={siteConfig.formularios.endpoint}
         >
-          <!-- Netlify hidden field -->
-          <input type="hidden" name="form-name" value="inscripcion" />
-          <p hidden><label>No rellenar: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+          <!-- Campos de Web3Forms -->
+          <input type="hidden" name="access_key" value={siteConfig.formularios.clave} />
+          <input type="hidden" name="subject" value="Nueva solicitud de socio — web El Burgao" />
+          <input type="hidden" name="from_name" value="Web El Burgao" />
+          <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true" />
 
           <div class="form-row">
             <div class="form-group">
@@ -422,13 +422,10 @@ const { cuota, islas, vehiculos, legal } = siteConfig;
 
     try {
       const data = new FormData(form);
-      const res  = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(data as any).toString(),
-      });
+      const res  = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+      const json = await res.json().catch(() => ({}));
 
-      if (res.ok) {
+      if (res.ok && json.success) {
         form.hidden = true;
         success.removeAttribute('hidden');
         success.scrollIntoView({ behavior: 'smooth', block: 'center' });

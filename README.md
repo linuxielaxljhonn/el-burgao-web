@@ -1,7 +1,7 @@
 # Web de la Asociación Autocaravanista El Burgao
 
 Web informativa de la asociación: agenda, noticias, rutas, ventajas y solicitud de alta.
-Construida con **Astro 4**, publicada en **Netlify**. Sin base de datos ni área privada
+Construida con **Astro 4**, publicada en **Cloudflare Pages**. Sin base de datos ni área privada
 (se añadirán en la fase de integración con las apps de socios y tesorería).
 
 Autor: **Jhonn V. Ardila Jara** — cede el uso de la web a la asociación.
@@ -43,7 +43,7 @@ La configuración está en `.pages.yml`. Secciones:
 - **Galería de fotos**.
 - **Datos de la asociación**: contacto, datos legales, cuotas, redes, junta, estatutos.
 
-Cada cambio guardado se publica solo en 1–2 minutos (GitHub → Netlify).
+Cada cambio guardado se publica solo en 1–2 minutos (GitHub → Cloudflare Pages).
 Imágenes en `public/assets/img/uploads/`, PDF en `public/docs/`.
 
 ### Puesta en marcha (una vez, el administrador)
@@ -62,17 +62,19 @@ Los esquemas completos están en `src/content/config.ts`.
 
 ## Formularios
 
-Solicitud de socio y contacto usan **Netlify Forms** (sin servidor).
-En Netlify: *Site configuration → Forms → Form notifications* → añadir el email de la junta.
-Incluyen casilla de consentimiento RGPD y campo trampa anti-spam.
+Solicitud de socio, contacto y sugerir un lugar usan **Web3Forms** (sin servidor):
+los envíos llegan al email con el que se creó la clave en https://web3forms.com.
+La clave pública está en `src/config/site.ts` → `formularios.clave`.
+Plan gratuito: 250 envíos al mes, sin adjuntos. Incluyen consentimiento RGPD y campo trampa anti-spam.
 
-## Publicar en Netlify
+## Publicar (Cloudflare Pages)
 
-1. Subir esta carpeta a un repositorio privado de GitHub.
-2. Netlify → *Add new site → Import from Git* → elegir el repositorio.
-3. Build command `npm run build`, publish directory `dist` (ya están en `netlify.toml`).
-4. Cuando la junta apruebe el dominio: *Domain management → Add domain* y cambiar
+1. El repositorio privado de GitHub está conectado a Cloudflare Pages (proyecto `el-burgao`).
+2. Build command `npm run build`, output `dist`. Cada commit en `main` se publica solo (500 al mes gratis).
+3. Dominio propio: Cloudflare → Pages → el-burgao → *Custom domains*, y cambiar
    `site` en `astro.config.mjs` y `url` en `src/config/site.ts`.
+
+> Antes se usaba Netlify; su plan gratuito solo permite unas 20 publicaciones al mes.
 
 ## Qué cambió respecto a la versión anterior (v2 → v3)
 
