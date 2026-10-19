@@ -30,7 +30,7 @@ const juntaD: { cargo?: string; nombre?: string }[] = Array.isArray(datos.junta)
 const PENDIENTE = (que: string) => `[PENDIENTE: ${que}]`;
 const o = (v: string | undefined, que: string) => (v && v.trim()) ? v.trim() : PENDIENTE(que);
 
-const foundedYear = 2014;
+const foundedYear = Number(datos.anioFundacion) || 2021;
 
 const siteConfig = {
 

@@ -680,6 +680,9 @@ content:
       - name: sociosAprox
         label: Número aproximado de socios
         type: number
+      - name: anioFundacion
+        label: Año de fundación
+        type: number
       - name: portada
         label: Imagen de la portada (sección «Quiénes somos»)
         type: object

@@ -15,7 +15,7 @@ export const GET: APIRoute = async () => {
 
   const index = [
     // Páginas estáticas
-    { type: 'pagina', title: 'Inicio',       excerpt: 'Asociación de autocaravanistas de las Islas Canarias desde 2014.', url: '/',          emoji: '🏠', tags: ['inicio','home','asociacion'] },
+    { type: 'pagina', title: 'Inicio',       excerpt: 'Asociación de autocaravanistas de las Islas Canarias desde 2021.', url: '/',          emoji: '🏠', tags: ['inicio','home','asociacion'] },
     { type: 'pagina', title: 'Noticias',     excerpt: 'Últimas noticias de El Burgao: eventos, rutas, normativa y comunidad.',                url: '/noticias',  emoji: '📰', tags: ['noticias','actualidad','blog'] },
     { type: 'pagina', title: 'Agenda',       excerpt: 'Encuentros, rutas, reuniones, asambleas y convocatorias.',                   url: '/eventos',   emoji: '📅', tags: ['eventos','concentracion','agenda','calendario'] },
     { type: 'pagina', title: 'Rutas',        excerpt: 'Rutas en autocaravana por las islas Canarias. Itinerarios detallados.',              url: '/rutas',     emoji: '🗺️', tags: ['rutas','itinerarios','canarias','viaje'] },
