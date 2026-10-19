@@ -97,6 +97,11 @@ const siteConfig = {
 
   // ── Página La asociación ────────────────────────────────────
   presentacion: datos.presentacion || '',
+  // Imagen de la sección «Quiénes somos» de la portada (vacío = dibujo de las islas)
+  portada: {
+    imagen: datos.portada?.imagen || '',
+    alt:    datos.portada?.alt || 'Autocaravanas de socios de El Burgao en Canarias',
+  },
   junta:        juntaD.filter(j => j && j.cargo).map(j => ({ cargo: j.cargo as string, nombre: o(j.nombre, 'nombre') })),
   estatutosPdf: datos.estatutosPdf || '',
 

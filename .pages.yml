@@ -555,6 +555,19 @@ content:
       - name: sociosAprox
         label: Número aproximado de socios
         type: number
+      - name: portada
+        label: Imagen de la portada (sección «Quiénes somos»)
+        type: object
+        fields:
+          - name: imagen
+            label: Foto
+            type: image
+            description: "Mejor horizontal. Si se deja vacía se muestra el dibujo de las islas."
+            options:
+              media: imagenes
+          - name: alt
+            label: Descripción de la foto
+            type: string
       - name: presentacion
         label: Presentación e historia (página La asociación)
         type: text
