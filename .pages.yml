@@ -680,6 +680,10 @@ content:
       - name: sociosAprox
         label: Número aproximado de socios
         type: number
+      - name: claveSocios
+        label: Clave de socio (página de Ventajas)
+        type: string
+        description: "Palabra que los socios escriben para ver los descuentos. Cámbiala en cada renovación anual y comunícala solo a los socios al día. Mayúsculas, tildes, espacios y guiones no importan."
       - name: anioFundacion
         label: Año de fundación
         type: number

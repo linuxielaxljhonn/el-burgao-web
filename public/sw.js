@@ -3,7 +3,7 @@
  * /admin (editor de contenidos) nunca se cachea.
  */
 
-const VERSION      = 'burgao-v3.0.0';
+const VERSION      = 'burgao-v3.1.0';
 const CACHE_STATIC = `${VERSION}-static`;
 const CACHE_PAGES  = `${VERSION}-pages`;
 const CACHE_IMAGES = `${VERSION}-images`;
@@ -36,6 +36,7 @@ self.addEventListener('fetch', e => {
   if (url.origin !== location.origin) return;
   if (req.method !== 'GET') return;
   if (url.pathname.startsWith('/admin')) return;
+  if (url.pathname.startsWith('/api/')) return;   // acceso de socios: nunca en caché
 
   if (req.destination === 'image' || url.pathname.match(/\.(jpg|jpeg|png|gif|webp|avif|svg|ico)$/)) {
     e.respondWith(cacheFirstLimit(req, CACHE_IMAGES, MAX_IMAGES)); return;

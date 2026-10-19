@@ -1,11 +1,15 @@
-// Despliegue en Cloudflare (Workers con archivos estáticos).
-// Cloudflare ejecuta "npm run build" y luego "npx wrangler deploy",
-// que publica la carpeta dist/ generada por Astro.
+// Despliegue en Cloudflare Workers.
+// Cloudflare ejecuta "npm run build" y luego "npx wrangler deploy":
+//  - dist/ (generada por Astro) se publica como archivos estáticos;
+//  - worker/index.js atiende solo /api/* (acceso de socios y descuentos).
 {
   "name": "el-burgao",
+  "main": "worker/index.js",
   "compatibility_date": "2025-09-01",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "404-page"
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
   }
 }

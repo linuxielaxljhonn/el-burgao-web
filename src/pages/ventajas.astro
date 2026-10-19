@@ -8,10 +8,14 @@ import { CATEGORIAS_VENTAJAS as CAT } from '../config/ventajas.ts';
 import { ISLAS_LABEL } from '../config/lugares.ts';
 import datosJson from '../data/ventajas.json';
 
-type Empresa = { nombre: string; categoria: string; actividad?: string; isla: string; direccion?: string; telefono?: string; web?: string; descuento: string; oculta?: boolean };
+// Los DESCUENTOS no se escriben en esta página: solo los ve quien ha
+// introducido la clave de socio (los sirve worker/index.js → /api/ventajas).
+// `i` es la posición en ventajas.json, para casar cada ficha con su descuento.
+type Empresa = { i: number; nombre: string; categoria: string; actividad?: string; isla: string; direccion?: string; telefono?: string; web?: string; oculta?: boolean };
 const datos: any = datosJson ?? {};
 const empresas: Empresa[] = (Array.isArray(datos.empresas) ? datos.empresas : [])
-  .filter((e: Empresa) => e && e.nombre && e.oculta !== true);
+  .map((e: any, i: number) => (e ? { i, nombre: e.nombre, categoria: e.categoria, actividad: e.actividad, isla: e.isla, direccion: e.direccion, telefono: e.telefono, web: e.web, oculta: e.oculta } : null))
+  .filter((e: Empresa | null): e is Empresa => !!e && !!e.nombre && e.oculta !== true);
 
 const ORDEN_ISLAS = ['lanzarote', 'fuerteventura', 'gran-canaria', 'tenerife', 'la-palma', 'la-gomera', 'el-hierro', 'la-graciosa'];
 const islas = ORDEN_ISLAS.filter(i => empresas.some(e => e.isla === i));
@@ -37,10 +41,25 @@ const mapsUrl = (e: Empresa) => `https://www.google.com/maps/search/?api=1&query
   <section class="section">
     <div class="container">
 
-      <p class="vent-aviso">
-        Presenta tu <strong>carnet de socio en vigor</strong>. {datos.nota && datos.nota.replace(/Presenta tu carnet de socio en vigor\.?/i, '')}
-        {datos.actualizado && <span>Actualizado: {datos.actualizado}.</span>}
-      </p>
+      <div class="vent-acceso card" id="ventAcceso">
+        <div class="vent-acceso__txt">
+          <h2>🔒 Descuentos solo para socios</h2>
+          <p>Escribe la <strong>clave de socio</strong> de esta temporada para ver el descuento de cada empresa. La recibes al pagar la cuota. Tu dispositivo la recordará.</p>
+        </div>
+        <form class="vent-acceso__form" id="ventForm" novalidate>
+          <label for="ventClave" class="sr-only">Clave de socio</label>
+          <input type="password" id="ventClave" name="clave" class="form-input" placeholder="Clave de socio" autocomplete="current-password" required />
+          <button type="submit" class="btn btn--primary">Ver descuentos</button>
+          <p class="vent-acceso__msg" id="ventMsg" role="alert"></p>
+        </form>
+        <p class="vent-acceso__pie">¿No eres socio? <a href="/hazte-socio">Hazte socio</a>. ¿Has olvidado la clave? Pregunta a la junta.</p>
+      </div>
+
+      <div class="vent-aviso" id="ventAviso" hidden>
+        <p>✅ Estás viendo los descuentos para socios. Presenta tu <strong>carnet de socio en vigor</strong>. <span id="ventNota"></span>
+        {datos.actualizado && <span class="vent-aviso__fecha">Actualizado: {datos.actualizado}.</span>}</p>
+        <button type="button" class="vent-salir" id="ventSalir">Salir</button>
+      </div>
 
       <form class="vent-filtros" id="ventFiltros" onsubmit="return false" aria-label="Filtrar empresas">
         <input type="search" id="ventBuscar" class="form-input" placeholder="Buscar empresa, producto o pueblo…" aria-label="Buscar" />
@@ -62,11 +81,11 @@ const mapsUrl = (e: Empresa) => `https://www.google.com/maps/search/?api=1&query
             {g.empresas.map(e => {
               const c = CAT[e.categoria] ?? CAT.ocio;
               return (
-                <li class="vent-card" style={`--c:${c.color}`} data-cat={e.categoria}
-                    data-texto={`${e.nombre} ${e.actividad ?? ''} ${e.direccion ?? ''} ${e.descuento}`.toLowerCase()}>
+                <li class="vent-card" style={`--c:${c.color}`} data-cat={e.categoria} data-i={e.i}
+                    data-texto={`${e.nombre} ${e.actividad ?? ''} ${e.direccion ?? ''}`.toLowerCase()}>
                   <span class="vent-card__cat">{c.emoji} {e.actividad || c.label}</span>
                   <h3 class="vent-card__nombre">{e.nombre}</h3>
-                  <p class="vent-card__desc">{e.descuento}</p>
+                  <p class="vent-card__desc vent-card__desc--oculto">🔒 Descuento para socios</p>
                   <div class="vent-card__info">
                     {e.direccion && <a href={mapsUrl(e)} target="_blank" rel="noopener">📍 {e.direccion}</a>}
                     {e.telefono && <a href={`tel:${tel(e.telefono)}`}>📞 {e.telefono}</a>}
@@ -115,11 +134,75 @@ const mapsUrl = (e: Empresa) => `https://www.google.com/maps/search/?api=1&query
     document.getElementById('ventVacio')!.hidden = total > 0;
   }
   [buscar, isla, cat].forEach(el => el.addEventListener('input', filtrar));
+
+  // ── Acceso de socios ────────────────────────────────────────
+  const acceso = document.getElementById('ventAcceso')!;
+  const aviso = document.getElementById('ventAviso')!;
+  const form = document.getElementById('ventForm') as HTMLFormElement;
+  const msg = document.getElementById('ventMsg')!;
+
+  async function cargarDescuentos(): Promise<boolean> {
+    try {
+      const res = await fetch('/api/ventajas', { credentials: 'same-origin', cache: 'no-store' });
+      if (!res.ok) return false;
+      const { descuentos, nota } = await res.json();
+      document.querySelectorAll<HTMLElement>('.vent-card').forEach(card => {
+        const d = descuentos[card.dataset.i || ''];
+        const p = card.querySelector('.vent-card__desc')!;
+        if (d) {
+          p.textContent = d;
+          p.classList.remove('vent-card__desc--oculto');
+          card.dataset.texto = (card.dataset.texto || '') + ' ' + d.toLowerCase();
+        }
+      });
+      document.getElementById('ventNota')!.textContent = (nota || '').replace(/Presenta tu carnet de socio en vigor\.?/i, '').trim();
+      acceso.hidden = true;
+      aviso.hidden = false;
+      filtrar();
+      return true;
+    } catch { return false; }
+  }
+
+  form.addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const clave = (document.getElementById('ventClave') as HTMLInputElement).value.trim();
+    if (!clave) { msg.textContent = 'Escribe la clave.'; return; }
+    msg.textContent = 'Comprobando…';
+    try {
+      const res = await fetch('/api/socios/acceso', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clave }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (res.ok && j.ok && await cargarDescuentos()) { msg.textContent = ''; form.reset(); }
+      else msg.textContent = j.error || 'No se ha podido comprobar la clave. Inténtalo de nuevo.';
+    } catch { msg.textContent = 'Sin conexión. Inténtalo de nuevo.'; }
+  });
+
+  document.getElementById('ventSalir')!.addEventListener('click', async () => {
+    await fetch('/api/socios/salir', { method: 'POST', credentials: 'same-origin' }).catch(() => {});
+    location.reload();
+  });
+
+  cargarDescuentos();
 </script>
 
 <style>
+.vent-acceso { padding: var(--space-6); margin-bottom: var(--space-6); display: grid; gap: var(--space-4); border: 1px solid rgba(201,169,110,.5); }
+.vent-acceso h2 { font-family: var(--font-display); font-size: var(--text-xl); margin: 0 0 var(--space-2); color: var(--color-text); }
+.vent-acceso p { margin: 0; color: var(--color-text-muted); }
+.vent-acceso__form { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.vent-acceso__form .form-input { flex: 1 1 220px; max-width: 360px; }
+.vent-acceso__msg { flex-basis: 100%; font-size: .85rem; color: #b42318; min-height: 1.2em; }
+:global([data-theme="dark"]) .vent-acceso__msg { color: #ff8a80; }
+.vent-acceso__pie { font-size: .85rem; }
+.vent-aviso { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.vent-aviso p { margin: 0; }
+.vent-aviso__fecha { color: var(--color-text-muted); }
+.vent-salir { background: none; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: .3rem .8rem; font-size: .8rem; color: var(--color-text-muted); cursor: pointer; }
+.vent-card__desc--oculto { color: var(--color-text-muted) !important; font-weight: 500 !important; font-style: italic; }
 .vent-aviso { padding: var(--space-4) var(--space-5); border-radius: var(--radius-md); background: rgba(201,169,110,.15); border: 1px solid rgba(201,169,110,.4); font-size: var(--text-sm); color: var(--color-text); margin-bottom: var(--space-5); }
-.vent-aviso span { color: var(--color-text-muted); }
 .vent-filtros { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--space-3); }
 .vent-contador { font-size: .8rem; color: var(--color-text-muted); margin: var(--space-2) 0 var(--space-6); }
 .vent-isla { margin-bottom: var(--space-10); }
