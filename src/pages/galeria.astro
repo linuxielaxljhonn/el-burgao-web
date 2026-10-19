@@ -26,7 +26,7 @@ interface GalleryItem {
   emoji:    string;
 }
 
-const items = (galleryData.items as GalleryItem[])
+const items = (((galleryData as any).items ?? []) as GalleryItem[])
   .slice()
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 

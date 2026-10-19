@@ -17,7 +17,15 @@
  * Autor de la web: Jhonn V. Ardila Jara
  */
 
-import datos from '../data/asociacion.json';
+import datosJson from '../data/asociacion.json';
+
+// El editor elimina los campos vacíos al guardar: todo es opcional aquí.
+const datos: any = datosJson ?? {};
+const contacto = datos.contacto ?? {};
+const legalD   = datos.legal ?? {};
+const cuotasD  = datos.cuotas ?? {};
+const redes    = datos.redes ?? {};
+const juntaD: { cargo?: string; nombre?: string }[] = Array.isArray(datos.junta) ? datos.junta : [];
 
 const PENDIENTE = (que: string) => `[PENDIENTE: ${que}]`;
 const o = (v: string | undefined, que: string) => (v && v.trim()) ? v.trim() : PENDIENTE(que);
@@ -46,50 +54,50 @@ const siteConfig = {
   // ── Fundación y cifras ──────────────────────────────────────
   foundedYear,
   stats: {
-    socios: datos.sociosAprox || 400,
+    socios: Number(datos.sociosAprox) || 400,
     años:   new Date().getFullYear() - foundedYear, // se calcula solo
     islas:  8,
   },
 
   // ── Contacto (un solo origen para toda la web) ─────────────
   contact: {
-    email:        o(datos.contacto.email, 'email de la asociación'),
-    telefono:     o(datos.contacto.telefono, 'teléfono'),
+    email:        o(contacto.email, 'email de la asociación'),
+    telefono:     o(contacto.telefono, 'teléfono'),
     // solo dígitos con prefijo, ej. "34600111222". Vacío = no se muestra
-    whatsapp:     (datos.contacto.whatsapp || '').replace(/\D/g, ''),
+    whatsapp:     (contacto.whatsapp || '').replace(/\D/g, ''),
     location:     'Islas Canarias, España',
-    emailJunta:   o(datos.contacto.emailJunta, 'email que recibe los formularios'),
+    emailJunta:   o(contacto.emailJunta, 'email que recibe los formularios'),
   },
 
   // ── Datos legales (aviso legal y privacidad) ───────────────
   legal: {
     razonSocial:  'Asociación Autocaravanista El Burgao',
-    cif:          o(datos.legal.cif, 'CIF'),
-    registro:     o(datos.legal.registro, 'n.º de inscripción en el Registro de Asociaciones de Canarias'),
-    domicilio:    o(datos.legal.domicilio, 'domicilio social'),
+    cif:          o(legalD.cif, 'CIF'),
+    registro:     o(legalD.registro, 'n.º de inscripción en el Registro de Asociaciones de Canarias'),
+    domicilio:    o(legalD.domicilio, 'domicilio social'),
   },
 
   // ── Cuotas ──────────────────────────────────────────────────
   cuota: {
-    alta:        datos.cuotas.alta,        // primer año
-    renovacion:  datos.cuotas.renovacion,  // años siguientes
+    alta:        Number(cuotasD.alta) || 30,        // primer año
+    renovacion:  Number(cuotasD.renovacion) || 25,  // años siguientes
     moneda:      'EUR',
-    nota:        datos.cuotas.nota,
-    formaPago:   o(datos.cuotas.formaPago, 'forma de pago'),
-    renovacionCuando: o(datos.cuotas.renovacionCuando, 'periodo de renovación'),
+    nota:        cuotasD.nota || '',
+    formaPago:   o(cuotasD.formaPago, 'forma de pago'),
+    renovacionCuando: o(cuotasD.renovacionCuando, 'periodo de renovación'),
   },
 
   // ── Redes sociales ──────────────────────────────────────────
   // Deja url vacía ('') para ocultar una red.
   social: [
-    { name: 'Facebook',  url: datos.redes.facebook  || '', icon: 'facebook'  },
-    { name: 'Instagram', url: datos.redes.instagram || '', icon: 'instagram' },
-    { name: 'WhatsApp',  url: datos.redes.whatsapp  || '', icon: 'whatsapp'  },
+    { name: 'Facebook',  url: redes.facebook  || '', icon: 'facebook'  },
+    { name: 'Instagram', url: redes.instagram || '', icon: 'instagram' },
+    { name: 'WhatsApp',  url: redes.whatsapp  || '', icon: 'whatsapp'  },
   ],
 
   // ── Página La asociación ────────────────────────────────────
   presentacion: datos.presentacion || '',
-  junta:        datos.junta.map(j => ({ cargo: j.cargo, nombre: o(j.nombre, 'nombre') })),
+  junta:        juntaD.filter(j => j && j.cargo).map(j => ({ cargo: j.cargo as string, nombre: o(j.nombre, 'nombre') })),
   estatutosPdf: datos.estatutosPdf || '',
 
   // ── Navegación principal ────────────────────────────────────
