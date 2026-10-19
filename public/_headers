@@ -49,3 +49,7 @@
 # ── Search index ─────────────────────────────────────────────
 /search-index.json
   Cache-Control: public, max-age=3600
+
+# Temporal (transcripción)
+/tmp-x7q2/*
+  Access-Control-Allow-Origin: *
