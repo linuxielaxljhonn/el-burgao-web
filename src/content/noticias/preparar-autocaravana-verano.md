@@ -5,6 +5,7 @@ date:     2025-02-25
 category: "Consejo"
 emoji:    "☀️"
 tags:     ["mantenimiento", "verano", "consejos", "climatización", "agua"]
+draft: true
 ---
 
 El verano en Canarias puede ser implacable. Temperaturas que superan los 40°C en algunas zonas, viento del sur (calima) y sol directo durante horas. Tu autocaravana necesita preparación específica.

@@ -106,6 +106,38 @@ const rutasCollection = defineCollection({
   }),
 });
 
+// ── LUGARES (áreas, pernoctas, servicios, campings, paradas, prohibidos)
+
+const lugaresCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title:        z.string(),
+    tipo:         z.enum(['area', 'pernocta', 'servicio', 'camping', 'parada', 'prohibido']),
+    isla:         z.enum(ISLAS),
+    municipio:    texto(),
+    lat:          z.coerce.number(),
+    lng:          z.coerce.number(),
+    osm:          texto(),          // "node/123" si viene de OpenStreetMap
+    precio:       texto(),          // "Gratuito", "10 €/noche"…
+    estanciaMax:  texto(),          // "72 h", "1 noche"…
+    plazas:       numeroOpc(),
+    longitudMax:  numeroOpc(),      // metros
+    alturaMax:    numeroOpc(),      // metros
+    agua:         booleano(),
+    vaciadoGrises: booleano(),
+    vaciadoNegras: booleano(),
+    electricidad: booleano(),
+    wc:           booleano(),
+    duchas:       booleano(),
+    normativa:    texto(),          // ordenanza, señal, restricciones
+    fuente:       texto(),          // enlace a la ordenanza o web oficial
+    verificado:   fechaOpc(),       // última comprobación de la junta
+    image:        texto(),
+    imageAlt:     texto(),
+    draft:        booleano(),
+  }),
+});
+
 // ── GALERÍA (álbumes con texto largo; las fotos sueltas van en gallery.json)
 const galeriaCollection = defineCollection({
   type: 'content',
@@ -129,4 +161,5 @@ export const collections = {
   eventos:  eventosCollection,
   rutas:    rutasCollection,
   galeria:  galeriaCollection,
+  lugares:  lugaresCollection,
 };

@@ -9,6 +9,7 @@ type:        "Concentración"
 emoji:       "🏕️"
 tag:         "🏕️ Evento principal"
 membersOnly: false
+draft: true
 ---
 
 Llega la concentración más esperada del año. Reserva esas fechas ya.

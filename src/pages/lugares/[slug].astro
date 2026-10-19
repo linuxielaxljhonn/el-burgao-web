@@ -1,0 +1,96 @@
+---
+/** Ficha de un lugar verificado (src/content/lugares/). */
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import { TIPOS_LUGAR, ISLAS_LABEL } from '../../config/lugares.ts';
+
+export async function getStaticPaths() {
+  const lugares = await getCollection('lugares', ({ data }) => !data.draft);
+  return lugares.map(l => ({ params: { slug: l.slug }, props: { lugar: l } }));
+}
+const { lugar } = Astro.props;
+const d = lugar.data;
+const t = TIPOS_LUGAR[d.tipo];
+const { Content } = await lugar.render();
+
+const servicios = [
+  [d.agua, '💧 Agua potable'],
+  [d.vaciadoGrises, '🚿 Vaciado de grises'],
+  [d.vaciadoNegras, '🚽 Vaciado de negras (WC químico)'],
+  [d.electricidad, '🔌 Electricidad'],
+  [d.wc, '🚻 Aseos'],
+  [d.duchas, '🚿 Duchas'],
+].filter(([v]) => v).map(([, l]) => l as string);
+
+const fmt = (x?: Date) => x ? x.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+---
+<PageLayout
+  title={`${d.title} — ${t.label}`}
+  description={`${t.label} en ${d.municipio ? d.municipio + ', ' : ''}${ISLAS_LABEL[d.isla]}. Información revisada por la Asociación El Burgao.`}
+  heading={d.title}
+  subheading={`${t.label} · ${d.municipio ? d.municipio + ', ' : ''}${ISLAS_LABEL[d.isla]}`}
+  emoji={t.emoji}
+  eyebrow="🗺️ Lugar"
+  breadcrumbs={[{ label: 'Mapa', href: '/mapa' }, { label: d.title }]}
+>
+  <section class="section">
+    <div class="container lugar-layout">
+      <article class="prose lugar-prose">
+        {d.tipo === 'prohibido' && (
+          <p class="lugar-alerta">⛔ Zona prohibida o conflictiva para autocaravanas. Revisa la normativa antes de estacionar.</p>
+        )}
+        {d.image && <img class="lugar-img" src={d.image} alt={d.imageAlt || d.title} loading="lazy" />}
+        <Content />
+        {d.normativa && (<><h2>Normativa</h2><p>{d.normativa}</p></>)}
+        {d.fuente && <p><a href={d.fuente} target="_blank" rel="noopener">Ver fuente oficial →</a></p>}
+      </article>
+
+      <aside class="lugar-aside">
+        <div id="miniMapa" class="lugar-mapa" data-lat={d.lat} data-lng={d.lng} role="img" aria-label={`Ubicación de ${d.title}`}></div>
+        <a class="btn btn--primary btn--full" href={`https://www.google.com/maps/dir/?api=1&destination=${d.lat},${d.lng}`} target="_blank" rel="noopener">Cómo llegar</a>
+        <dl class="lugar-datos">
+          {d.precio && (<><dt>Precio</dt><dd>{d.precio}</dd></>)}
+          {d.estanciaMax && (<><dt>Estancia máxima</dt><dd>{d.estanciaMax}</dd></>)}
+          {d.plazas && (<><dt>Plazas</dt><dd>{d.plazas}</dd></>)}
+          {d.longitudMax && (<><dt>Longitud máxima</dt><dd>{d.longitudMax} m</dd></>)}
+          {d.alturaMax && (<><dt>Altura máxima</dt><dd>{d.alturaMax} m</dd></>)}
+          <dt>Coordenadas</dt><dd>{d.lat.toFixed(5)}, {d.lng.toFixed(5)}</dd>
+        </dl>
+        {servicios.length > 0 && (
+          <ul class="lugar-servicios">{servicios.map(s => <li>{s}</li>)}</ul>
+        )}
+        <p class="lugar-verificado">
+          {d.verificado ? `✅ Comprobado por la asociación el ${fmt(d.verificado)}` : 'Pendiente de comprobación'}
+        </p>
+        <a class="lugar-corregir" href={`/sugerir-lugar?corregir=${encodeURIComponent(d.title)}`}>¿Ha cambiado algo? Avísanos</a>
+      </aside>
+    </div>
+  </section>
+</PageLayout>
+
+<script>
+  import L from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+  const el = document.getElementById('miniMapa');
+  if (el) {
+    const ll: [number, number] = [Number(el.dataset.lat), Number(el.dataset.lng)];
+    const m = L.map(el, { scrollWheelZoom: false, zoomControl: true }).setView(ll, 14);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(m);
+    L.circleMarker(ll, { radius: 10, color: '#1B4F72', fillColor: '#C9A96E', fillOpacity: 1, weight: 3 }).addTo(m);
+  }
+</script>
+
+<style>
+.lugar-layout { display: grid; grid-template-columns: 1fr 340px; gap: var(--space-10); align-items: start; }
+.lugar-alerta { padding: var(--space-4); border-radius: var(--radius-md); background: rgba(192,57,43,.1); border: 1px solid rgba(192,57,43,.35); }
+.lugar-img { width: 100%; border-radius: var(--radius-lg); margin-bottom: var(--space-5); }
+.lugar-aside { display: flex; flex-direction: column; gap: var(--space-4); position: sticky; top: 90px; }
+.lugar-mapa { height: 240px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); z-index: 0; }
+.lugar-datos { display: grid; grid-template-columns: auto 1fr; gap: .4rem 1rem; margin: 0; font-size: .875rem; }
+.lugar-datos dt { font-weight: 600; color: var(--color-text-muted); }
+.lugar-datos dd { margin: 0; color: var(--color-text); }
+.lugar-servicios { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .3rem; font-size: .875rem; color: var(--color-text); }
+.lugar-verificado { font-size: .8rem; color: var(--color-text-muted); margin: 0; }
+.lugar-corregir { font-size: .85rem; }
+@media (max-width: 900px) { .lugar-layout { grid-template-columns: 1fr; } .lugar-aside { position: static; } }
+</style>

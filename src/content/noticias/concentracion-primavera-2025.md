@@ -13,7 +13,7 @@ tags:
   - primavera
   - "2025"
 emoji: 🏕️
-draft: false
+draft: true
 ---
 La **Gran Concentración de Primavera 2025** se celebrará del 9 al 11 de mayo en el Parque Sur de Maspalomas, Gran Canaria. Este año esperamos superar el récord de asistencia con más de 80 autocaravanas confirmadas.
 

@@ -1,0 +1,133 @@
+---
+/**
+ * sugerir-lugar.astro — Los socios proponen lugares (o correcciones).
+ * Llega por Netlify Forms (formulario «sugerencia-lugar») al email de la junta,
+ * que lo revisa y lo publica desde el editor → «Lugares del mapa».
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import { TIPOS_LUGAR, ISLAS_LABEL } from '../config/lugares.ts';
+import siteConfig from '../config/site.ts';
+---
+<PageLayout
+  title="Sugerir un lugar"
+  description="Propón un área, pernocta, punto de vaciado o zona conflictiva para el mapa de la Asociación El Burgao."
+  heading="Sugerir un lugar"
+  subheading="Áreas, pernoctas, vaciado, paradas… o un sitio donde ya no se puede estacionar."
+  emoji="📍"
+  eyebrow="🗺️ Participa"
+  breadcrumbs={[{ label: 'Mapa', href: '/mapa' }, { label: 'Sugerir un lugar' }]}
+>
+  <section class="section">
+    <div class="container">
+      <form class="sug-form card" name="sugerencia-lugar" method="POST" action="/gracias"
+            data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data">
+        <input type="hidden" name="form-name" value="sugerencia-lugar" />
+        <p hidden><label>No rellenar: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+
+        <div class="form-group">
+          <label class="form-label" for="s-nombre">Nombre o descripción del lugar <span class="required">*</span></label>
+          <input id="s-nombre" name="lugar" class="form-input" required placeholder="Ej.: Aparcamiento junto a la playa de …" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="s-tipo">Tipo <span class="required">*</span></label>
+            <select id="s-tipo" name="tipo" class="form-input form-select" required>
+              {Object.entries(TIPOS_LUGAR).map(([k, t]) => <option value={k}>{t.emoji} {t.label}</option>)}
+              <option value="correccion">✏️ Corrección de un lugar ya publicado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="s-isla">Isla <span class="required">*</span></label>
+            <select id="s-isla" name="isla" class="form-input form-select" required>
+              <option value="">Selecciona</option>
+              {Object.entries(ISLAS_LABEL).map(([v, l]) => <option value={v}>{l}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="s-municipio">Municipio</label>
+          <input id="s-municipio" name="municipio" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">Ubicación</span>
+          <div class="sug-ubic">
+            <button type="button" class="btn btn--outline btn--sm" id="btnUbic">📍 Usar mi ubicación actual</button>
+            <span id="ubicEstado" class="form-hint" aria-live="polite"></span>
+          </div>
+          <input type="hidden" name="latitud" id="s-lat" />
+          <input type="hidden" name="longitud" id="s-lng" />
+          <input name="enlace_mapa" class="form-input" style="margin-top:.5rem" placeholder="O pega un enlace de Google Maps / coordenadas" />
+        </div>
+
+        <fieldset class="form-group sug-serv">
+          <legend class="form-label">Servicios que tiene</legend>
+          {['Agua potable', 'Vaciado de grises', 'Vaciado de negras', 'Electricidad', 'Aseos', 'Duchas', 'Sombra', 'Vigilancia'].map(s => (
+            <label class="checkbox-label"><input type="checkbox" name="servicios[]" value={s} /> <span>{s}</span></label>
+          ))}
+        </fieldset>
+
+        <div class="form-group">
+          <label class="form-label" for="s-desc">Detalles <span class="required">*</span></label>
+          <textarea id="s-desc" name="detalles" class="form-input form-textarea" rows="5" required
+            placeholder="Precio, estancia máxima, límites de altura o longitud, señales, ruido, cuándo estuviste…"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="s-foto">Foto (opcional, máx. 8 MB)</label>
+          <input id="s-foto" type="file" name="foto" accept="image/*" class="form-input" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="s-tu">Tu nombre</label>
+            <input id="s-tu" name="nombre" class="form-input" autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="s-email">Tu email <span class="required">*</span></label>
+            <input id="s-email" type="email" name="email" class="form-input" required autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="rgpd" required />
+            <span>Acepto la <a href="/privacidad" target="_blank" rel="noopener">política de privacidad</a>. La foto y los datos del lugar podrán publicarse en la web; tu nombre y email no. <span class="required">*</span></span>
+          </label>
+          <p class="form-legal">Responsable: {siteConfig.legal.razonSocial}. Finalidad: revisar y publicar la sugerencia.</p>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">Enviar sugerencia</button>
+      </form>
+    </div>
+  </section>
+</PageLayout>
+
+<script>
+  const p = new URLSearchParams(location.search).get('corregir');
+  if (p) {
+    (document.getElementById('s-tipo') as HTMLSelectElement).value = 'correccion';
+    (document.getElementById('s-nombre') as HTMLInputElement).value = p;
+  }
+  const estado = document.getElementById('ubicEstado')!;
+  document.getElementById('btnUbic')?.addEventListener('click', () => {
+    if (!navigator.geolocation) { estado.textContent = 'Tu navegador no permite obtener la ubicación.'; return; }
+    estado.textContent = 'Obteniendo ubicación…';
+    navigator.geolocation.getCurrentPosition(pos => {
+      (document.getElementById('s-lat') as HTMLInputElement).value = pos.coords.latitude.toFixed(6);
+      (document.getElementById('s-lng') as HTMLInputElement).value = pos.coords.longitude.toFixed(6);
+      estado.textContent = `✅ Ubicación añadida (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`;
+    }, () => { estado.textContent = 'No se ha podido obtener. Pega un enlace de Google Maps abajo.'; }, { enableHighAccuracy: true, timeout: 15000 });
+  });
+</script>
+
+<style>
+.sug-form { max-width: 720px; margin-inline: auto; padding: var(--space-8); display: flex; flex-direction: column; gap: var(--space-2); }
+.sug-ubic { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.sug-serv { border: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: .4rem; }
+.sug-serv legend { margin-bottom: .5rem; }
+.form-legal { font-size: .75rem; color: var(--color-text-muted); margin-top: .4rem; }
+@media (max-width: 640px) { .sug-form { padding: var(--space-5); } }
+</style>

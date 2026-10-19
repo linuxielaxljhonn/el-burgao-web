@@ -6,6 +6,7 @@ category: "Ruta"
 emoji:    "🌋"
 featured: false
 tags:     ["teide", "tenerife", "ruta", "parque nacional", "miradores"]
+draft: true
 ---
 
 El Teide es el techo de España y uno de los volcanes más impresionantes del mundo. Recorrerlo en autocaravana es una experiencia que todo socio de El Burgao debería vivir al menos una vez.

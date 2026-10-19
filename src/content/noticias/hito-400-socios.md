@@ -6,6 +6,7 @@ category: "Asociación"
 emoji:    "🎉"
 featured: false
 tags:     ["socios", "comunidad", "hito", "crecimiento", "el hierro", "la graciosa"]
+draft: true
 ---
 
 Hoy es un día especial para El Burgao. Con la incorporación de cuatro nuevas familias procedentes de El Hierro y La Graciosa, la asociación supera por primera vez los **400 socios**.

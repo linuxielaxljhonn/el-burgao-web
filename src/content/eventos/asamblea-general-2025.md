@@ -8,6 +8,7 @@ type:        "Asamblea"
 emoji:       "📋"
 tag:         "📋 Solo socios"
 membersOnly: true
+draft: true
 ---
 
 La Asamblea General es el órgano soberano de El Burgao. Tu voto cuenta.

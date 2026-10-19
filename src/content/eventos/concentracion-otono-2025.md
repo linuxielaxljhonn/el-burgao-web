@@ -9,6 +9,7 @@ type:        "Concentración"
 emoji:       "🌊"
 tag:         "🌊 Evento principal"
 membersOnly: false
+draft: true
 ---
 
 Fuerteventura en otoño es magia pura. Vuelve la concentración más popular de la temporada.

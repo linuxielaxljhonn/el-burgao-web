@@ -305,6 +305,129 @@ content:
         label: Descripción por días
         type: rich-text
 
+  # ── LUGARES DEL MAPA ───────────────────────────────────────
+  - name: lugares
+    label: Lugares del mapa (áreas, pernoctas, vaciado…)
+    type: collection
+    path: src/content/lugares
+    format: yaml-frontmatter
+    filename: "{primary}.md"
+    view:
+      fields: [title, tipo, isla]
+      primary: title
+      sort: title
+      order: asc
+    fields:
+      - name: title
+        label: Nombre
+        type: string
+        required: true
+      - name: tipo
+        label: Tipo
+        type: select
+        required: true
+        options:
+          values:
+            - { name: area, label: Área de autocaravanas }
+            - { name: pernocta, label: Pernocta tolerada }
+            - { name: servicio, label: Vaciado y agua }
+            - { name: camping, label: Camping }
+            - { name: parada, label: Parada de día }
+            - { name: prohibido, label: Prohibido / conflictivo }
+      - name: isla
+        label: Isla
+        type: select
+        required: true
+        options:
+          values:
+            - { name: gran-canaria, label: Gran Canaria }
+            - { name: tenerife, label: Tenerife }
+            - { name: lanzarote, label: Lanzarote }
+            - { name: fuerteventura, label: Fuerteventura }
+            - { name: la-palma, label: La Palma }
+            - { name: la-gomera, label: La Gomera }
+            - { name: el-hierro, label: El Hierro }
+            - { name: la-graciosa, label: La Graciosa }
+      - name: municipio
+        label: Municipio
+        type: string
+      - name: lat
+        label: Latitud
+        type: number
+        required: true
+        description: "En Google Maps: mantén pulsado el punto y copia el primer número (ej. 28.9634)."
+      - name: lng
+        label: Longitud
+        type: number
+        required: true
+        description: "El segundo número, negativo en Canarias (ej. -13.5477)."
+      - name: precio
+        label: Precio
+        type: string
+        description: "Ej.: Gratuito · 10 €/noche"
+      - name: estanciaMax
+        label: Estancia máxima
+        type: string
+        description: "Ej.: 72 h · 1 noche"
+      - name: plazas
+        label: Plazas
+        type: number
+      - name: longitudMax
+        label: Longitud máxima (m)
+        type: number
+      - name: alturaMax
+        label: Altura máxima (m)
+        type: number
+      - name: agua
+        label: Agua potable
+        type: boolean
+      - name: vaciadoGrises
+        label: Vaciado de grises
+        type: boolean
+      - name: vaciadoNegras
+        label: Vaciado de negras
+        type: boolean
+      - name: electricidad
+        label: Electricidad
+        type: boolean
+      - name: wc
+        label: Aseos
+        type: boolean
+      - name: duchas
+        label: Duchas
+        type: boolean
+      - name: normativa
+        label: Normativa y restricciones
+        type: text
+        description: "Ordenanza, señales, horarios… Para zonas prohibidas, explica por qué."
+      - name: fuente
+        label: Enlace a la fuente oficial
+        type: string
+      - name: verificado
+        label: Comprobado por la junta el
+        type: date
+        default: ""
+        options:
+          format: yyyy-MM-dd
+      - name: osm
+        label: Código OpenStreetMap
+        type: string
+        description: "Si este lugar ya salía en gris en el mapa (ej. node/123456), ponlo aquí y el punto gris desaparecerá."
+      - name: image
+        label: Foto
+        type: image
+        options:
+          media: imagenes
+      - name: imageAlt
+        label: Descripción de la foto
+        type: string
+      - name: draft
+        label: Borrador (no publicar todavía)
+        type: boolean
+      - name: body
+        label: Descripción y consejos
+        type: rich-text
+
   # ── GALERÍA ────────────────────────────────────────────────
   - name: galeria
     label: Galería de fotos

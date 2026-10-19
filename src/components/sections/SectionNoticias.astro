@@ -39,6 +39,10 @@ function formatDate(date: Date) {
       </p>
     </header>
 
+    {!featured && (
+      <p class="news-empty" data-reveal="up">Muy pronto publicaremos aquí las novedades y anuncios de la asociación.</p>
+    )}
+
     <!-- ── NOTICIA DESTACADA ── -->
     {featured && (
       <article class="news-featured card" data-reveal="up" data-delay="100">
@@ -108,6 +112,8 @@ function formatDate(date: Date) {
 </section>
 
 <style>
+.news-empty { text-align:center; color: var(--color-text-muted); padding: var(--space-8) 0; }
+
 /* ── NOTICIA DESTACADA ──────────────────────────────────────── */
 .news-featured {
   display: grid;

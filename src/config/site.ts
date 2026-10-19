@@ -105,6 +105,7 @@ const siteConfig = {
     { label: 'Inicio',         href: '/',               icon: '🏠' },
     { label: 'La asociación',  href: '/la-asociacion',  icon: '🚐' },
     { label: 'Agenda',         href: '/eventos',        icon: '📅' },
+    { label: 'Mapa',           href: '/mapa',           icon: '📍' },
     { label: 'Rutas',          href: '/rutas',          icon: '🗺️' },
     { label: 'Noticias',       href: '/noticias',       icon: '📰' },
     { label: 'Contacto',       href: '/contacto',       icon: '📬' },

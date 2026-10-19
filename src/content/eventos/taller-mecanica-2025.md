@@ -8,6 +8,7 @@ type:        "Formación"
 emoji:       "🔧"
 tag:         "🔧 Formación"
 membersOnly: false
+draft: true
 ---
 
 Aprende a mantener tu autocaravana con los expertos. Sin conocimientos previos necesarios.

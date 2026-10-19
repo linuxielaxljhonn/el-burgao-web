@@ -5,6 +5,7 @@ date:     2025-02-10
 category: "Galería"
 emoji:    "📸"
 tags:     ["fuerteventura", "corralejo", "concentración", "otoño", "fotos", "galería"]
+draft: true
 ---
 
 La Concentración de Otoño 2024 en Fuerteventura fue, sin duda, la más multitudinaria de nuestra historia. Más de 65 autocaravanas y 180 personas compartieron dos días inolvidables en las dunas de Corralejo.

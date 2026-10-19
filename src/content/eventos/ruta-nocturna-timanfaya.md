@@ -8,6 +8,7 @@ type:        "Ruta"
 emoji:       "🌋"
 tag:         "🌋 Ruta exclusiva"
 membersOnly: true
+draft: true
 ---
 
 Una noche única bajo el cielo estrellado de Lanzarote, rodeados de volcanes. Exclusivo para socios.

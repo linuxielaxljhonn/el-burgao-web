@@ -102,7 +102,7 @@ const categoryColors: Record<string, string> = {
         ))}
       </div>
 
-      <div id="newsEmpty" hidden class="rutas-empty">
+      <div id="newsEmpty" hidden={noticias.length > 0} class="rutas-empty">
         <span>📰</span>
         <p>No hay noticias en esta categoría todavía.</p>
       </div>

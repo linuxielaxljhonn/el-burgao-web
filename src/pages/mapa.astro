@@ -1,0 +1,280 @@
+---
+/**
+ * mapa.astro — Mapa de Canarias: áreas, pernoctas, servicios, campings,
+ * paradas y zonas prohibidas.
+ *
+ * Dos fuentes:
+ *  1. Lugares verificados por la junta (src/content/lugares/, editor → «Lugares del mapa»).
+ *  2. Datos de OpenStreetMap SIN VERIFICAR (src/data/osm-lugares.json, se actualiza
+ *     solo cada mes). Si un lugar verificado lleva el mismo código OSM, el punto
+ *     sin verificar se oculta.
+ */
+import { getCollection } from 'astro:content';
+import PageLayout from '../layouts/PageLayout.astro';
+import { TIPOS_LUGAR, ISLAS_LABEL, islaDe } from '../config/lugares.ts';
+import osmData from '../data/osm-lugares.json';
+
+const verificados = (await getCollection('lugares', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title, 'es'));
+const osmUsados = new Set(verificados.map(l => l.data.osm).filter(Boolean));
+
+const puntos = [
+  ...verificados.map(l => ({
+    v: 1,
+    id: l.slug,
+    n: l.data.title,
+    t: l.data.tipo,
+    i: l.data.isla,
+    m: l.data.municipio ?? '',
+    lat: l.data.lat,
+    lng: l.data.lng,
+    p: l.data.precio ?? '',
+    url: `/lugares/${l.slug}/`,
+  })),
+  ...((osmData as any).lugares ?? [])
+    .filter((o: any) => !osmUsados.has(o.osm))
+    .map((o: any) => ({
+      v: 0,
+      id: o.osm,
+      n: o.nombre || TIPOS_LUGAR[o.tipo as keyof typeof TIPOS_LUGAR]?.label || 'Lugar',
+      t: o.tipo,
+      i: islaDe(o.lat, o.lng),
+      m: o.municipio ?? '',
+      lat: o.lat,
+      lng: o.lng,
+      p: o.precio ?? '',
+      url: `https://www.openstreetmap.org/${o.osm}`,
+    })),
+];
+
+const nVerificados = verificados.length;
+const nOsm = puntos.length - nVerificados;
+const actualizadoOsm = (osmData as any).actualizado || '';
+---
+
+<PageLayout
+  title="Mapa de áreas y pernoctas en Canarias"
+  description="Mapa de áreas de autocaravanas, pernoctas, puntos de vaciado, campings y zonas prohibidas en las Islas Canarias, revisado por la Asociación El Burgao."
+  heading="Mapa de Canarias"
+  subheading="Áreas de autocaravanas, pernoctas, vaciado y agua, campings y zonas conflictivas en las ocho islas."
+  emoji="🗺️"
+  eyebrow="🗺️ Rutas y lugares"
+  breadcrumbs={[{ label: 'Mapa', href: '/mapa' }]}
+>
+  <section class="section mapa-section">
+    <div class="container">
+
+      <div class="mapa-aviso" role="note">
+        <strong>Antes de pernoctar</strong>, comprueba la señalización y la ordenanza del municipio:
+        las normas cambian. Los puntos en gris vienen de OpenStreetMap y <strong>no están verificados</strong> por la asociación.
+      </div>
+
+      <form class="mapa-filtros" id="mapaFiltros" aria-label="Filtros del mapa" onsubmit="return false">
+        <fieldset class="mapa-tipos">
+          <legend class="sr-only">Tipos de lugar</legend>
+          {Object.entries(TIPOS_LUGAR).map(([k, t]) => (
+            <label class="mapa-chip" style={`--c:${t.color}`}>
+              <input type="checkbox" name="tipo" value={k} checked />
+              <span aria-hidden="true">{t.emoji}</span> {t.label}
+            </label>
+          ))}
+        </fieldset>
+        <div class="mapa-filtros__fila">
+          <label class="mapa-select">
+            <span>Isla</span>
+            <select name="isla" id="filtroIsla">
+              <option value="">Todas</option>
+              {Object.entries(ISLAS_LABEL).map(([v, l]) => <option value={v}>{l}</option>)}
+            </select>
+          </label>
+          <label class="mapa-check">
+            <input type="checkbox" name="osm" id="filtroOsm" checked />
+            Mostrar sin verificar ({nOsm})
+          </label>
+          <button type="button" class="btn btn--outline btn--sm" id="btnCercaDeMi">📍 Cerca de mí</button>
+        </div>
+      </form>
+
+      <div id="mapa" class="mapa" role="region" aria-label="Mapa interactivo de las Islas Canarias"></div>
+      <p class="mapa-contador" id="mapaContador" aria-live="polite"></p>
+
+      <div class="mapa-leyenda">
+        <span><i class="dot dot--v"></i> Verificado por la asociación ({nVerificados})</span>
+        <span><i class="dot dot--o"></i> OpenStreetMap, sin verificar{actualizadoOsm && ` · actualizado ${actualizadoOsm}`}</span>
+      </div>
+
+      <h2 class="mapa-h2">Lugares verificados</h2>
+      {nVerificados > 0 ? (
+        <ul class="lugares-lista" role="list">
+          {verificados.map(l => {
+            const t = TIPOS_LUGAR[l.data.tipo];
+            return (
+              <li>
+                <a href={`/lugares/${l.slug}/`} class="lugar-item">
+                  <span class="lugar-item__emoji" aria-hidden="true">{t.emoji}</span>
+                  <span class="lugar-item__body">
+                    <strong>{l.data.title}</strong>
+                    <span>{t.label} · {l.data.municipio ? `${l.data.municipio}, ` : ''}{ISLAS_LABEL[l.data.isla]}</span>
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p class="mapa-vacio">La junta está revisando los primeros lugares. Mientras tanto puedes consultar los puntos de OpenStreetMap en el mapa.</p>
+      )}
+
+      <div class="mapa-cta card">
+        <div>
+          <h2>¿Conoces un buen sitio o una zona conflictiva?</h2>
+          <p>Propón un lugar y la junta lo revisará antes de publicarlo.</p>
+        </div>
+        <a href="/sugerir-lugar" class="btn btn--primary">Sugerir un lugar</a>
+      </div>
+
+      <p class="mapa-fuente">
+        Mapa: © colaboradores de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (licencia ODbL).
+      </p>
+    </div>
+  </section>
+
+  <script type="application/json" id="mapaDatos" set:html={JSON.stringify({ puntos, tipos: TIPOS_LUGAR, islas: ISLAS_LABEL })} />
+</PageLayout>
+
+<script>
+  import L from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+
+  type Punto = { v: number; id: string; n: string; t: string; i: string; m: string; lat: number; lng: number; p: string; url: string };
+  const datos = JSON.parse(document.getElementById('mapaDatos')!.textContent || '{}');
+  const puntos: Punto[] = datos.puntos || [];
+  const tipos: Record<string, { label: string; emoji: string; color: string }> = datos.tipos;
+  const islas: Record<string, string> = datos.islas;
+
+  const mapa = L.map('mapa', { scrollWheelZoom: false, tap: true } as any).setView([28.3, -15.8], 7);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  }).addTo(mapa);
+  mapa.on('focus', () => mapa.scrollWheelZoom.enable());
+
+  const capa = L.layerGroup().addTo(mapa);
+
+  function icono(p: Punto) {
+    const t = tipos[p.t] || tipos.parada;
+    const el = document.createElement('span');
+    el.className = 'mk' + (p.v ? ' mk--v' : ' mk--o');
+    el.style.setProperty('--c', t.color);
+    el.textContent = t.emoji;
+    return L.divIcon({ html: el, className: '', iconSize: p.v ? [32, 32] : [24, 24], iconAnchor: p.v ? [16, 16] : [12, 12] });
+  }
+
+  function popup(p: Punto) {
+    const t = tipos[p.t] || tipos.parada;
+    const div = document.createElement('div');
+    div.className = 'mk-pop';
+    const h = document.createElement('strong'); h.textContent = p.n; div.appendChild(h);
+    const sub = document.createElement('span');
+    sub.textContent = [t.label, p.m, islas[p.i]].filter(Boolean).join(' · ');
+    div.appendChild(sub);
+    if (p.p) { const pr = document.createElement('span'); pr.textContent = p.p; div.appendChild(pr); }
+    const est = document.createElement('em');
+    est.textContent = p.v ? 'Verificado por la asociación' : 'Sin verificar (OpenStreetMap)';
+    div.appendChild(est);
+    const a = document.createElement('a');
+    a.href = p.url;
+    a.textContent = p.v ? 'Ver ficha →' : 'Ver en OpenStreetMap →';
+    if (!p.v) { a.target = '_blank'; a.rel = 'noopener'; }
+    div.appendChild(a);
+    const g = document.createElement('a');
+    g.href = `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`;
+    g.target = '_blank'; g.rel = 'noopener';
+    g.textContent = 'Cómo llegar';
+    div.appendChild(g);
+    return div;
+  }
+
+  const form = document.getElementById('mapaFiltros') as HTMLFormElement;
+  const contador = document.getElementById('mapaContador')!;
+
+  function pintar() {
+    const activos = new Set([...form.querySelectorAll<HTMLInputElement>('input[name=tipo]:checked')].map(i => i.value));
+    const isla = (document.getElementById('filtroIsla') as HTMLSelectElement).value;
+    const conOsm = (document.getElementById('filtroOsm') as HTMLInputElement).checked;
+    capa.clearLayers();
+    const visibles = puntos.filter(p => activos.has(p.t) && (!isla || p.i === isla) && (p.v || conOsm));
+    // los verificados encima
+    visibles.sort((a, b) => a.v - b.v).forEach(p => {
+      L.marker([p.lat, p.lng], { icon: icono(p), title: p.n, zIndexOffset: p.v ? 1000 : 0 })
+        .bindPopup(() => popup(p))
+        .addTo(capa);
+    });
+    contador.textContent = `${visibles.length} lugares en el mapa`;
+    if (isla && visibles.length) {
+      mapa.fitBounds(L.latLngBounds(visibles.map(p => [p.lat, p.lng] as [number, number])), { padding: [30, 30], maxZoom: 12 });
+    }
+  }
+  form.addEventListener('change', pintar);
+  pintar();
+
+  document.getElementById('btnCercaDeMi')?.addEventListener('click', () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(pos => {
+      const ll: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+      mapa.setView(ll, 12);
+      L.circleMarker(ll, { radius: 8, color: '#1B4F72', fillColor: '#5dade2', fillOpacity: 0.9 }).addTo(mapa).bindPopup('Estás aquí').openPopup();
+    }, () => { contador.textContent = 'No se ha podido obtener tu ubicación.'; }, { enableHighAccuracy: true, timeout: 10000 });
+  });
+</script>
+
+<style>
+.mapa-section { padding-top: var(--space-8); }
+.mapa-aviso {
+  padding: var(--space-4) var(--space-5); border-radius: var(--radius-md);
+  background: rgba(201,169,110,.15); border: 1px solid rgba(201,169,110,.4);
+  font-size: var(--text-sm); line-height: 1.5; margin-bottom: var(--space-5); color: var(--color-text);
+}
+.mapa-filtros { margin-bottom: var(--space-4); }
+.mapa-tipos { border: 0; padding: 0; margin: 0 0 var(--space-3); display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.mapa-chip {
+  display: inline-flex; align-items: center; gap: .35rem; cursor: pointer;
+  padding: .4rem .75rem; border-radius: 999px; font-size: .8rem; font-weight: 500;
+  border: 1.5px solid var(--c); color: var(--color-text); background: var(--color-bg-raised);
+}
+.mapa-chip input { accent-color: var(--c); width: 15px; height: 15px; margin: 0; }
+.mapa-filtros__fila { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); }
+.mapa-select { display: inline-flex; align-items: center; gap: .5rem; font-size: .875rem; font-weight: 600; }
+.mapa-select select { padding: .45rem .7rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-bg-raised); color: var(--color-text); }
+.mapa-check { display: inline-flex; align-items: center; gap: .45rem; font-size: .875rem; }
+.mapa { height: 68vh; min-height: 420px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); z-index: 0; }
+.mapa-contador { font-size: .8rem; color: var(--color-text-muted); margin-top: var(--space-2); }
+.mapa-leyenda { display: flex; flex-wrap: wrap; gap: var(--space-5); font-size: .8rem; color: var(--color-text-muted); margin-top: var(--space-2); }
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: -1px; margin-right: .3rem; }
+.dot--v { background: #1B4F72; box-shadow: 0 0 0 2px #C9A96E; }
+.dot--o { background: #aab0b6; }
+.mapa-h2 { font-family: var(--font-display); font-size: var(--text-2xl); margin: var(--space-10) 0 var(--space-4); color: var(--color-text); }
+.mapa-vacio { color: var(--color-text-muted); }
+.lugares-lista { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-3); }
+.lugar-item { display: flex; gap: var(--space-3); align-items: center; padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-raised); text-decoration: none; color: var(--color-text); }
+.lugar-item:hover { border-color: var(--color-brand); }
+.lugar-item__emoji { font-size: 1.5rem; }
+.lugar-item__body { display: flex; flex-direction: column; font-size: .875rem; }
+.lugar-item__body span { color: var(--color-text-muted); font-size: .8rem; }
+.mapa-cta { margin-top: var(--space-10); padding: var(--space-6); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+.mapa-cta h2 { font-family: var(--font-display); font-size: var(--text-xl); margin: 0 0 var(--space-1); color: var(--color-text); }
+.mapa-cta p { margin: 0; color: var(--color-text-muted); }
+.mapa-fuente { font-size: .75rem; color: var(--color-text-muted); margin-top: var(--space-6); }
+@media (max-width: 640px) { .mapa { height: 62vh; min-height: 360px; } }
+</style>
+
+<style is:global>
+.mk { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; background: #fff; border: 2px solid var(--c); box-shadow: 0 1px 4px rgba(0,0,0,.35); font-size: 15px; line-height: 1; }
+.mk--o { filter: grayscale(1); opacity: .75; font-size: 11px; border-color: #8a9096; }
+.mk--v { box-shadow: 0 0 0 2px #C9A96E, 0 2px 6px rgba(0,0,0,.4); }
+.mk-pop { display: flex; flex-direction: column; gap: .2rem; font-family: var(--font-body); min-width: 170px; }
+.mk-pop strong { font-size: .95rem; }
+.mk-pop span { font-size: .8rem; color: #555; }
+.mk-pop em { font-size: .75rem; color: #7a6a3a; }
+.mk-pop a { font-size: .85rem; font-weight: 600; }
+</style>

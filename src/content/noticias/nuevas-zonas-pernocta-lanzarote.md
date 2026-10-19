@@ -5,6 +5,7 @@ date:     2025-03-20
 category: "Normativa"
 emoji:    "📋"
 tags:     ["lanzarote", "pernocta", "normativa", "áreas", "cabildo"]
+draft: true
 ---
 
 Buenas noticias para los amantes de Lanzarote. El Cabildo Insular ha dado luz verde a cuatro nuevas zonas de pernocta para autocaravanas, ampliando significativamente las opciones disponibles en la isla.

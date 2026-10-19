@@ -39,6 +39,7 @@ La configuración está en `.pages.yml`. Secciones:
 - **Agenda**: eventos, reuniones, asambleas, manifestaciones (con cartel y PDF).
 - **Noticias y anuncios**: los anuncios pueden tener fecha de caducidad.
 - **Rutas**.
+- **Lugares del mapa**: áreas, pernoctas, vaciado, campings, paradas y zonas prohibidas.
 - **Galería de fotos**.
 - **Datos de la asociación**: contacto, datos legales, cuotas, redes, junta, estatutos.
 
@@ -83,3 +84,13 @@ Incluyen casilla de consentimiento RGPD y campo trampa anti-spam.
 - Tipos de evento nuevos: Reunión y Manifestación.
 - Contacto, redes y datos legales centralizados; lo que falta se muestra como `[PENDIENTE]`.
 - Service worker corregido (página sin conexión) y cabeceras de seguridad simplificadas.
+
+## Mapa de Canarias (/mapa)
+
+- **Lugares verificados**: `src/content/lugares/` (editor → «Lugares del mapa»).
+- **Puntos sin verificar**: `src/data/osm-lugares.json`, descargado de OpenStreetMap por la
+  acción de GitHub `.github/workflows/importar-osm.yml` (el día 1 de cada mes, o a mano desde
+  GitHub → Actions → «Importar lugares de OpenStreetMap» → Run workflow).
+- Al verificar un punto gris, crear el lugar en el editor y copiar su código OSM (`node/…`):
+  el punto gris desaparece.
+- Las sugerencias de socios llegan por Netlify Forms (formulario `sugerencia-lugar`).
