@@ -48,7 +48,7 @@ const siteConfig = {
   // ── URLs ────────────────────────────────────────────────────
   // Cambiar cuando la junta apruebe el dominio definitivo
   // (también en astro.config.mjs → site).
-  url:     'https://el-burgao.pages.dev',
+  url:     'https://el-burgao.linuxielaxl.workers.dev',
   ogImage: '/assets/img/og-image.jpg',
 
   // ── Fundación y cifras ──────────────────────────────────────
