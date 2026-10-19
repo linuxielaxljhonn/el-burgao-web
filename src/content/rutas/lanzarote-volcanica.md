@@ -20,6 +20,22 @@ services:
   - "Vaciado en Costa Teguise"
 lat: 29.0469
 lng: -13.5899
+etapas:
+  - titulo: "Arrecife y los Jameos del Agua"
+    paradas:
+      - { nombre: "Arrecife — Castillo de San Gabriel", tipo: visita, lat: 28.9573, lng: -13.5464 }
+      - { nombre: "Jameos del Agua", tipo: visita, lat: 29.1572, lng: -13.4320 }
+  - titulo: "Parque Nacional de Timanfaya"
+    paradas:
+      - { nombre: "Centro de Visitantes de Mancha Blanca", tipo: visita, lat: 29.0453, lng: -13.7110 }
+      - { nombre: "Islote de Hilario (Montañas del Fuego)", tipo: visita, lat: 29.0058, lng: -13.7531 }
+  - titulo: "La Geria y el vino en hoyos"
+    paradas:
+      - { nombre: "La Geria", tipo: visita, lat: 28.9750, lng: -13.7000, nota: "Zona de bodegas a lo largo de la LZ-30" }
+  - titulo: "Famara y el Mirador del Río"
+    paradas:
+      - { nombre: "Playa de Famara", tipo: visita, lat: 29.1155, lng: -13.5560 }
+      - { nombre: "Mirador del Río", tipo: visita, lat: 29.2138, lng: -13.4815 }
 ---
 
 Lanzarote no se parece a ningún otro lugar. Su paisaje marciano, modelado por las erupciones del siglo XVIII, convive con una cultura única y una arquitectura que César Manrique convirtió en arte.
@@ -30,7 +46,7 @@ Empieza en la capital. Los Jameos del Agua son una cueva-laguna con cangrejos ci
 
 ## Día 2 — Timanfaya completo
 
-El parque nacional cierra el acceso a autocaravanas de más de 3,5 toneladas. Deja el vehículo en el aparcamiento exterior y entra en autobús. El restaurante del parque cocina con calor volcánico real.
+Consulta en el parque las condiciones de acceso para autocaravanas antes de ir: la ruta por las Montañas del Fuego se hace en autobús desde el Islote de Hilario. El restaurante del parque cocina con calor volcánico real.
 
 ## Día 3 — La Geria y el vino en hoyos
 

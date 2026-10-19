@@ -283,6 +283,53 @@ content:
       - name: imageAlt
         label: Descripción de la imagen
         type: string
+      - name: etapas
+        label: Etapas (un bloque por día)
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{titulo}"
+        fields:
+          - name: titulo
+            label: Título del día
+            type: string
+            required: true
+          - name: descripcion
+            label: Resumen del día
+            type: text
+          - name: paradas
+            label: Paradas (en orden)
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{nombre}"
+            fields:
+              - name: nombre
+                label: Nombre
+                type: string
+                required: true
+              - name: tipo
+                label: Tipo
+                type: select
+                options:
+                  values:
+                    - { name: visita, label: Visita / parada de día }
+                    - { name: pernocta, label: Pernocta }
+                    - { name: servicio, label: Vaciado / agua / servicio }
+                    - { name: otro, label: Otro }
+              - name: lat
+                label: Latitud
+                type: number
+                required: true
+              - name: lng
+                label: Longitud
+                type: number
+                required: true
+              - name: nota
+                label: Nota breve
+                type: string
       - name: gpxFile
         label: Archivo GPX
         type: file

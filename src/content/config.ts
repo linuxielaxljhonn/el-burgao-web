@@ -100,6 +100,18 @@ const rutasCollection = defineCollection({
     services:    lista(),
     lat:         numeroOpc(),
     lng:         numeroOpc(),
+    // Etapas por día con sus paradas (para el mapa del recorrido)
+    etapas:      z.preprocess(v => (v == null ? [] : v), z.array(z.object({
+      titulo:      z.string(),
+      descripcion: texto(),
+      paradas:     z.preprocess(v => (v == null ? [] : v), z.array(z.object({
+        nombre: z.string(),
+        tipo:   z.preprocess(vacio, z.enum(['visita', 'pernocta', 'servicio', 'otro']).default('visita')),
+        lat:    z.coerce.number(),
+        lng:    z.coerce.number(),
+        nota:   texto(),
+      })).default([])),
+    })).default([])),
     draft:       booleano(),
     featured:    booleano(),
     order:       numero(99),

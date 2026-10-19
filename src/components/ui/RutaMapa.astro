@@ -1,0 +1,104 @@
+---
+/**
+ * RutaMapa.astro — Mapa del recorrido de una ruta por etapas, lista por días
+ * y descarga GPX generada en el navegador.
+ */
+interface Parada { nombre: string; tipo: 'visita' | 'pernocta' | 'servicio' | 'otro'; lat: number; lng: number; nota?: string }
+interface Etapa { titulo: string; descripcion?: string; paradas: Parada[] }
+interface Props { titulo: string; etapas: Etapa[] }
+const { titulo, etapas } = Astro.props;
+
+const ICONO: Record<string, string> = { visita: '📸', pernocta: '🌙', servicio: '🚰', otro: '📍' };
+const COLORES = ['#1B4F72', '#C9A96E', '#117a65', '#8e44ad', '#c0392b', '#2e86c1', '#b9770e'];
+let n = 0;
+const datos = etapas.map((e, i) => ({
+  dia: i + 1, color: COLORES[i % COLORES.length],
+  paradas: e.paradas.map(p => ({ ...p, n: ++n, icono: ICONO[p.tipo] ?? '📍' })),
+}));
+const todas = datos.flatMap(d => d.paradas);
+const gmaps = todas.length >= 2
+  ? `https://www.google.com/maps/dir/${todas.slice(0, 10).map(p => `${p.lat},${p.lng}`).join('/')}`
+  : '';
+---
+{todas.length > 0 && (
+<section class="rmapa" aria-labelledby="rmapa-t">
+  <h2 id="rmapa-t">Recorrido por etapas</h2>
+  <div id="rutaMapa" class="rmapa__mapa" role="img" aria-label={`Mapa del recorrido: ${titulo}`}></div>
+  <p class="rmapa__nota">La línea une las paradas en orden; no sigue la carretera. Usa tu GPS o Google Maps para la ruta exacta.</p>
+  <div class="rmapa__acciones">
+    {gmaps && <a class="btn btn--primary btn--sm" href={gmaps} target="_blank" rel="noopener">Abrir en Google Maps</a>}
+    <button type="button" class="btn btn--outline btn--sm" id="btnGpx">Descargar GPX</button>
+  </div>
+  <ol class="rmapa__dias">
+    {etapas.map((e, i) => (
+      <li class="rmapa__dia" style={`--c:${datos[i].color}`}>
+        <h3>Día {i + 1} · {e.titulo}</h3>
+        {e.descripcion && <p>{e.descripcion}</p>}
+        <ul>
+          {datos[i].paradas.map(p => (
+            <li><span class="rmapa__n">{p.n}</span> <span aria-hidden="true">{p.icono}</span> {p.nombre}{p.nota && <em> — {p.nota}</em>}</li>
+          ))}
+        </ul>
+      </li>
+    ))}
+  </ol>
+  <script type="application/json" id="rutaDatos" set:html={JSON.stringify({ titulo, datos })} />
+</section>
+)}
+
+<script>
+  import L from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+  const el = document.getElementById('rutaMapa');
+  const raw = document.getElementById('rutaDatos');
+  if (el && raw) {
+    const { titulo, datos } = JSON.parse(raw.textContent || '{}');
+    const m = L.map(el, { scrollWheelZoom: false });
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(m);
+    const puntos: [number, number][] = [];
+    for (const d of datos) {
+      const linea: [number, number][] = [];
+      for (const p of d.paradas) {
+        const ll: [number, number] = [p.lat, p.lng];
+        puntos.push(ll); linea.push(ll);
+        const s = document.createElement('span');
+        s.className = 'rmk'; s.style.setProperty('--c', d.color); s.textContent = String(p.n);
+        const pop = document.createElement('div');
+        const b = document.createElement('strong'); b.textContent = `${p.n}. ${p.nombre}`; pop.appendChild(b);
+        const t = document.createElement('div'); t.textContent = `Día ${d.dia}${p.nota ? ' · ' + p.nota : ''}`; pop.appendChild(t);
+        L.marker(ll, { icon: L.divIcon({ html: s, className: '', iconSize: [26, 26], iconAnchor: [13, 13] }) }).bindPopup(pop).addTo(m);
+      }
+    }
+    L.polyline(puntos, { color: '#1B4F72', weight: 3, dashArray: '6 8', opacity: .8 }).addTo(m);
+    m.fitBounds(L.latLngBounds(puntos), { padding: [30, 30], maxZoom: 13 });
+
+    document.getElementById('btnGpx')?.addEventListener('click', () => {
+      const esc = (s: string) => s.replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]!));
+      const wpts = datos.flatMap((d: any) => d.paradas.map((p: any) =>
+        `<wpt lat="${p.lat}" lon="${p.lng}"><name>${esc(`${p.n}. ${p.nombre}`)}</name><desc>${esc(`Día ${d.dia}`)}</desc></wpt>`)).join('\n');
+      const rte = datos.flatMap((d: any) => d.paradas.map((p: any) =>
+        `<rtept lat="${p.lat}" lon="${p.lng}"><name>${esc(p.nombre)}</name></rtept>`)).join('\n');
+      const gpx = `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="El Burgao" xmlns="http://www.topografix.com/GPX/1/1">\n<metadata><name>${esc(titulo)}</name></metadata>\n${wpts}\n<rte><name>${esc(titulo)}</name>\n${rte}\n</rte>\n</gpx>\n`;
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([gpx], { type: 'application/gpx+xml' }));
+      a.download = `${titulo.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-')}.gpx`;
+      a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    });
+  }
+</script>
+
+<style>
+.rmapa { margin-top: var(--space-10); }
+.rmapa h2 { font-family: var(--font-display); font-size: var(--text-2xl); color: var(--color-text); }
+.rmapa__mapa { height: 380px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); z-index: 0; margin-top: var(--space-4); }
+.rmapa__nota { font-size: .78rem; color: var(--color-text-muted); margin-top: var(--space-2); }
+.rmapa__acciones { display: flex; gap: var(--space-3); flex-wrap: wrap; margin: var(--space-3) 0 var(--space-6); }
+.rmapa__dias { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--space-4); }
+.rmapa__dia { border-left: 4px solid var(--c); padding: var(--space-2) var(--space-4); }
+.rmapa__dia h3 { font-size: 1rem; margin: 0 0 var(--space-2); color: var(--color-text); }
+.rmapa__dia ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .35rem; font-size: .9rem; }
+.rmapa__n { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--c); color: #fff; font-size: .72rem; font-weight: 700; }
+</style>
+<style is:global>
+.rmk { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; background: var(--c); color: #fff; font: 700 12px/1 var(--font-body, sans-serif); border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+</style>
